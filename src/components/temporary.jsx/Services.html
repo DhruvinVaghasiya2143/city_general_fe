@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Medical Services and Departments - City General Hospital</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 md:px-10 py-3 bg-white dark:bg-slate-900 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-8 flex items-center justify-center bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary">medical_services</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em]">City General</h2>
+</div>
+<nav class="hidden lg:flex items-center gap-9">
+<a class="text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Find a Doctor</a>
+<a class="text-primary text-sm font-semibold" href="#">Services</a>
+<a class="text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Locations</a>
+<a class="text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Patient Portal</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<label class="hidden md:flex flex-col min-w-40 !h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-slate-500 dark:text-slate-400 flex border-none bg-slate-100 dark:bg-slate-800 items-center justify-center pl-4 rounded-l-lg">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-0 border-none bg-slate-100 dark:bg-slate-800 focus:border-none h-full placeholder:text-slate-500 px-4 rounded-l-none pl-2 text-sm font-normal" placeholder="Search departments..." value=""/>
+</div>
+</label>
+<button class="flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-all shadow-md shadow-primary/20">
+<span class="truncate">Emergency Call</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-slate-100 dark:border-slate-800" data-alt="Professional profile picture of a doctor" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAb0lxWJNjzjGeggTPDiaOEcL7bL6uFT526rBo-8wo4_LYTwdJv3Sz0TwFV2FbBGLnzlupQdVIwr7hYC1ngfzqRTxBhb-QtEdYfo5U2CAL_sWH6l8bIKsGNsPFOrfaigXsg1cbCDF2CtpkMNEzuRs7BL9K9tPpsooP-cCbGT3wEXkDJGKWVmMf4FDbhD3dqpfE5mfqEahfR2b1_wKdSEDhZqFQnveuQKEBO6mr0FW8vBvKSgNuFoTxZY4qQr8GF6TJ03z4xa5Ge_tdy");'></div>
+</div>
+</header>
+<main class="px-6 md:px-10 lg:px-40 py-8">
+<div class="max-w-[1200px] mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
+<div class="flex flex-col gap-2">
+<nav class="flex text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">
+<a class="hover:text-primary" href="#">Home</a>
+<span class="mx-2">/</span>
+<span class="text-slate-900 dark:text-slate-100">Our Services</span>
+</nav>
+<h1 class="text-slate-900 dark:text-slate-100 text-4xl font-black leading-tight tracking-[-0.033em]">Our Medical Services</h1>
+<p class="text-slate-600 dark:text-slate-400 text-lg font-normal max-w-2xl">Access world-class healthcare across our specialized departments. We combine cutting-edge technology with compassionate care.</p>
+</div>
+<div class="flex items-center gap-2 bg-white dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-800">
+<button class="p-2 bg-slate-100 dark:bg-slate-800 rounded text-primary">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-symbols-outlined">view_list</span>
+</button>
+</div>
+</div>
+<!-- Filters -->
+<div class="flex gap-3 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary px-6 text-white text-sm font-semibold">
+                        All Departments
+                    </button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-6 text-slate-700 dark:text-slate-300 text-sm font-medium hover:border-primary/50 transition-colors">
+                        Urgent Care
+                        <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-6 text-slate-700 dark:text-slate-300 text-sm font-medium hover:border-primary/50 transition-colors">
+                        Surgical
+                        <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-6 text-slate-700 dark:text-slate-300 text-sm font-medium hover:border-primary/50 transition-colors">
+                        Diagnostics
+                        <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-6 text-slate-700 dark:text-slate-300 text-sm font-medium hover:border-primary/50 transition-colors">
+                        Rehabilitation
+                        <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</button>
+</div>
+<!-- Departments Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<!-- Cardiology -->
+<div class="group flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+<div class="relative w-full aspect-[4/3] overflow-hidden">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover group-hover:scale-110 transition-transform duration-500" data-alt="Modern cardiology diagnostic equipment and monitoring" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBcFYysDiuw-XHV-8WJ2_bkw7HWlrcroLftbcDJLydcG2WpMBkJek0I8TqQisuG66dvSwctX0IjbhNJ6hdsteiPviJ3GwkiA9Dhwq6yNU6Ghcw3hHZ30HHOoel54U1I1DyxYzvjJo2cWNYuJw-p804KRe_pQkKo4swxDCJ60nHT_Q3gOPVW2iKZfefrfHCYn_En8DJRowpXW3Y60Chblj3sQAb5VrF7tR-K3XajkAuZGfWUXqfP21xLdBjy3TkeinQ7PYAh7hWjgne0");'></div>
+<div class="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">cardiology</span>
+</div>
+</div>
+<div class="p-6 flex flex-col grow">
+<h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold mb-2">Cardiology</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6 grow">Advanced heart care including non-invasive diagnostics, interventional procedures, and cardiac rehabilitation.</p>
+<div class="flex flex-col gap-3">
+<button class="w-full py-2.5 px-4 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                                    Book Appointment
+                                    <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+</button>
+<a class="text-center text-primary text-sm font-semibold hover:underline" href="#">View Specialists</a>
+</div>
+</div>
+</div>
+<!-- Pediatrics -->
+<div class="group flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+<div class="relative w-full aspect-[4/3] overflow-hidden">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover group-hover:scale-110 transition-transform duration-500" data-alt="Pediatrician examining a smiling child patient" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC4pLR8uUucJhWNIFUZA0GkhazSNcsBA7gfq691K6P-m_syFZErOZkAbN9QWRSh0tTsNrl3eUOc31OJsZI-V_HOJhZDs-G_eV5VvoneKXy01eJuL1BsmFvvoiFgMt39h4XxB3ZEdo3An2KLsvxomrbPViZjrzsRGM3uDs-6EoxE2kqpgC6YpiqPHiUHRy2k67Xmgatc-eurQw0idTHGXP6zVS0kjYD6orhyIYnCPRdXjRWTDJr2hovKsDShbuAQ2TaFya4fDgNJJlUE");'></div>
+<div class="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">child_care</span>
+</div>
+</div>
+<div class="p-6 flex flex-col grow">
+<h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold mb-2">Pediatrics</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6 grow">Comprehensive medical care for infants, children, and adolescents in a friendly environment.</p>
+<div class="flex flex-col gap-3">
+<button class="w-full py-2.5 px-4 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                                    Book Appointment
+                                    <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+</button>
+<a class="text-center text-primary text-sm font-semibold hover:underline" href="#">View Specialists</a>
+</div>
+</div>
+</div>
+<!-- Neurology -->
+<div class="group flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+<div class="relative w-full aspect-[4/3] overflow-hidden">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover group-hover:scale-110 transition-transform duration-500" data-alt="Close up of a brain scan image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBEimYYTXEcWk5-wbHdQEKOtib3qX_Z60chg2J_LinApv1m_X1beGq1o4WYdsrGngcIVY99cxokQ3Mmu2Xnatda3CoMonYzmWeSM3R6fSNadyNcp4jqyV2ZWG1jXb6NyZMVrTFMCxvgjhH8op3tp6y985nGjYVw1BTl3luBLj0AWe-PVLdpr3THsPDpMGh8i0gH535R0L1Au2DG4O6N0l88fctJXNbVzvRWCeBOPIWjgTsoaD8OxPnT4S3j2lxF6vgI9I-1ZdAX0oEu");'></div>
+<div class="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+</div>
+<div class="p-6 flex flex-col grow">
+<h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold mb-2">Neurology</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6 grow">Expert diagnosis and treatment of disorders involving the brain, spinal cord, and peripheral nerves.</p>
+<div class="flex flex-col gap-3">
+<button class="w-full py-2.5 px-4 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                                    Book Appointment
+                                    <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+</button>
+<a class="text-center text-primary text-sm font-semibold hover:underline" href="#">View Specialists</a>
+</div>
+</div>
+</div>
+<!-- Orthopedics -->
+<div class="group flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+<div class="relative w-full aspect-[4/3] overflow-hidden">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover group-hover:scale-110 transition-transform duration-500" data-alt="Doctor reviewing an X-ray of a joint" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCXWwHap42TGczbePJQxJuUalFRHxRPj60rO12wi_EvxdZ9yAAXrEojzh4qc57eoZj0XNKVaMbbm94UEiIUTPTB4VjNsJcoecvFd-YC174qVf2cmX57PVF0hMaBk5IBldRb8eLjWWCqhG0ojOpxE6ehuuIWkpbab1FR5teNivrAqFKFRKL1prEdqPVtLB7msJDO99_NdVrl7q2-VTDrHXivGiJcXJj4pZh7e1rj7hGP1cg7dyhNGym5Q88FrLW94jKDEqc3pvAzfHcP");'></div>
+<div class="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">orthopedics</span>
+</div>
+</div>
+<div class="p-6 flex flex-col grow">
+<h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold mb-2">Orthopedics</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6 grow">Specialized care for bones, joints, ligaments, and tendons, from sports injuries to joint replacement.</p>
+<div class="flex flex-col gap-3">
+<button class="w-full py-2.5 px-4 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                                    Book Appointment
+                                    <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+</button>
+<a class="text-center text-primary text-sm font-semibold hover:underline" href="#">View Specialists</a>
+</div>
+</div>
+</div>
+<!-- Dermatology -->
+<div class="group flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+<div class="relative w-full aspect-[4/3] overflow-hidden">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover group-hover:scale-110 transition-transform duration-500" data-alt="Close up of skincare treatment in clinic" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCs-cggY85Usw74IhfvO8mv187w28FeSuS88wDMgIE6rax61aj8vWSvpmPrFGsHAWGVdTL0dTgD1aQ54nksd9qvYHrXDqru-HqBHQy8NS0d1_6lYYg0TtOCRwYyWDsaoJoGzxLxoFHz4ehYKbki5FIXoiL13kmOTDXeAzd38laiAn6Dj9ME0WZr2zJXFK6dR0GgLXRRPhn54qTX3KCNgrdlRF_YiQANz1QLRPtM2Ujibby70JWEYcqGxjsJcQyDD8pGr7fsDCNwFLLO");'></div>
+<div class="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">dermatology</span>
+</div>
+</div>
+<div class="p-6 flex flex-col grow">
+<h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold mb-2">Dermatology</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6 grow">Treatment for conditions of the skin, hair, and nails, including medical and cosmetic dermatology.</p>
+<div class="flex flex-col gap-3">
+<button class="w-full py-2.5 px-4 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                                    Book Appointment
+                                    <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+</button>
+<a class="text-center text-primary text-sm font-semibold hover:underline" href="#">View Specialists</a>
+</div>
+</div>
+</div>
+<!-- Oncology -->
+<div class="group flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+<div class="relative w-full aspect-[4/3] overflow-hidden">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover group-hover:scale-110 transition-transform duration-500" data-alt="Laboratory research for cancer treatments" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAa2O1Xn0vLBhwA6CrhyQtI80QNGAPKTvC5OtSNH4hIt0alE9_5nNsCIq6_y73hJrNJfIyFF84tEc1VT_Mre6enwi4t8CK1jLbEqAO6Yh8Hbmm8EqsWJ6puM9fUkMY4E38JNEaFFy3wFuZpIqUmqFc9ijufAJ_0NT5s3OMEr2Aatyxom9DuCnOjq2fP0ZdSqT_cJxqqr1GGK7cwVtSRBErZPz5-FSnNUEDtDKwNDpV0mGr8p3-GgDINJ848TS_hfBiw40-r9nD7prld");'></div>
+<div class="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">oncology</span>
+</div>
+</div>
+<div class="p-6 flex flex-col grow">
+<h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold mb-2">Oncology</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6 grow">Comprehensive cancer care utilizing the latest treatments, research, and supportive services.</p>
+<div class="flex flex-col gap-3">
+<button class="w-full py-2.5 px-4 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                                    Book Appointment
+                                    <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+</button>
+<a class="text-center text-primary text-sm font-semibold hover:underline" href="#">View Specialists</a>
+</div>
+</div>
+</div>
+<!-- Maternity -->
+<div class="group flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+<div class="relative w-full aspect-[4/3] overflow-hidden">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover group-hover:scale-110 transition-transform duration-500" data-alt="Expecting mother at a checkup appointment" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDZlUveSDgfPX9MojDOFKKw273p_LAEFuQ0DdISiFAVQVZ6-DKFDVTtw5AtQaQP3WtTEpO42xYj0gY0a8Brhse1SFs7LEIGPu4iyQTV_tS-SSt8LCfkC9DnLXEM4JJEdXlq6CnntdVJb8ee7QK74vu9xZlrqXJgQqDAks9smA0pw85DTxbGF28vDcB9tryx4Ik2t2UmHi3OPDkcj_rofhvr22H6R-FMQj1s6KEpeXByR8xVctNRqNWmoGMyfzdFpeJjI_RNzQABAYoG");'></div>
+<div class="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">pregnancy</span>
+</div>
+</div>
+<div class="p-6 flex flex-col grow">
+<h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold mb-2">Maternity</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6 grow">Nurturing care for expectant mothers and newborns throughout the pregnancy journey.</p>
+<div class="flex flex-col gap-3">
+<button class="w-full py-2.5 px-4 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                                    Book Appointment
+                                    <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+</button>
+<a class="text-center text-primary text-sm font-semibold hover:underline" href="#">View Specialists</a>
+</div>
+</div>
+</div>
+<!-- Mental Health -->
+<div class="group flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+<div class="relative w-full aspect-[4/3] overflow-hidden">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover group-hover:scale-110 transition-transform duration-500" data-alt="Calm environment for therapy session" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCILSftzRTHFH77T2ZTDlp6jDNbdAo1wTg7cELEPPi-mDpUcFcmejrY1zKRQlV9LgY-yYcRajyeAVu9HouDXboKO38_N8yT-okWQ5RKGJbU2tWY8_VI-g3goFnsDPJmo8EUgIQC6sGbBdgjINVk5sjjDJxfrCLvMKoEAqo3vusErnYVIIYDegDhz1WMMDDKEHQxUaTIPXwsvNdA7SYFzSta4QrcEIGng6cHc0nXGbSXnyqeFUIBcSJ7XdQ7GLgzMF1knDUFo5Ipa_NY");'></div>
+<div class="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">psychology_alt</span>
+</div>
+</div>
+<div class="p-6 flex flex-col grow">
+<h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold mb-2">Mental Health</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6 grow">Holistic support for mental well-being, providing therapy, counseling, and psychiatric care.</p>
+<div class="flex flex-col gap-3">
+<button class="w-full py-2.5 px-4 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                                    Book Appointment
+                                    <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+</button>
+<a class="text-center text-primary text-sm font-semibold hover:underline" href="#">View Specialists</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Features/Why Choose Us Section -->
+<div class="mt-20 pt-16 border-t border-slate-200 dark:border-slate-800">
+<h2 class="text-slate-900 dark:text-slate-100 text-3xl font-bold leading-tight tracking-[-0.015em] mb-12 text-center">Why Choose Our Services?</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="flex flex-col items-center text-center p-6 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+<div class="size-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-3xl text-primary">clinical_notes</span>
+</div>
+<h4 class="text-lg font-bold mb-3">Electronic Records</h4>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Secure and instant access to your health history, lab results, and prescriptions through our patient portal.</p>
+</div>
+<div class="flex flex-col items-center text-center p-6 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+<div class="size-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-3xl text-primary">group</span>
+</div>
+<h4 class="text-lg font-bold mb-3">Expert Team</h4>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Our multidisciplinary team of world-class specialists works together to provide coordinated, integrated care.</p>
+</div>
+<div class="flex flex-col items-center text-center p-6 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+<div class="size-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-3xl text-primary">emergency</span>
+</div>
+<h4 class="text-lg font-bold mb-3">24/7 Care</h4>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Round-the-clock emergency services and urgent care support to ensure you're never without help.</p>
+</div>
+</div>
+</div>
+<!-- Map Section -->
+<div class="mt-20 rounded-2xl overflow-hidden relative h-[400px]">
+<div class="absolute inset-0 bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Map showing hospital locations in the city center" data-location="Chicago" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMX-seZfr9b8sS2gFo8JtfnSfbm7Xxhq2vRxTad8mfMhbmfCtn18umGRRJwO-Y7TFRRykqjLc5J038q4e2jewurDwXU-ziL07pfTh-Y1EBoElWiaiQWnAXFyRQEf8gAi-JNs1ZtzxKI77Qd5ROsvzIVl084sUcPXbRD_PEaOn3KBBFXwuZ2T5T7tjlPM73nVHReibLj-zJm-SqOOu0MSnq4kfKlTzC-98UJpxHjOFs49tiDap4Kyp5Ef3Jw8W5PVmQ6LKXAgPHJsAN"/>
+<div class="absolute inset-0 bg-slate-900/20"></div>
+</div>
+<div class="absolute bottom-10 left-10 p-8 bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-sm border border-slate-200 dark:border-slate-800">
+<h3 class="text-xl font-bold mb-2">Main Campus</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm mb-4">123 Health Blvd, Med-District<br/>Chicago, IL 60601</p>
+<button class="text-primary font-bold text-sm flex items-center gap-2">
+                            Get Directions
+                            <span class="material-symbols-outlined text-[18px]">directions</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-12 mt-20">
+<div class="max-w-[1200px] mx-auto px-10 grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined">medical_services</span>
+<span class="font-bold text-lg text-slate-900 dark:text-slate-100">City General</span>
+</div>
+<p class="text-slate-500 text-sm">Providing exceptional patient care for over 50 years with compassion and innovation.</p>
+</div>
+<div>
+<h5 class="font-bold mb-4 text-slate-900 dark:text-slate-100">Quick Links</h5>
+<ul class="flex flex-col gap-2 text-slate-500 text-sm">
+<li><a class="hover:text-primary" href="#">About Us</a></li>
+<li><a class="hover:text-primary" href="#">Medical Team</a></li>
+<li><a class="hover:text-primary" href="#">Patient Stories</a></li>
+<li><a class="hover:text-primary" href="#">Contact</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold mb-4 text-slate-900 dark:text-slate-100">Departments</h5>
+<ul class="flex flex-col gap-2 text-slate-500 text-sm">
+<li><a class="hover:text-primary" href="#">Cardiology</a></li>
+<li><a class="hover:text-primary" href="#">Pediatrics</a></li>
+<li><a class="hover:text-primary" href="#">Orthopedics</a></li>
+<li><a class="hover:text-primary" href="#">Neurology</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold mb-4 text-slate-900 dark:text-slate-100">Contact Us</h5>
+<ul class="flex flex-col gap-2 text-slate-500 text-sm">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">call</span> (555) 123-4567</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">mail</span> info@citygeneral.com</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">schedule</span> 24/7 Emergency</li>
+</ul>
+</div>
+</div>
+<div class="max-w-[1200px] mx-auto px-10 mt-12 pt-8 border-t border-slate-100 dark:border-slate-800 text-center text-slate-400 text-xs">
+                © 2024 City General Hospital. All rights reserved. Professional healthcare for the community.
+            </div>
+</footer>
+</div>
+</div>
+</body></html>
