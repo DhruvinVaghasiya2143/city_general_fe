@@ -1,5 +1,6 @@
 import React from "react";
 import { Container, Typography, Button, Box, Avatar } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import ImageAvatars from "./Avatar";
 
 // ✅ Proper component
@@ -27,6 +28,8 @@ const WaitTimeDisplay = ({ waitTime, isLive }) => {
 };
 
 export default function HeroSection() {
+  const navigate = useNavigate();
+
   return (
     <Container sx={{ py: 8 }}>
       <div className="flex flex-col md:flex-row items-center justify-between gap-8">
@@ -50,10 +53,16 @@ export default function HeroSection() {
           </Typography>
 
           <Box sx={{ mt: 3 }}>
-            <Button variant="contained" sx={{ mr: 2 }}>
-              Book Appointment
+            <Button
+              variant="contained"
+              sx={{ mr: 2 }}
+              onClick={() => navigate("/doctors")}
+            >
+              Book Now
             </Button>
-            <Button variant="outlined">View Our Services</Button>
+            <Button variant="outlined"
+            onClick={() => navigate("/services")}
+            >View Our Services</Button>
           </Box>
         </div>
 

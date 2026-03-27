@@ -626,7 +626,6 @@ function ResponsiveAppBar() {
                   sx={{ flex: 1 }}
                 />
               </Box>
-              
             </Box>
           </Box>
 
@@ -847,7 +846,7 @@ function ResponsiveAppBar() {
               </div>
 
               {/* Search Bar */}
-              <div className="hidden md:flex">
+              {/* <div className="hidden md:flex">
                 <TextField
                   size="small"
                   placeholder="Find a doctor"
@@ -856,7 +855,7 @@ function ResponsiveAppBar() {
                   variant="outlined"
                   className="bg-gray-200 rounded-md "
                 />
-              </div>
+              </div> */}
 
               {/* Right Side */}
               <div className="flex items-center gap-3">
@@ -868,22 +867,21 @@ function ResponsiveAppBar() {
                     Book Appointment
                   </Button>
                 ) : (
-                  <Button
-                    variant="contained"
-                    color={authUser.role === "Doctor" ? "error" : "primary"}
-                    sx={{
-                      bgcolor:
-                        authUser.role === "Doctor" ? "#dc2626" : "#137fec",
-                      textTransform: "none",
-                      fontWeight: 700,
-                      borderRadius: "8px",
-                    }}
-                    className="hidden sm:flex"
-                  >
-                    {authUser.role === "Doctor"
-                      ? "Emergency Alert"
-                      : "Add Task"}
-                  </Button>
+                  authUser.role === "Doctor" && (
+                    <Button
+                      variant="contained"
+                      color="error"
+                      sx={{
+                        bgcolor: "#dc2626",
+                        textTransform: "none",
+                        fontWeight: 700,
+                        borderRadius: "8px",
+                      }}
+                      className="hidden sm:flex"
+                    >
+                      Emergency Alert
+                    </Button>
+                  )
                 )}
 
                 {isLoggedIn ? (
@@ -1194,8 +1192,6 @@ function ResponsiveAppBar() {
     }
   };
 
-
-  
   return <>{renderContent()}</>;
 }
 

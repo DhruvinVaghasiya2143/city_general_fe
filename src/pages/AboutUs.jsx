@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -11,13 +11,42 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import TargetIcon from "@mui/icons-material/AdsClick";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import axios from "axios";
 
 const AboutUs = () => {
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/public/doctors",
+        );
+        // The API returns { data: [...], pagination: {...} }
+        setDoctors(response.data.data || []);
+      } catch (error) {
+        console.error("Error fetching doctors for about us:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDoctors();
+  }, []);
+
+  // Default images to cycle through if doctor doesn't have one
+  const defaultImages = [
+    "/assets/doc_michael.png",
+    "/assets/doc_sarah.png",
+    "/assets/doc_james.png",
+  ];
+
   return (
     <Box>
       {/* Hero Section */}
@@ -149,24 +178,34 @@ const AboutUs = () => {
         </Box>
 
         {/* History Section */}
-        <Typography variant="h3" sx={{ fontWeight: 800, mb: 6, mt: 6 }}>
-          Our Rich History
-        </Typography>
-        <div className="flex gap-4">
+        <div id="history">
           <Box
             sx={{
               display: "flex",
               flexDirection: { xs: "column", md: "row" },
-              justifyContent: "space-between",
+              gap: 8,
+              mb: 15,
               alignItems: "center",
-              gap: 4,
-              mb: 12,
             }}
           >
-            <Box
-            // sx={{ width: { xs: '100%', md: '33.333%' } }}
-            >
-              <Box className="timeline">
+            <Box sx={{ width: { xs: "100%", md: "66.666%" } }}>
+              <Typography
+                variant="h3"
+                sx={{ fontWeight: 800, mb: 3, letterSpacing: "-0.02em" }}
+              >
+                A Legacy of Compassionate Care
+              </Typography>
+              <Typography
+                variant="h6"
+                color="text.secondary"
+                sx={{ mb: 4, lineHeight: 1.6 }}
+              >
+                Since our founding, City General has been at the forefront of
+                medical innovation, combining state-of-the-art technology with a
+                deep commitment to human-centric healing.
+              </Typography>
+
+              <Box sx={{ mt: 6 }}>
                 {[
                   {
                     year: "1974",
@@ -267,10 +306,11 @@ const AboutUs = () => {
             color="text.secondary"
             sx={{ maxWidth: "700px", mx: "auto" }}
           >
-            Our team of over 500 medical professionals brings expertise from the
-            world's leading institutions to your neighborhood.
+            Our team of world-class medical professionals brings expertise from
+            leading institutions to your neighborhood.
           </Typography>
         </Box>
+
         <Box
           sx={{
             display: "flex",
@@ -280,63 +320,73 @@ const AboutUs = () => {
             justifyContent: "center",
           }}
         >
-          {[
-            {
-              name: "Dr. Sarah Jenkins",
-              role: "Chief Medical Officer",
-              img: "/assets/doc_sarah.png",
-            },
-            {
-              name: "Dr. Michael Chen",
-              role: "Head of Cardiology",
-              img: "/assets/doc_michael.png",
-            },
-            {
-              name: "Dr. Elena Rodriguez",
-              role: "Pediatric Specialist",
-              img: "/assets/doc_sarah.png",
-            }, // Reusing image as placeholder
-            {
-              name: "Dr. James Wilson",
-              role: "Head of Orthopedics",
-              img: "/assets/doc_james.png",
-            },
-          ].map((doc, i) => (
-            <Box
-              key={i}
-              sx={{
-                width: {
-                  xs: "100%",
-                  sm: "calc(50% - 16px)",
-                  md: "calc(25% - 24px)",
-                },
-                textAlign: "center",
-              }}
-            >
-              <Box
-                sx={{
-                  width: "100%",
-                  aspectRatio: "1/1",
-                  borderRadius: 4,
-                  overflow: "hidden",
-                  mb: 2,
-                  boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
-                }}
-              >
-                <Box
-                  component="img"
-                  src={doc.img}
-                  sx={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              </Box>
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                {doc.name}
-              </Typography>
-              <Typography variant="body2" color="primary">
-                {doc.role}
-              </Typography>
-            </Box>
-          ))}
+            {doctors.length > 0 ? (
+              doctors.slice(0, 4).map((doc, i) => {
+                const malePool = [
+                  "/assets/doc_michael.png",
+                  "/assets/doc_james.png",
+                  "/assets/doc_robert.png",
+                ];
+                const femalePool = ["/assets/doc_kiran.png", "/assets/doc_sarah.png"];
+
+                let finalImg;
+                const fullName = `${doc.firstName} ${doc.lastName}`.toLowerCase();
+
+                if (fullName.includes("kiran")) {
+                  finalImg = femalePool[0]; // Always female for Kiran
+                } else {
+                  // Assign from male pool for first 3, or if not Kiran
+                  // Use index to skip if Kiran took a slot, but keep it simple for 4 doctors
+                  if (i < 3) {
+                    finalImg = malePool[i % malePool.length];
+                  } else {
+                    // 4th doctor gets female photo by default if not kiran, to ensure "3 men, 1 woman"
+                    finalImg = femalePool[1] || femalePool[0];
+                  }
+                }
+
+                return (
+                  <Box
+                    key={i}
+                    sx={{
+                      width: {
+                        xs: "100%",
+                        sm: "calc(50% - 16px)",
+                        md: "calc(25% - 24px)",
+                      },
+                      textAlign: "center",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: "100%",
+                        aspectRatio: "1/1",
+                        borderRadius: 4,
+                        overflow: "hidden",
+                        mb: 2,
+                        boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={finalImg}
+                        sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      />
+                    </Box>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    Dr. {doc.firstName} {doc.lastName}
+                  </Typography>
+                  <Typography variant="body2" color="primary">
+                    {doc.specialty}
+                  </Typography>
+                </Box>
+              );
+            })
+          ) : (
+            <Typography color="text.secondary">
+              No medical specialists currently featured.
+            </Typography>
+          )}
         </Box>
 
         {/* Facilities Section */}

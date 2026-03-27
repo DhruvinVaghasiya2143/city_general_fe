@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import {
-  CardHeader,
   Box,
-  Container,
   Typography,
   TextField,
   Button,
@@ -12,12 +10,10 @@ import {
   IconButton,
   Checkbox,
   FormControlLabel,
-  ToggleButtonGroup,
-  ToggleButton,
   Divider,
   Alert,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Visibility from "@mui/icons-material/Visibility";
@@ -25,25 +21,15 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import LoginIcon from "@mui/icons-material/Login";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import LockResetIcon from "@mui/icons-material/LockReset";
-import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
+import ShieldIcon from "@mui/icons-material/Shield";
 import axios from "axios";
 
-const Login = () => {
-  const [role, setRole] = useState("Doctor");
+const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
-  const handleRoleChange = (event, newRole) => {
-    if (newRole !== null) {
-      setRole(newRole);
-      setError("");
-      setEmail("");
-      setPassword("");
-    }
-  };
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -61,38 +47,36 @@ const Login = () => {
         {
           email: email,
           password: password,
-          role: role,
+          role: "admin",
         },
       );
 
-      const user = response.data.user;
-      console.log("user", user);
-      const sessionUser = {
-        loggedIn: true,
-        role: user.role,
-        name: user.firstName + " " + user.lastName,
-        email: user.email,
-        loginTime: new Date().toISOString(),
-        id: user._id,
-      };
+      if (response) {
+        console.log("loginResponse", response);
+        const user = response.data.user;
 
-      sessionStorage.setItem("authUser", JSON.stringify(sessionUser));
+        const sessionUser = {
+          loggedIn: true,
+          role: "admin",
+          name: user.firstName + " " + user.lastName,
+          email: user.email,
+          loginTime: new Date().toISOString(),
+        };
 
-      // Redirect based on role
-      const userRole = user.role?.toLowerCase();
-      console.log("userRole", userRole, user);
-      if (userRole === "doctor") navigate("/doctor-dashboard");
-      if (userRole === "pharmacist") navigate("/pharmacists-dashboard");
-      if (userRole === "receptionist") navigate("/receptionist-dashboard");
+        sessionStorage.setItem("authUser", JSON.stringify(sessionUser));
+
+        // Admin Dashboard redirect
+        navigate("/admin-dashboard");
+      }
     } catch (error) {
-      setError(error.response?.data?.message || "Login failed");
+      setError(error.response?.data?.message || "Admin login failed");
     }
   };
 
   return (
     <Box
       sx={{
-        bgcolor: "#f6f7f8",
+        bgcolor: "#f8fafc",
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
@@ -108,74 +92,54 @@ const Login = () => {
         }}
       >
         <Box sx={{ width: "100%", maxWidth: "480px" }}>
+          <Box sx={{ textAlign: "center", mb: 4 }}>
+            <Box 
+              sx={{ 
+                display: 'inline-flex', 
+                p: 1.5, 
+                borderRadius: '16px', 
+                bgcolor: 'primary.main', 
+                color: 'white',
+                mb: 2,
+                boxShadow: '0 8px 16px rgba(19, 127, 236, 0.2)'
+              }}
+            >
+              <ShieldIcon fontSize="large" />
+            </Box>
+            <Typography variant="h3" sx={{ fontWeight: 900, mb: 1, letterSpacing: '-0.02em' }}>
+              Admin Login
+            </Typography>
+            <Typography sx={{ color: "#64748b", fontWeight: 500 }}>
+              Authorized access only. Please sign in to manage the platform.
+            </Typography>
+          </Box>
+
           <Card
             elevation={0}
             sx={{
               p: { xs: 2, md: 4 },
-              borderRadius: "20px",
+              borderRadius: "24px",
               border: "1px solid #e2e8f0",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+              boxShadow: "0 10px 40px rgba(0,0,0,0.04)",
               bgcolor: "white",
             }}
           >
-            <CardHeader
-              title="Login"
-              sx={{
-                textAlign: "center",
-                fontWeight: 900,
-                mb: 1,
-                padding: 0,
-              }}
-            />
             <CardContent sx={{ p: 0 }}>
-              <ToggleButtonGroup
-                value={role}
-                exclusive
-                onChange={handleRoleChange}
-                fullWidth
-                sx={{
-                  mb: 2,
-                  bgcolor: "#f1f5f9",
-                  p: 0.5,
-                  borderRadius: "12px",
-                  "& .MuiToggleButton-root": {
-                    border: "none",
-                    borderRadius: "8px !important",
-                    textTransform: "none",
-                    fontWeight: 600,
-                    color: "#64748b",
-                    "&.Mui-selected": {
-                      bgcolor: "white",
-                      color: "primary.main",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                      "&:hover": {
-                        bgcolor: "white",
-                      },
-                    },
-                  },
-                }}
-              >
-                <ToggleButton value="Doctor">Doctor</ToggleButton>
-                <ToggleButton value="Pharmacist">Pharmacist</ToggleButton>
-                <ToggleButton value="Receptionist">Receptionist</ToggleButton>
-              </ToggleButtonGroup>
-
               <Box
                 component="form"
                 onSubmit={handleSignIn}
                 noValidate
-                sx={{ mt: 1 }}
               >
                 <Box sx={{ mb: 3 }}>
                   <Typography
                     variant="body2"
                     sx={{ fontWeight: 700, mb: 1, color: "#334155" }}
                   >
-                    Email Address
+                    Administrator Email
                   </Typography>
                   <TextField
                     fullWidth
-                    placeholder="e.g. name@hospital.com"
+                    placeholder="admin@citygeneral.com"
                     variant="outlined"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -188,9 +152,10 @@ const Login = () => {
                         </InputAdornment>
                       ),
                       sx: {
-                        borderRadius: "10px",
+                        borderRadius: "12px",
                         bgcolor: "#f8fafc",
                         "& fieldset": { borderColor: "#e2e8f0" },
+                        "&:hover fieldset": { borderColor: "primary.main" },
                       },
                     }}
                   />
@@ -201,7 +166,7 @@ const Login = () => {
                     variant="body2"
                     sx={{ fontWeight: 700, mb: 1, color: "#334155" }}
                   >
-                    Password
+                    Secure Password
                   </Typography>
                   <TextField
                     fullWidth
@@ -230,9 +195,10 @@ const Login = () => {
                         </InputAdornment>
                       ),
                       sx: {
-                        borderRadius: "10px",
+                        borderRadius: "12px",
                         bgcolor: "#f8fafc",
                         "& fieldset": { borderColor: "#e2e8f0" },
+                        "&:hover fieldset": { borderColor: "primary.main" },
                       },
                     }}
                   />
@@ -243,7 +209,7 @@ const Login = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    mb: 3,
+                    mb: 4,
                   }}
                 >
                   <FormControlLabel
@@ -257,8 +223,8 @@ const Login = () => {
                       />
                     }
                     label={
-                      <Typography variant="body2" sx={{ color: "#64748b" }}>
-                        Remember me
+                      <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
+                        Keep session active
                       </Typography>
                     }
                   />
@@ -271,7 +237,7 @@ const Login = () => {
                       "&:hover": { textDecoration: "underline" },
                     }}
                   >
-                    Forgot password?
+                    Reset Password?
                   </Typography>
                 </Box>
 
@@ -280,28 +246,80 @@ const Login = () => {
                   variant="contained"
                   size="large"
                   type="submit"
-                  // onClick={handleSignIn}
                   endIcon={<LoginIcon fontSize="small" />}
                   sx={{
-                    py: 1.5,
-                    borderRadius: "10px",
+                    py: 2,
+                    borderRadius: "12px",
                     fontWeight: 700,
                     textTransform: "none",
-                    boxShadow: "0 4px 12px rgba(19, 127, 236, 0.2)",
-                    mb: 0,
+                    fontSize: '1rem',
+                    boxShadow: "0 8px 20px rgba(19, 127, 236, 0.25)",
+                    mb: error ? 3 : 4,
+                    transition: 'all 0.2s',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: "0 12px 24px rgba(19, 127, 236, 0.3)",
+                    }
                   }}
                 >
-                  Sign In
+                  Access Dashboard
                 </Button>
 
                 {error && (
                   <Alert
                     severity="error"
-                    sx={{ mb: 2, borderRadius: "10px", fontSize: "0.85rem" }}
+                    sx={{ mb: 4, borderRadius: "12px", fontSize: "0.85rem", fontWeight: 500 }}
                   >
                     {error}
                   </Alert>
                 )}
+
+                <Box
+                  sx={{
+                    position: "relative",
+                    mb: 4,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Divider sx={{ width: "100%", position: "absolute" }} />
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      bgcolor: "white",
+                      px: 2,
+                      zIndex: 1,
+                      color: "#94a3b8",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "1px",
+                    }}
+                  >
+                    Administration
+                  </Typography>
+                </Box>
+
+                <Button
+                  component={RouterLink}
+                  to="/admin/register"
+                  fullWidth
+                  variant="outlined"
+                  sx={{
+                    py: 1.5,
+                    borderRadius: "12px",
+                    fontWeight: 700,
+                    textTransform: "none",
+                    color: "#475569",
+                    borderColor: '#e2e8f0',
+                    "&:hover": { 
+                      bgcolor: "#f8fafc",
+                      borderColor: '#cbd5e1'
+                    },
+                  }}
+                >
+                  Register New Administrator
+                </Button>
               </Box>
             </CardContent>
           </Card>
@@ -317,14 +335,14 @@ const Login = () => {
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <VerifiedUserIcon sx={{ fontSize: "16px" }} />
-              <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                HIPAA Compliant
+              <Typography variant="caption" sx={{ fontWeight: 700 }}>
+                SECURE ACCESS
               </Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <LockResetIcon sx={{ fontSize: "16px" }} />
-              <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                256-bit Encryption
+              <Typography variant="caption" sx={{ fontWeight: 700 }}>
+                RSA ENCRYPTED
               </Typography>
             </Box>
           </Box>
@@ -339,59 +357,13 @@ const Login = () => {
           backgroundColor: "white",
         }}
       >
-        <Typography variant="caption" sx={{ color: "#64748b" }}>
-          © 2024 HealthCare Portal. All patient data is protected under
-          international health privacy regulations.
+        <Typography variant="caption" sx={{ color: "#94a3b8", fontWeight: 500 }}>
+          © 2024 City General Hospital Admin Portal. 
+          Confidential System - Unauthorized Use is Prohibited.
         </Typography>
-        <Box
-          sx={{
-            mt: 2,
-            display: "flex",
-            justifyContent: "center",
-            gap: 2,
-            "& span": { color: "#e2e8f0" },
-          }}
-        >
-          <Typography
-            variant="caption"
-            sx={{
-              color: "#94a3b8",
-              cursor: "pointer",
-              "&:hover": { color: "primary.main" },
-            }}
-          >
-            Privacy Policy
-          </Typography>
-          <Typography component="span" variant="caption">
-            •
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              color: "#94a3b8",
-              cursor: "pointer",
-              "&:hover": { color: "primary.main" },
-            }}
-          >
-            Terms of Service
-          </Typography>
-          <Typography component="span" variant="caption">
-            •
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              color: "#94a3b8",
-              cursor: "pointer",
-              "&:hover": { color: "primary.main" },
-            }}
-          >
-            Help Center
-          </Typography>
-        </Box>
       </footer>
     </Box>
   );
 };
 
-export default Login;
+export default AdminLogin;

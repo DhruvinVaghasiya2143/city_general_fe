@@ -135,31 +135,6 @@ const PharmacistsPage = () => {
   const handleOpenUserMenu = (event) => setAnchorEl(event.currentTarget);
   const handleCloseUserMenu = () => setAnchorEl(null);
 
-  React.useEffect(() => {
-    const raw = sessionStorage.getItem("authUser");
-    if (raw) {
-      try {
-        setAuthUser(JSON.parse(raw));
-      } catch {
-        setAuthUser(null);
-      }
-    } else {
-      setAuthUser(null);
-    }
-  }, [navigate]);
-
-  const isLoggedIn = authUser?.loggedIn;
-
-  React.useEffect(() => {
-    if (authUser) {
-      if (authUser.role !== "Pharmacist") {
-        navigate("/");
-      }
-    } else if (sessionStorage.getItem("authUser") === null) {
-      navigate("/login");
-    }
-  }, [authUser, navigate]);
-
   const handleLogout = () => {
     sessionStorage.removeItem("authUser");
     navigate("/login");

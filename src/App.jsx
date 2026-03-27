@@ -1,27 +1,30 @@
-import React from "react";
 import { Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import Navbar from "./components/navbar";
 import Landing from "./pages/landing";
 import Login from "./pages/login";
-import Navbar from "./components/navbar";
-import StatsSection from "./components/StatsSection";
-import HeroSection from "./components/HeroSection";
-import ServicesSection from "./components/ServicesSection";
-import WhyChooseSection from "./components/WhyChooseSection";
-import CTASection from "./components/CTASection";
+
 import Footer from "./components/footer";
+import PrivateRoute from "./components/PrivateRoute";
 import AboutUs from "./pages/AboutUs";
-import ServicesPage from "./pages/ServicesPage";
-import DoctorsPage from "./pages/DoctorsPage";
 import ContactUs from "./pages/ContactUs";
 import DoctorsDashboard from "./pages/DoctorsDashboard";
-import ReceptionistDashboard from "./pages/ReceptionistDashboard";
+import DoctorsPage from "./pages/DoctorsPage";
 import PharmacistsPage from "./pages/PharmacistsPage";
-import PrivateRoute from "./components/PrivateRoute";
+import ReceptionistDashboard from "./pages/ReceptionistDashboard";
+import ServicesPage from "./pages/ServicesPage";
+// import Registration from "./pages/Registration";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminLogin from "./pages/AdminLogin";
+import AdminRegistration from "./pages/AdminRegistration";
 
 function App() {
   return (
     <div>
       <Navbar />
+      <ToastContainer />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/about" element={<AboutUs />} />
@@ -29,10 +32,22 @@ function App() {
         <Route path="/doctors" element={<DoctorsPage />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/login" element={<Login />} />
+        {/* <Route path="/registration" element={<Registration />} /> */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/register" element={<AdminRegistration />} />
+        <Route
+          path="/admin-dashboard"
+          element={
+            <PrivateRoute allowedRoles={["Admin"]}>
+              <AdminDashboard />
+            </PrivateRoute>
+          }
+        />
+
         <Route
           path="/pharmacists-dashboard"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={["Pharmacist"]}>
               <PharmacistsPage />
             </PrivateRoute>
           }
@@ -40,7 +55,7 @@ function App() {
         <Route
           path="/doctor-dashboard"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={["Doctor"]}>
               <DoctorsDashboard />
             </PrivateRoute>
           }
@@ -48,7 +63,7 @@ function App() {
         <Route
           path="/receptionist-dashboard"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={["Receptionist"]}>
               <ReceptionistDashboard />
             </PrivateRoute>
           }

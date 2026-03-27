@@ -1,7 +1,10 @@
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function CTASection() {
+  const navigate = useNavigate();
+
   return (
     <Box
       sx={{
@@ -20,19 +23,22 @@ export default function CTASection() {
       </Typography>
 
       <Typography variant="p" fontWeight="normal">
-        Book your first consultation today and experience <br />  healthcare reimaged.
+        Book your first consultation today and experience <br /> healthcare
+        reimaged.
       </Typography>
 
       <Box sx={{ mt: 3 }}>
         <Button
           variant="contained"
           sx={{ bgcolor: "white", color: "#1976d2", mr: 2 }}
+          onClick={() => navigate("/doctors")}
         >
           Schedule Now
         </Button>
         <Button
           variant="outlined"
           sx={{ color: "white", borderColor: "white" }}
+          onClick={() => navigate("/contact")}
         >
           Contact Our Team
         </Button>
