@@ -42,8 +42,9 @@ const AdminLogin = () => {
     }
 
     try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.post(
-        "http://localhost:8000/api/auth/login",
+        `${api}/auth/login`,
         {
           email: email,
           password: password,
@@ -93,20 +94,23 @@ const AdminLogin = () => {
       >
         <Box sx={{ width: "100%", maxWidth: "480px" }}>
           <Box sx={{ textAlign: "center", mb: 4 }}>
-            <Box 
-              sx={{ 
-                display: 'inline-flex', 
-                p: 1.5, 
-                borderRadius: '16px', 
-                bgcolor: 'primary.main', 
-                color: 'white',
+            <Box
+              sx={{
+                display: "inline-flex",
+                p: 1.5,
+                borderRadius: "16px",
+                bgcolor: "primary.main",
+                color: "white",
                 mb: 2,
-                boxShadow: '0 8px 16px rgba(19, 127, 236, 0.2)'
+                boxShadow: "0 8px 16px rgba(19, 127, 236, 0.2)",
               }}
             >
               <ShieldIcon fontSize="large" />
             </Box>
-            <Typography variant="h3" sx={{ fontWeight: 900, mb: 1, letterSpacing: '-0.02em' }}>
+            <Typography
+              variant="h3"
+              sx={{ fontWeight: 900, mb: 1, letterSpacing: "-0.02em" }}
+            >
               Admin Login
             </Typography>
             <Typography sx={{ color: "#64748b", fontWeight: 500 }}>
@@ -125,11 +129,7 @@ const AdminLogin = () => {
             }}
           >
             <CardContent sx={{ p: 0 }}>
-              <Box
-                component="form"
-                onSubmit={handleSignIn}
-                noValidate
-              >
+              <Box component="form" onSubmit={handleSignIn} noValidate>
                 <Box sx={{ mb: 3 }}>
                   <Typography
                     variant="body2"
@@ -223,7 +223,10 @@ const AdminLogin = () => {
                       />
                     }
                     label={
-                      <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "#64748b", fontWeight: 500 }}
+                      >
                         Keep session active
                       </Typography>
                     }
@@ -252,14 +255,14 @@ const AdminLogin = () => {
                     borderRadius: "12px",
                     fontWeight: 700,
                     textTransform: "none",
-                    fontSize: '1rem',
+                    fontSize: "1rem",
                     boxShadow: "0 8px 20px rgba(19, 127, 236, 0.25)",
                     mb: error ? 3 : 4,
-                    transition: 'all 0.2s',
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
+                    transition: "all 0.2s",
+                    "&:hover": {
+                      transform: "translateY(-2px)",
                       boxShadow: "0 12px 24px rgba(19, 127, 236, 0.3)",
-                    }
+                    },
                   }}
                 >
                   Access Dashboard
@@ -268,7 +271,12 @@ const AdminLogin = () => {
                 {error && (
                   <Alert
                     severity="error"
-                    sx={{ mb: 4, borderRadius: "12px", fontSize: "0.85rem", fontWeight: 500 }}
+                    sx={{
+                      mb: 4,
+                      borderRadius: "12px",
+                      fontSize: "0.85rem",
+                      fontWeight: 500,
+                    }}
                   >
                     {error}
                   </Alert>
@@ -311,10 +319,10 @@ const AdminLogin = () => {
                     fontWeight: 700,
                     textTransform: "none",
                     color: "#475569",
-                    borderColor: '#e2e8f0',
-                    "&:hover": { 
+                    borderColor: "#e2e8f0",
+                    "&:hover": {
                       bgcolor: "#f8fafc",
-                      borderColor: '#cbd5e1'
+                      borderColor: "#cbd5e1",
                     },
                   }}
                 >
@@ -357,9 +365,12 @@ const AdminLogin = () => {
           backgroundColor: "white",
         }}
       >
-        <Typography variant="caption" sx={{ color: "#94a3b8", fontWeight: 500 }}>
-          © 2024 City General Hospital Admin Portal. 
-          Confidential System - Unauthorized Use is Prohibited.
+        <Typography
+          variant="caption"
+          sx={{ color: "#94a3b8", fontWeight: 500 }}
+        >
+          © 2024 City General Hospital Admin Portal. Confidential System -
+          Unauthorized Use is Prohibited.
         </Typography>
       </footer>
     </Box>

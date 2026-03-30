@@ -23,7 +23,9 @@ import axios from "axios";
 import { TablePagination } from "@mui/material";
 
 const fetchDashboardStats = async () => {
-  const response = await axios.get("http://localhost:8000/api/admin/stats");
+  const response = await axios.get(
+    `${import.meta.env.VITE_API_BASE_BACKEND_URL}/admin/stats`,
+  );
   return response.data;
 };
 
@@ -52,8 +54,9 @@ const AdminDashboard = () => {
           : activeRole === "patient"
             ? "patients"
             : "admins";
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.get(
-        `http://localhost:8000/api/admin/${endpoint}?page=${page}&limit=${rowsPerPage}`,
+        `${api}/admin/${endpoint}?page=${page}&limit=${rowsPerPage}`,
       );
       setUsers(response.data.users || []);
       setTotalUsers(response.data.total || 0);
@@ -140,7 +143,9 @@ const AdminDashboard = () => {
     <Box sx={{ bgcolor: "#f8fafc", minHeight: "100vh", pt: 2, pb: 12 }}>
       <Container maxWidth="lg">
         {/* Header */}
-        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mb: 1 }}>
+        <Box
+          sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mb: 1 }}
+        >
           <Button
             variant="contained"
             onClick={() => setOpenAddService(true)}

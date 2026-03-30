@@ -63,8 +63,9 @@ const DoctorsPage = () => {
   const [recentAppointments, setRecentAppointments] = useState([]);
   const handleCompleteAppointment = async (id) => {
     try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.patch(
-        `http://localhost:8000/api/appointment/status/${id}`,
+        `${api}/appointment/status/${id}`,
         {
           status: "completed",
         },
@@ -124,8 +125,9 @@ const DoctorsPage = () => {
     console.log("payload", payload);
 
     try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.post(
-        "http://localhost:8000/api/public/appointment",
+        `${api}/public/appointment`,
         payload,
       );
       console.log(response.data);
@@ -180,16 +182,19 @@ const DoctorsPage = () => {
 
   const getdoctorById = async (id) => {
     try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.get(
-        `http://localhost:8000/api/public/doctors/${id}`,
+        `${api}/public/doctors/${id}`,
       );
 
-      setDoctorProfile(response.data[0]);
+      // Backend returns a single doctor object, not an array
+      setDoctorProfile(response.data);
     } catch (error) {
       console.error(error);
     }
   };
   const handleOpen = (doctor) => {
+    setDoctorProfile(null); // Reset profile before fetching new data
     setSelectedDoctor(doctor);
     setOpen(true);
   };
@@ -197,13 +202,15 @@ const DoctorsPage = () => {
   const handleClose = () => {
     setOpen(false);
     setSelectedDoctor(null);
+    setDoctorProfile(null);
   };
 
   useEffect(() => {
     const getDoctors = async () => {
       try {
+        const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
         const response = await axios.get(
-          "http://localhost:8000/api/public/doctors",
+          `${api}/public/doctors`,
         );
 
         setDoctors(response.data.data);
@@ -528,7 +535,7 @@ const DoctorsPage = () => {
                         textTransform: "capitalize",
                       }}
                     >
-                      {selectedDoctor.department}
+                      {doctorProfile?.department || selectedDoctor.department || "N/A"}
                     </Typography>
                   </Box>
                   <Box sx={{ display: "flex", gap: 1 }}>
@@ -558,7 +565,7 @@ const DoctorsPage = () => {
                         textTransform: "capitalize",
                       }}
                     >
-                      {selectedDoctor.officeNumber}
+                      {doctorProfile?.officeNumber || "N/A"}
                     </Typography>
                   </Box>
                   <Box sx={{ display: "flex", gap: 1 }}>
@@ -573,7 +580,7 @@ const DoctorsPage = () => {
                         textTransform: "capitalize",
                       }}
                     >
-                      {selectedDoctor.workingHours}
+                      {doctorProfile?.workingHours || "N/A"}
                     </Typography>
                   </Box>
                 </Box>

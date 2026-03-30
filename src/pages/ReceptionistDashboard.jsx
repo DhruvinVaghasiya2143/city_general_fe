@@ -182,8 +182,9 @@ const ReceptionistDashboard = () => {
 
   const handleCompleteAppointment = async (appointmentId) => {
     try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       await axios.put(
-        `http://localhost:8000/api/receptionist/appointments/${appointmentId}/complete`,
+        `${api}/receptionist/appointments/${appointmentId}/complete`,
       );
       setAppointments((prevAppointments) =>
         prevAppointments.map((appointment) =>
@@ -210,8 +211,9 @@ const ReceptionistDashboard = () => {
 
   const fetchAppointments = async (pageIndex, limit, currentFilter) => {
     try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.get(
-        `http://localhost:8000/api/receptionist/appointments?page=${pageIndex + 1}&limit=${limit}&filter=${currentFilter}`,
+        `${api}/receptionist/appointments?page=${pageIndex + 1}&limit=${limit}&filter=${currentFilter}`,
       );
 
       let fetchedData = response.data.data;

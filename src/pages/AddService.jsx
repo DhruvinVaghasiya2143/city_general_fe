@@ -56,9 +56,13 @@ const AddService = ({ open, onClose, onSuccess }) => {
     }
     if (!formData.imageUrl) {
       newError.imageUrl = "Image URL is required";
-    } else if (!/^(http|https):\/\/[^ "]+$/.test(formData.imageUrl) && !formData.imageUrl.startsWith("/")) {
-        // Basic URL validation or local path
-      newError.imageUrl = "Enter a valid image URL or project path (e.g., /services/...)";
+    } else if (
+      !/^(http|https):\/\/[^ "]+$/.test(formData.imageUrl) &&
+      !formData.imageUrl.startsWith("/")
+    ) {
+      // Basic URL validation or local path
+      newError.imageUrl =
+        "Enter a valid image URL or project path (e.g., /services/...)";
     }
     return newError;
   };
@@ -73,8 +77,9 @@ const AddService = ({ open, onClose, onSuccess }) => {
     }
 
     try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.post(
-        "http://localhost:8000/api/admin/services",
+        `${api}/admin/services`,
         formData,
       );
 
@@ -84,7 +89,8 @@ const AddService = ({ open, onClose, onSuccess }) => {
       }
     } catch (err) {
       console.error("Add Service Error:", err);
-      const serverError = err.response?.data?.message || "Server error during service creation";
+      const serverError =
+        err.response?.data?.message || "Server error during service creation";
       setError({ submit: serverError });
     }
   };

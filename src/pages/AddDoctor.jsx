@@ -51,8 +51,9 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
     try {
       console.log("Sending Data:", formData);
 
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.post(
-        "http://localhost:8000/api/admin/add-staff",
+        `${api}/admin/add-staff`,
         formData,
       );
 
@@ -214,14 +215,16 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
           component="span"
           sx={{ fontWeight: 800, color: "#1e293b", mb: 0.5, display: "block" }}
         >
-          Add New {formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}
+          Add New{" "}
+          {formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}
         </Typography>
         <Typography
           variant="body2"
           component="span"
           sx={{ color: "#64748b", fontWeight: 500, display: "block" }}
         >
-          Enter the professional and personal details of the new {formData.role}.
+          Enter the professional and personal details of the new {formData.role}
+          .
         </Typography>
       </DialogTitle>
 
@@ -664,7 +667,8 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
               "&:hover": { bgcolor: "#2563eb" },
             }}
           >
-            Save {formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}
+            Save{" "}
+            {formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}
           </Button>
         </DialogActions>
       </DialogContent>

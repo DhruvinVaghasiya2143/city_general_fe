@@ -134,8 +134,9 @@ const DoctorsDashboard = () => {
     currentFilter,
   ) => {
     try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.get(
-        `http://localhost:8000/api/appointment/appointments/${doctorId}?page=${page}&limit=${limit}&filter=${currentFilter}`,
+        `${api}/appointment/appointments/${doctorId}?page=${page}&limit=${limit}&filter=${currentFilter}`,
       );
 
       setAssignedAppointments(response.data.data);
@@ -151,8 +152,9 @@ const DoctorsDashboard = () => {
 
   const handleMarkAsCompleted = async (appointmentId) => {
     try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       await axios.patch(
-        `http://localhost:8000/api/appointment/status/${appointmentId}`,
+        `${api}/appointment/status/${appointmentId}`,
         {
           status: "completed",
         },
@@ -169,8 +171,9 @@ const DoctorsDashboard = () => {
 
   const handleMarkAsRead = async (appointmentId) => {
     try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       await axios.patch(
-        `http://localhost:8000/api/appointment/status/${appointmentId}`,
+        `${api}/appointment/status/${appointmentId}`,
         {
           status: "read",
         },
@@ -186,8 +189,9 @@ const DoctorsDashboard = () => {
 
   const getDoctorDetails = async (userId) => {
     try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.get(
-        `http://localhost:8000/api/doctor/details/${userId}`,
+        `${api}/doctor/details/${userId}`,
       );
       setDoctorDetails(response.data);
     } catch (error) {

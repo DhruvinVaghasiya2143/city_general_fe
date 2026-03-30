@@ -26,9 +26,11 @@ const AboutUs = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
+        const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
         const response = await axios.get(
-          "http://localhost:8000/api/public/doctors",
+          `${api}/public/doctors`,
         );
+        
         // The API returns { data: [...], pagination: {...} }
         setDoctors(response.data.data || []);
       } catch (error) {
@@ -320,59 +322,62 @@ const AboutUs = () => {
             justifyContent: "center",
           }}
         >
-            {doctors.length > 0 ? (
-              doctors.slice(0, 4).map((doc, i) => {
-                const malePool = [
-                  "/assets/doc_michael.png",
-                  "/assets/doc_james.png",
-                  "/assets/doc_robert.png",
-                ];
-                const femalePool = ["/assets/doc_kiran.png", "/assets/doc_sarah.png"];
+          {doctors.length > 0 ? (
+            doctors.slice(0, 4).map((doc, i) => {
+              const malePool = [
+                "/assets/doc_michael.png",
+                "/assets/doc_james.png",
+                "/assets/doc_robert.png",
+              ];
+              const femalePool = [
+                "/assets/doc_kiran.png",
+                "/assets/doc_sarah.png",
+              ];
 
-                let finalImg;
-                const fullName = `${doc.firstName} ${doc.lastName}`.toLowerCase();
+              let finalImg;
+              const fullName = `${doc.firstName} ${doc.lastName}`.toLowerCase();
 
-                if (fullName.includes("kiran")) {
-                  finalImg = femalePool[0]; // Always female for Kiran
+              if (fullName.includes("kiran")) {
+                finalImg = femalePool[0]; // Always female for Kiran
+              } else {
+                // Assign from male pool for first 3, or if not Kiran
+                // Use index to skip if Kiran took a slot, but keep it simple for 4 doctors
+                if (i < 3) {
+                  finalImg = malePool[i % malePool.length];
                 } else {
-                  // Assign from male pool for first 3, or if not Kiran
-                  // Use index to skip if Kiran took a slot, but keep it simple for 4 doctors
-                  if (i < 3) {
-                    finalImg = malePool[i % malePool.length];
-                  } else {
-                    // 4th doctor gets female photo by default if not kiran, to ensure "3 men, 1 woman"
-                    finalImg = femalePool[1] || femalePool[0];
-                  }
+                  // 4th doctor gets female photo by default if not kiran, to ensure "3 men, 1 woman"
+                  finalImg = femalePool[1] || femalePool[0];
                 }
+              }
 
-                return (
+              return (
+                <Box
+                  key={i}
+                  sx={{
+                    width: {
+                      xs: "100%",
+                      sm: "calc(50% - 16px)",
+                      md: "calc(25% - 24px)",
+                    },
+                    textAlign: "center",
+                  }}
+                >
                   <Box
-                    key={i}
                     sx={{
-                      width: {
-                        xs: "100%",
-                        sm: "calc(50% - 16px)",
-                        md: "calc(25% - 24px)",
-                      },
-                      textAlign: "center",
+                      width: "100%",
+                      aspectRatio: "1/1",
+                      borderRadius: 4,
+                      overflow: "hidden",
+                      mb: 2,
+                      boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
                     }}
                   >
                     <Box
-                      sx={{
-                        width: "100%",
-                        aspectRatio: "1/1",
-                        borderRadius: 4,
-                        overflow: "hidden",
-                        mb: 2,
-                        boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
-                      }}
-                    >
-                      <Box
-                        component="img"
-                        src={finalImg}
-                        sx={{ width: "100%", height: "100%", objectFit: "cover" }}
-                      />
-                    </Box>
+                      component="img"
+                      src={finalImg}
+                      sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  </Box>
                   <Typography variant="h6" sx={{ fontWeight: 700 }}>
                     Dr. {doc.firstName} {doc.lastName}
                   </Typography>

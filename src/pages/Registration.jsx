@@ -21,7 +21,6 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-
 const Registration = () => {
   const [registrationFormData, setRegistrationFormData] = useState({
     firstName: "",
@@ -37,21 +36,28 @@ const Registration = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setRegistrationFormData({ ...registrationFormData, [name]: value });
-  };  
+  };
 
   const handleRegisterUser = async (e) => {
     e.preventDefault();
 
     let newErrors = {};
 
-    if (!registrationFormData.firstName) newErrors.firstName = "First name is required";
-    if (!registrationFormData.lastName) newErrors.lastName = "Last name is required";
+    if (!registrationFormData.firstName)
+      newErrors.firstName = "First name is required";
+    if (!registrationFormData.lastName)
+      newErrors.lastName = "Last name is required";
     if (!registrationFormData.email) newErrors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(registrationFormData.email)) newErrors.email = "Invalid email format";
-    
-    if (!registrationFormData.password) newErrors.password = "Password is required";
-    if (!registrationFormData.confirmPassword) newErrors.confirmPassword = "Confirm Password is required";
-    else if (registrationFormData.password !== registrationFormData.confirmPassword) {
+    else if (!/\S+@\S+\.\S+/.test(registrationFormData.email))
+      newErrors.email = "Invalid email format";
+
+    if (!registrationFormData.password)
+      newErrors.password = "Password is required";
+    if (!registrationFormData.confirmPassword)
+      newErrors.confirmPassword = "Confirm Password is required";
+    else if (
+      registrationFormData.password !== registrationFormData.confirmPassword
+    ) {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
@@ -67,23 +73,21 @@ const Registration = () => {
     const payloadToSend = { ...registrationFormData, role };
 
     try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.post(
-        "http://localhost:8000/api/auth/register",
+        `${api}/auth/register`,
         payloadToSend,
       );
 
       if (response.data.success) {
         navigate("/login");
-        
+
         console.log("registerResponse", response);
       }
-
     } catch (error) {
       console.log(error);
     }
   };
-
-
 
   return (
     <Box
