@@ -106,14 +106,16 @@ const DoctorsDashboard = () => {
   const [assignedAppointments, setAssignedAppointments] = React.useState([]);
   const [selectedAppointment, setSelectedAppointment] = React.useState(null);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [prescription, setPrescription] = React.useState("");
 
   const handleViewAppointment = (appointment) => {
     setSelectedAppointment(appointment);
+    setPrescription(appointment.prescription || "");
     setIsDialogOpen(true);
     // Mark as read when opened
-    if (appointment.status === "pending") {
-      handleMarkAsRead(appointment._id);
-    }
+    // if (appointment.status === "pending") {
+    //   handleMarkAsRead(appointment._id);
+    // }
   };
 
   const handleCloseDialog = () => {
@@ -153,12 +155,10 @@ const DoctorsDashboard = () => {
   const handleMarkAsCompleted = async (appointmentId) => {
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      await axios.patch(
-        `${api}/appointment/status/${appointmentId}`,
-        {
-          status: "completed",
-        },
-      );
+      await axios.patch(`${api}/appointment/status/${appointmentId}`, {
+        status: "completed",
+        prescription: prescription,
+      });
       // Refresh the data
       if (user?.id) {
         getAssignedAppointments(user.id, schedulePage, rowsPerPage, filter);
@@ -172,12 +172,9 @@ const DoctorsDashboard = () => {
   const handleMarkAsRead = async (appointmentId) => {
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      await axios.patch(
-        `${api}/appointment/status/${appointmentId}`,
-        {
-          status: "read",
-        },
-      );
+      await axios.patch(`${api}/appointment/status/${appointmentId}`, {
+        status: "completed",
+      });
       // Refresh the data to show latest status
       if (user?.id) {
         getAssignedAppointments(user.id, schedulePage, rowsPerPage, filter);
@@ -190,9 +187,7 @@ const DoctorsDashboard = () => {
   const getDoctorDetails = async (userId) => {
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      const response = await axios.get(
-        `${api}/doctor/details/${userId}`,
-      );
+      const response = await axios.get(`${api}/doctor/details/${userId}`);
       setDoctorDetails(response.data);
     } catch (error) {
       console.error("Error fetching doctor details:", error);
@@ -233,6 +228,8 @@ const DoctorsDashboard = () => {
       getDoctorDetails(user.id);
     }
   }, [user?.id, schedulePage, rowsPerPage, filter]);
+
+  console.log(assignedAppointments);
 
   return (
     <Box
@@ -1572,6 +1569,37 @@ const DoctorsDashboard = () => {
                     "No specific concern provided."}
                 </Typography>
               </Box>
+              {selectedAppointment.status !== "completed" && (
+                <Box>
+                  <Typography
+                    sx={{
+                      fontSize: "0.75rem",
+                      fontWeight: 700,
+                      color: "#64748b",
+                      textTransform: "uppercase",
+                      mb: 1,
+                    }}
+                  >
+                    Prescription
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={4}
+                    variant="outlined"
+                    placeholder="Enter medical prescription and advice..."
+                    value={prescription}
+                    onChange={(e) => setPrescription(e.target.value)}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        fontSize: "0.875rem",
+                        bgcolor: "#f8fafc",
+                        borderRadius: "12px",
+                      },
+                    }}
+                  />
+                </Box>
+              )}
             </>
           )}
         </DialogContent>

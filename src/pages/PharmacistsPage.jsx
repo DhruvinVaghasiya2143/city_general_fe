@@ -130,7 +130,34 @@ const PharmacistsPage = () => {
   const [authUser, setAuthUser] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [profileOpen, setProfileOpen] = React.useState(false);
+  const [prescriptions, setPrescriptions] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+    if (storedUser) {
+      setAuthUser(storedUser);
+    } else {
+      navigate("/login");
+    }
+  }, [navigate]);
+
+  const fetchPrescriptions = async () => {
+    try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
+      const response = await axios.get(`${api}/doctor/prescriptions`);
+      setPrescriptions(response.data || []);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching prescriptions:", error);
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchPrescriptions();
+  }, []);
 
   const handleOpenUserMenu = (event) => setAnchorEl(event.currentTarget);
   const handleCloseUserMenu = () => setAnchorEl(null);
@@ -527,7 +554,7 @@ const PharmacistsPage = () => {
                       lineHeight: 1,
                     }}
                   >
-                    42
+                    {prescriptions.length}
                   </Typography>
                 </Box>
                 <Box sx={{ bgcolor: "#eff6ff", p: 2, borderRadius: "16px" }}>
@@ -1026,26 +1053,9 @@ const PharmacistsPage = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {[
-                        {
-                          id: "#RX-2041",
-                          med: "Amoxicillin 500mg",
-                          pat: "James Wilson",
-                          stat: "Dispensed",
-                          color: "success",
-                          time: "09:42 AM",
-                        },
-                        {
-                          id: "#RX-2040",
-                          med: "Metformin 850mg",
-                          pat: "Maria Garcia",
-                          stat: "Processing",
-                          color: "info",
-                          time: "09:35 AM",
-                        },
-                      ].map((row) => (
+                      {prescriptions.slice(0, 10).map((row) => (
                         <TableRow
-                          key={row.id}
+                          key={row._id}
                           hover
                           sx={{
                             "&:hover": { bgcolor: "rgba(248, 250, 252, 0.5)" },
@@ -1061,16 +1071,20 @@ const PharmacistsPage = () => {
                               borderBottom: "1px solid #f8fafc",
                             }}
                           >
-                            {row.id}
+                            #{row._id.slice(-4).toUpperCase()}
                           </TableCell>
                           <TableCell
                             sx={{
                               fontWeight: 600,
                               color: "#334155",
                               borderBottom: "1px solid #f8fafc",
+                              maxWidth: "200px",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
                             }}
                           >
-                            {row.med}
+                            {row.prescription}
                           </TableCell>
                           <TableCell
                             sx={{
@@ -1078,20 +1092,14 @@ const PharmacistsPage = () => {
                               borderBottom: "1px solid #f8fafc",
                             }}
                           >
-                            {row.pat}
+                            {row.patientId?.firstName} {row.patientId?.lastName}
                           </TableCell>
                           <TableCell sx={{ borderBottom: "1px solid #f8fafc" }}>
                             <Chip
-                              label={row.stat}
+                              label="Dispensed"
                               sx={{
-                                bgcolor:
-                                  row.color === "success"
-                                    ? "#ecfdf5"
-                                    : "#eff6ff",
-                                color:
-                                  row.color === "success"
-                                    ? "#059669"
-                                    : "#2563eb",
+                                bgcolor: "#ecfdf5",
+                                color: "#059669",
                                 fontWeight: 700,
                                 fontSize: "0.625rem",
                                 textTransform: "uppercase",
@@ -1107,10 +1115,17 @@ const PharmacistsPage = () => {
                               borderBottom: "1px solid #f8fafc",
                             }}
                           >
-                            {row.time}
+                            {new Date(row.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </TableCell>
                         </TableRow>
                       ))}
+                      {!loading && prescriptions.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={5} align="center" sx={{ py: 4, color: "#94a3b8" }}>
+                            No prescriptions found.
+                          </TableCell>
+                        </TableRow>
+                      )}
                     </TableBody>
                   </Table>
                 </TableContainer>
