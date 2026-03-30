@@ -237,14 +237,6 @@ const ReceptionistDashboard = () => {
 
   React.useEffect(() => {
     fetchAppointments(page, rowsPerPage, filter);
-
-    // Set up auto-refresh every 2 seconds for near-instant updates
-    const intervalId = setInterval(() => {
-      fetchAppointments(page, rowsPerPage, filter);
-    }, 2000); // 2000ms = 2 seconds
-
-    // Clean up interval on component unmount or when dependencies change
-    return () => clearInterval(intervalId);
   }, [page, rowsPerPage, filter]);
 
   // React.useEffect(() => {
