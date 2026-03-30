@@ -45,11 +45,16 @@ const AdminDashboard = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalUsers, setTotalUsers] = useState(0);
+  
+  const [isEditService, setIsEditService] = useState(false);
+  const [currentService, setCurrentService] = useState(null);
 
   const fetchUsers = async () => {
     try {
       const endpoint =
-        activeRole === "doctor"
+        activeRole === "service"
+          ? "services"
+          : activeRole === "doctor"
           ? "doctors"
           : activeRole === "patient"
             ? "patients"
@@ -94,6 +99,24 @@ const AdminDashboard = () => {
   };
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleEditService = (service) => {
+    setCurrentService(service);
+    setIsEditService(true);
+    setOpenAddService(true);
+  };
+
+  const handleDeleteService = async (id) => {
+    if (window.confirm("Are you sure you want to delete this service?")) {
+      try {
+        const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
+        await axios.delete(`${api}/admin/services/${id}`);
+        fetchUsers();
+      } catch (err) {
+        console.error("Error deleting service:", err);
+      }
+    }
   };
   const handleSuccess = () => {
     // Refresh stats and users after adding a doctor
@@ -304,6 +327,7 @@ const AdminDashboard = () => {
               <Tab label="Doctors" value="doctor" />
               <Tab label="Patients" value="patient" />
               <Tab label="Admins" value="admin" />
+              <Tab label="Services" value="service" />
             </Tabs>
           </Box>
           <Divider />
@@ -330,84 +354,119 @@ const AdminDashboard = () => {
             >
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  {activeRole === "doctor" && (
+                  {activeRole === "service" ? (
                     <>
-                      <th>Specialty</th>
-                      <th>Hospital</th>
+                      <th>Service Name</th>
+                      <th>Description</th>
+                      <th>Actions</th>
+                    </>
+                  ) : (
+                    <>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      {activeRole === "doctor" && (
+                        <>
+                          <th>Specialty</th>
+                          <th>Hospital</th>
+                        </>
+                      )}
+                      {activeRole !== "doctor" && <th>Role</th>}
                     </>
                   )}
-                  {activeRole !== "doctor" && <th>Role</th>}
                 </tr>
               </thead>
               <tbody>
                 {users.length > 0 ? (
                   users.map((user) => (
                     <tr key={user._id}>
-                      <td style={{ fontWeight: 600, color: "#1e293b" }}>
-                        {activeRole === "doctor"
-                          ? `${user.userId?.firstName} ${user.userId?.lastName}`
-                          : `${user.firstName} ${user.lastName}`}
-                      </td>
-                      <td style={{ color: "#64748b" }}>
-                        {activeRole === "doctor"
-                          ? user.userId?.email
-                          : user.email}
-                      </td>
-                      <td style={{ color: "#64748b" }}>
-                        {activeRole === "doctor"
-                          ? user.userId?.phone
-                          : user.phone}
-                      </td>
-                      {activeRole === "doctor" && (
+                      {activeRole === "service" ? (
                         <>
-                          <td>
-                            <Box
-                              component="span"
-                              sx={{
-                                px: 1,
-                                py: 0.5,
-                                borderRadius: "6px",
-                                bgcolor: "#eff6ff",
-                                color: "#3b82f6",
-                                fontSize: "0.85rem",
-                                fontWeight: 600,
-                              }}
-                            >
-                              {user.specialty}
+                          <td style={{ fontWeight: 600, color: "#1e293b" }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                              <Avatar src={user.imageUrl} variant="rounded" />
+                              {user.name}
                             </Box>
                           </td>
-                          <td style={{ color: "#64748b" }}>
-                            {user.hospitalName}
+                          <td style={{ color: "#64748b", maxWidth: "300px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {user.description}
+                          </td>
+                          <td>
+                            <Box sx={{ display: "flex", gap: 1 }}>
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                onClick={() => handleEditService(user)}
+                                sx={{ textTransform: "none", fontWeight: 700, borderRadius: "6px" }}
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                color="error"
+                                onClick={() => handleDeleteService(user._id)}
+                                sx={{ textTransform: "none", fontWeight: 700, borderRadius: "6px" }}
+                              >
+                                Delete
+                              </Button>
+                            </Box>
                           </td>
                         </>
-                      )}
-                      {activeRole !== "doctor" && (
-                        <td>
-                          <Box
-                            component="span"
-                            sx={{
-                              px: 1,
-                              py: 0.5,
-                              borderRadius: "6px",
-                              bgcolor:
-                                activeRole === "patient"
-                                  ? "#ecfdf5"
-                                  : "#f5f3ff",
-                              color:
-                                activeRole === "patient"
-                                  ? "#10b981"
-                                  : "#8b5cf6",
-                              fontSize: "0.85rem",
-                              fontWeight: 600,
-                              textTransform: "capitalize",
-                            }}
-                          >
-                            {user.role}
-                          </Box>
-                        </td>
+                      ) : (
+                        <>
+                          <td style={{ fontWeight: 600, color: "#1e293b" }}>
+                            {activeRole === "doctor"
+                              ? `${user.userId?.firstName || ""} ${user.userId?.lastName || ""}`
+                              : `${user.firstName || ""} ${user.lastName || ""}`}
+                          </td>
+                          <td style={{ color: "#64748b" }}>
+                            {activeRole === "doctor" ? user.userId?.email : user.email}
+                          </td>
+                          <td style={{ color: "#64748b" }}>
+                            {activeRole === "doctor" ? user.userId?.phone : user.phone}
+                          </td>
+                          {activeRole === "doctor" && (
+                            <>
+                              <td>
+                                <Box
+                                  component="span"
+                                  sx={{
+                                    px: 1,
+                                    py: 0.5,
+                                    borderRadius: "6px",
+                                    bgcolor: "#eff6ff",
+                                    color: "#3b82f6",
+                                    fontSize: "0.85rem",
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  {user.specialty}
+                                </Box>
+                              </td>
+                              <td style={{ color: "#64748b" }}>{user.hospitalName}</td>
+                            </>
+                          )}
+                          {activeRole !== "doctor" && (
+                            <td>
+                              <Box
+                                component="span"
+                                sx={{
+                                  px: 1,
+                                  py: 0.5,
+                                  borderRadius: "6px",
+                                  bgcolor: activeRole === "patient" ? "#ecfdf5" : "#f5f3ff",
+                                  color: activeRole === "patient" ? "#10b981" : "#8b5cf6",
+                                  fontSize: "0.85rem",
+                                  fontWeight: 600,
+                                  textTransform: "capitalize",
+                                }}
+                              >
+                                {user.role}
+                              </Box>
+                            </td>
+                          )}
+                        </>
                       )}
                     </tr>
                   ))
@@ -456,10 +515,19 @@ const AdminDashboard = () => {
         {/* Add Service Dialog */}
         <AddService
           open={openAddService}
-          onClose={() => setOpenAddService(false)}
+          onClose={() => {
+            setOpenAddService(false);
+            setIsEditService(false);
+            setCurrentService(null);
+          }}
+          isEdit={isEditService}
+          initialData={currentService}
           onSuccess={() => {
-            console.log("Service added successfully");
-            // No need to refresh users/stats as it's a different domain
+            console.log("Service saved successfully");
+            setOpenAddService(false);
+            setIsEditService(false);
+            setCurrentService(null);
+            fetchUsers();
           }}
         />
       </Container>

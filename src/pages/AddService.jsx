@@ -15,7 +15,7 @@ import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import SaveIcon from "@mui/icons-material/Save";
 import axios from "axios";
 
-const AddService = ({ open, onClose, onSuccess }) => {
+const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = false }) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -25,14 +25,23 @@ const AddService = ({ open, onClose, onSuccess }) => {
 
   React.useEffect(() => {
     if (open) {
-      setFormData({
-        name: "",
-        description: "",
-        imageUrl: "",
-      });
+      if (isEdit && initialData) {
+        setFormData({
+          name: initialData.name || "",
+          description: initialData.description || "",
+          imageUrl: initialData.imageUrl || "",
+          icon: initialData.icon || "MedicalServicesIcon",
+        });
+      } else {
+        setFormData({
+          name: "",
+          description: "",
+          imageUrl: "",
+        });
+      }
       setError({});
     }
-  }, [open]);
+  }, [open, isEdit, initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -78,10 +87,9 @@ const AddService = ({ open, onClose, onSuccess }) => {
 
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      const response = await axios.post(
-        `${api}/admin/services`,
-        formData,
-      );
+      const response = await (isEdit
+        ? axios.put(`${api}/admin/services/${initialData._id}`, formData)
+        : axios.post(`${api}/admin/services`, formData));
 
       if (response.data.success) {
         if (onSuccess) onSuccess();
@@ -90,7 +98,7 @@ const AddService = ({ open, onClose, onSuccess }) => {
     } catch (err) {
       console.error("Add Service Error:", err);
       const serverError =
-        err.response?.data?.message || "Server error during service creation";
+        err.response?.data?.message || `Server error during service ${isEdit ? "update" : "creation"}`;
       setError({ submit: serverError });
     }
   };
@@ -119,14 +127,14 @@ const AddService = ({ open, onClose, onSuccess }) => {
           component="span"
           sx={{ fontWeight: 800, color: "#1e293b", mb: 0.5, display: "block" }}
         >
-          Add New Medical Service
+          {isEdit ? "Edit Medical Service" : "Add New Medical Service"}
         </Typography>
         <Typography
           variant="body2"
           component="span"
           sx={{ color: "#64748b", fontWeight: 500, display: "block" }}
         >
-          Enter the details for the new hospital department or service.
+          {isEdit ? "Update the details for this medical service." : "Enter the details for the new hospital department or service."}
         </Typography>
       </DialogTitle>
 
@@ -245,7 +253,7 @@ const AddService = ({ open, onClose, onSuccess }) => {
               "&:hover": { bgcolor: "#2563eb" },
             }}
           >
-            Save Service
+            {isEdit ? "Update Service" : "Save Service"}
           </Button>
         </DialogActions>
       </DialogContent>

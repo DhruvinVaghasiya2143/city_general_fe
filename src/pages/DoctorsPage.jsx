@@ -24,6 +24,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import axios from "axios";
+import doctorImage from "../assets/doctor_image.jpg";
 
 const SPECIALTIES = [
   "All",
@@ -64,12 +65,9 @@ const DoctorsPage = () => {
   const handleCompleteAppointment = async (id) => {
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      const response = await axios.patch(
-        `${api}/appointment/status/${id}`,
-        {
-          status: "completed",
-        },
-      );
+      const response = await axios.patch(`${api}/appointment/status/${id}`, {
+        status: "completed",
+      });
       setAppointment((prev) =>
         prev.map((apt) =>
           apt._id === id ? { ...apt, status: "completed" } : apt,
@@ -126,10 +124,7 @@ const DoctorsPage = () => {
 
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      const response = await axios.post(
-        `${api}/public/appointment`,
-        payload,
-      );
+      const response = await axios.post(`${api}/public/appointment`, payload);
       console.log(response.data);
     } catch (error) {
       console.error(error);
@@ -183,9 +178,7 @@ const DoctorsPage = () => {
   const getdoctorById = async (id) => {
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      const response = await axios.get(
-        `${api}/public/doctors/${id}`,
-      );
+      const response = await axios.get(`${api}/public/doctors/${id}`);
 
       // Backend returns a single doctor object, not an array
       setDoctorProfile(response.data);
@@ -209,9 +202,7 @@ const DoctorsPage = () => {
     const getDoctors = async () => {
       try {
         const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-        const response = await axios.get(
-          `${api}/public/doctors`,
-        );
+        const response = await axios.get(`${api}/public/doctors`);
 
         setDoctors(response.data.data);
       } catch (error) {
@@ -370,10 +361,20 @@ const DoctorsPage = () => {
                   },
                   borderRadius: "16px",
                   border: "1px solid #e2e8f0",
+                  overflow: "hidden",
                 }}
               >
-                <CardContent>
-                  <img src="/src/assets/doctor_image.jpg" alt="doctor" />
+                <Box
+                  component="img"
+                  src={doctorImage}
+                  alt="doctor"
+                  sx={{
+                    width: "100%",
+                    height: "200px",
+                    objectFit: "cover",
+                  }}
+                />
+                <CardContent sx={{ pt: 2 }}>
                   <Typography
                     variant="h6"
                     sx={{ fontWeight: 900, textTransform: "capitalize" }}
@@ -467,7 +468,7 @@ const DoctorsPage = () => {
               <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
                 <Box
                   component="img"
-                  src="/src/assets/doctor_image.jpg"
+                  src={doctorImage}
                   alt="doctor"
                   sx={{
                     width: 200,
@@ -535,7 +536,9 @@ const DoctorsPage = () => {
                         textTransform: "capitalize",
                       }}
                     >
-                      {doctorProfile?.department || selectedDoctor.department || "N/A"}
+                      {doctorProfile?.department ||
+                        selectedDoctor.department ||
+                        "N/A"}
                     </Typography>
                   </Box>
                   <Box sx={{ display: "flex", gap: 1 }}>
