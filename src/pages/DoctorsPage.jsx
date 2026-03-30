@@ -202,7 +202,7 @@ const DoctorsPage = () => {
     const getDoctors = async () => {
       try {
         const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-        const response = await axios.get(`${api}/public/doctors`);
+        const response = await axios.get(`${api}/public/doctors?limit=1000`);
 
         setDoctors(response.data.data);
       } catch (error) {
