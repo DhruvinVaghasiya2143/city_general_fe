@@ -11,6 +11,7 @@ import {
   InputAdornment,
   IconButton,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
@@ -18,6 +19,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const ForgotPasswordModal = ({ open, onClose, role }) => {
   const [email, setEmail] = useState("");
@@ -26,13 +28,11 @@ const ForgotPasswordModal = ({ open, onClose, role }) => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleReset = async (e) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
 
     if (!email || !newPassword || !confirmPassword) {
       setError("Please fill in all fields.");
@@ -54,15 +54,12 @@ const ForgotPasswordModal = ({ open, onClose, role }) => {
       });
 
       if (response.data.success) {
-        setSuccess("Password reset successfully! You can now sign in.");
-        setTimeout(() => {
-          onClose();
-          // Reset fields
-          setEmail("");
-          setNewPassword("");
-          setConfirmPassword("");
-          setSuccess("");
-        }, 3000);
+        toast.success("Password reset successfully! You can now sign in.");
+        onClose();
+        // Reset fields
+        setEmail("");
+        setNewPassword("");
+        setConfirmPassword("");
       }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to reset password. Please try again.");
@@ -107,11 +104,6 @@ const ForgotPasswordModal = ({ open, onClose, role }) => {
           {error && (
             <Alert severity="error" sx={{ mb: 2, borderRadius: "10px" }}>
               {error}
-            </Alert>
-          )}
-          {success && (
-            <Alert severity="success" sx={{ mb: 2, borderRadius: "10px" }}>
-              {success}
             </Alert>
           )}
 
@@ -208,10 +200,15 @@ const ForgotPasswordModal = ({ open, onClose, role }) => {
             fontWeight: 700,
             textTransform: "none",
             px: 4,
+            minWidth: "140px",
             boxShadow: "0 4px 12px rgba(19, 127, 236, 0.2)",
           }}
         >
-          {loading ? "Resetting..." : "Reset Password"}
+          {loading ? (
+            <CircularProgress size={24} sx={{ color: "white" }} />
+          ) : (
+            "Reset Password"
+          )}
         </Button>
       </DialogActions>
     </Dialog>

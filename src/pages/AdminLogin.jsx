@@ -12,6 +12,7 @@ import {
   FormControlLabel,
   Divider,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
@@ -31,6 +32,7 @@ const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -44,6 +46,7 @@ const AdminLogin = () => {
     }
 
     try {
+      setIsLoading(true);
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.post(
         `${api}/auth/login`,
@@ -73,6 +76,8 @@ const AdminLogin = () => {
       }
     } catch (error) {
       setError(error.response?.data?.message || "Admin login failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -252,7 +257,8 @@ const AdminLogin = () => {
                   variant="contained"
                   size="large"
                   type="submit"
-                  endIcon={<LoginIcon fontSize="small" />}
+                  disabled={isLoading}
+                  endIcon={!isLoading && <LoginIcon fontSize="small" />}
                   sx={{
                     py: 2,
                     borderRadius: "12px",
@@ -268,7 +274,11 @@ const AdminLogin = () => {
                     },
                   }}
                 >
-                  Access Dashboard
+                  {isLoading ? (
+                    <CircularProgress size={24} sx={{ color: "white" }} />
+                  ) : (
+                    "Access Dashboard"
+                  )}
                 </Button>
 
                 {error && (

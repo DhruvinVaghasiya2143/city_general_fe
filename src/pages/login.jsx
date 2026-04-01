@@ -16,6 +16,7 @@ import {
   ToggleButton,
   Divider,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
@@ -36,6 +37,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleRoleChange = (event, newRole) => {
@@ -58,6 +60,7 @@ const Login = () => {
     }
 
     try {
+      setIsLoading(true);
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.post(
         `${api}/auth/login`,
@@ -89,6 +92,8 @@ const Login = () => {
       if (userRole === "receptionist") navigate("/receptionist-dashboard");
     } catch (error) {
       setError(error.response?.data?.message || "Login failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -284,8 +289,8 @@ const Login = () => {
                   variant="contained"
                   size="large"
                   type="submit"
-                  // onClick={handleSignIn}
-                  endIcon={<LoginIcon fontSize="small" />}
+                  disabled={isLoading}
+                  endIcon={!isLoading && <LoginIcon fontSize="small" />}
                   sx={{
                     py: 1.5,
                     borderRadius: "10px",
@@ -295,7 +300,11 @@ const Login = () => {
                     mb: 0,
                   }}
                 >
-                  Sign In
+                  {isLoading ? (
+                    <CircularProgress size={24} sx={{ color: "white" }} />
+                  ) : (
+                    "Sign In"
+                  )}
                 </Button>
 
                 {error && (
