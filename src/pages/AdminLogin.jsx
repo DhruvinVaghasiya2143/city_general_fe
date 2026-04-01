@@ -23,12 +23,14 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import ShieldIcon from "@mui/icons-material/Shield";
 import axios from "axios";
+import ForgotPasswordModal from "../components/ForgotPasswordModal";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -233,6 +235,7 @@ const AdminLogin = () => {
                   />
                   <Typography
                     variant="body2"
+                    onClick={() => setForgotPasswordOpen(true)}
                     sx={{
                       color: "primary.main",
                       fontWeight: 700,
@@ -373,6 +376,12 @@ const AdminLogin = () => {
           Unauthorized Use is Prohibited.
         </Typography>
       </footer>
+
+      <ForgotPasswordModal
+        open={forgotPasswordOpen}
+        onClose={() => setForgotPasswordOpen(false)}
+        role="Admin"
+      />
     </Box>
   );
 };

@@ -31,6 +31,8 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 
+import ScheduleAppointment from "../pages/ScheduleAppointment";
+
 const PUBLIC_PAGES = [
   { label: "Services", path: "/services" },
   { label: "Doctors", path: "/doctors" },
@@ -91,6 +93,10 @@ function ResponsiveAppBar() {
   const [profileOpen, setProfileOpen] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [isBookingOpen, setIsBookingOpen] = React.useState(false);
+  const handleOpenBooking = () => setIsBookingOpen(true);
+  const handleCloseBooking = () => setIsBookingOpen(false);
 
   // Read sessionStorage on mount and whenever the component re-renders (e.g. after login navigation)
   React.useEffect(() => {
@@ -701,7 +707,25 @@ function ResponsiveAppBar() {
               </Typography>
             </Box>
 
-            <Box sx={{ display: "flex", gap: 1 }}>
+            <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
+              <Button
+                variant="contained"
+                onClick={handleOpenBooking}
+                sx={{
+                  bgcolor: "#3b82f6",
+                  color: "white",
+                  fontWeight: 700,
+                  borderRadius: "8px",
+                  px: 2,
+                  py: 1,
+                  fontSize: "0.875rem",
+                  textTransform: "none",
+                  boxShadow: "0 4px 6px -1px rgba(59, 130, 246, 0.2)",
+                  "&:hover": { bgcolor: "#2563eb" },
+                }}
+              >
+                Book Appointment
+              </Button>
               <IconButton
                 sx={{
                   width: 40,
@@ -862,6 +886,7 @@ function ResponsiveAppBar() {
                 {!authUser ? (
                   <Button
                     variant="contained"
+                    onClick={handleOpenBooking}
                     className="bg-blue-600 hover:bg-blue-700 normal-case hidden sm:flex"
                   >
                     Book Appointment
@@ -1192,7 +1217,12 @@ function ResponsiveAppBar() {
     }
   };
 
-  return <>{renderContent()}</>;
+  return (
+    <>
+      {renderContent()}
+      <ScheduleAppointment open={isBookingOpen} onClose={handleCloseBooking} />
+    </>
+  );
 }
 
 export default ResponsiveAppBar;

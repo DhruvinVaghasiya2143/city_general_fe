@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -21,6 +21,17 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminRegistration from "./pages/AdminRegistration";
 
 function App() {
+  const location = useLocation();
+
+  const hideFooterRoutes = [
+    "/admin-dashboard",
+    "/pharmacists-dashboard",
+    "/doctor-dashboard",
+    "/receptionist-dashboard",
+  ];
+
+  const shouldShowFooter = !hideFooterRoutes.includes(location.pathname);
+
   return (
     <div>
       <Navbar />
@@ -70,7 +81,7 @@ function App() {
         />
       </Routes>
 
-      <Footer />
+      {shouldShowFooter && <Footer />}
     </div>
   );
 }

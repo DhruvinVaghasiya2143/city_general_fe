@@ -107,10 +107,12 @@ const DoctorsDashboard = () => {
   const [selectedAppointment, setSelectedAppointment] = React.useState(null);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [prescription, setPrescription] = React.useState("");
+  const [prescriptionError, setPrescriptionError] = React.useState(false);
 
   const handleViewAppointment = (appointment) => {
     setSelectedAppointment(appointment);
     setPrescription(appointment.prescription || "");
+    setPrescriptionError(false);
     setIsDialogOpen(true);
     // Mark as read when opened
     // if (appointment.status === "pending") {
@@ -121,6 +123,7 @@ const DoctorsDashboard = () => {
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     setSelectedAppointment(null);
+    setPrescriptionError(false);
   };
 
   const isLoggedIn = authUser?.loggedIn;
@@ -153,6 +156,10 @@ const DoctorsDashboard = () => {
   };
 
   const handleMarkAsCompleted = async (appointmentId) => {
+    if (!prescription.trim()) {
+      setPrescriptionError(true);
+      return;
+    }
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       await axios.patch(`${api}/appointment/status/${appointmentId}`, {
@@ -1589,7 +1596,17 @@ const DoctorsDashboard = () => {
                     variant="outlined"
                     placeholder="Enter medical prescription and advice..."
                     value={prescription}
-                    onChange={(e) => setPrescription(e.target.value)}
+                    onChange={(e) => {
+                      setPrescription(e.target.value);
+                      if (e.target.value.trim()) {
+                        setPrescriptionError(false);
+                      }
+                    }}
+                    error={prescriptionError}
+                    helperText={
+                      prescriptionError ? "* if no prescription then please write none" : ""
+                    }
+                    required
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         fontSize: "0.875rem",
@@ -1598,6 +1615,7 @@ const DoctorsDashboard = () => {
                       },
                     }}
                   />
+                
                 </Box>
               )}
             </>

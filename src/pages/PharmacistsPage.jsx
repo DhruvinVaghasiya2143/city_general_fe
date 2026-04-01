@@ -19,7 +19,21 @@ import {
   Drawer,
   Menu,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  InputLabel,
+  Select,
+  TablePagination,
+  Autocomplete,
+  Grid,
 } from "@mui/material";
+import axios from "axios";
+import { toast } from "react-toastify";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 import CloseIcon from "@mui/icons-material/Close";
 import BadgeIcon from "@mui/icons-material/Badge";
@@ -27,6 +41,10 @@ import EmailIcon from "@mui/icons-material/Email";
 import WorkIcon from "@mui/icons-material/Work";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
+import PersonIcon from "@mui/icons-material/Person";
+import PhoneIcon from "@mui/icons-material/Phone";
+import DesktopWindowsIcon from "@mui/icons-material/DesktopWindows";
+import CodeIcon from "@mui/icons-material/Code";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
@@ -52,9 +70,16 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import Groups2Icon from "@mui/icons-material/Groups2";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-const NavItem = ({ icon: Icon, label, active, badge }) => (
+const NavItem = ({ icon: Icon, label, active, badge, onClick }) => (
   <Box
+    onClick={onClick}
     sx={{
       display: "flex",
       alignItems: "center",
@@ -130,8 +155,68 @@ const PharmacistsPage = () => {
   const [authUser, setAuthUser] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [profileOpen, setProfileOpen] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState("Overview");
   const [prescriptions, setPrescriptions] = React.useState([]);
+  const [drugs, setDrugs] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+  const [addDrugModalOpen, setAddDrugModalOpen] = React.useState(false);
+  const [isEditMode, setIsEditMode] = React.useState(false);
+  const [editingDrugId, setEditingDrugId] = React.useState(null);
+  const [drugData, setDrugData] = React.useState({
+    name: "",
+    category: "",
+    manufacturerCompany: "",
+    stock: "",
+    price: "",
+    expiryDate: "",
+  });
+  const [selectedPrescription, setSelectedPrescription] = React.useState(null);
+  const [prescriptionModalOpen, setPrescriptionModalOpen] =
+    React.useState(false);
+
+  // Pagination state for Prescriptions
+  const [prescriptionPage, setPrescriptionPage] = React.useState(0);
+  const [prescriptionRowsPerPage, setPrescriptionRowsPerPage] =
+    React.useState(10);
+  const [prescriptionTotal, setPrescriptionTotal] = React.useState(0);
+
+  // Pagination state for Drugs
+  const [drugPage, setDrugPage] = React.useState(0);
+  const [drugRowsPerPage, setDrugRowsPerPage] = React.useState(10);
+  const [drugTotal, setDrugTotal] = React.useState(0);
+
+  // Billing (Invoice) state
+  const [invoices, setInvoices] = React.useState([]);
+  const [invoicePage, setInvoicePage] = React.useState(0);
+  const [invoiceRowsPerPage, setInvoiceRowsPerPage] = React.useState(10);
+  const [invoiceTotal, setInvoiceTotal] = React.useState(0);
+  const [addInvoiceModalOpen, setAddInvoiceModalOpen] = React.useState(false);
+  const [newInvoiceData, setNewInvoiceData] = React.useState({
+    patientName: "",
+    mobileNumber: "",
+    emailId: "",
+    items: [],
+  });
+  const [generatedInvoice, setGeneratedInvoice] = React.useState(null);
+  const [summaryModalOpen, setSummaryModalOpen] = React.useState(false);
+  const [selectedDrugForInvoice, setSelectedDrugForInvoice] =
+    React.useState(null);
+  const [quantityForInvoice, setQuantityForInvoice] = React.useState(1);
+  const [stats, setStats] = React.useState({
+    totalMedicines: 0,
+    outOfStock: 0,
+    totalMonthlyRevenue: 0,
+    completedInvoices: 0,
+  });
+
+  const [viewInvoiceModalOpen, setViewInvoiceModalOpen] = React.useState(false);
+  const [viewingInvoice, setViewingInvoice] = React.useState(null);
+
+  const [deleteConfirmDialogOpen, setDeleteConfirmDialogOpen] =
+    React.useState(false);
+  const [selectedDrugForDeletion, setSelectedDrugForDeletion] =
+    React.useState(null);
+
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -143,11 +228,15 @@ const PharmacistsPage = () => {
     }
   }, [navigate]);
 
-  const fetchPrescriptions = async () => {
+  const fetchPrescriptions = async (page = 0, limit = 10) => {
     try {
+      setLoading(true);
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      const response = await axios.get(`${api}/doctor/prescriptions`);
-      setPrescriptions(response.data || []);
+      const response = await axios.get(
+        `${api}/doctor/prescriptions?page=${page + 1}&limit=${limit}`,
+      );
+      setPrescriptions(response.data.data || []);
+      setPrescriptionTotal(response.data.total || 0);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching prescriptions:", error);
@@ -155,9 +244,68 @@ const PharmacistsPage = () => {
     }
   };
 
+  const fetchDrugs = async (page = 0, limit = 10) => {
+    try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
+      const response = await axios.get(
+        `${api}/pharmacist/drugs?page=${page + 1}&limit=${limit}`,
+      );
+      setDrugs(response.data.data || []);
+      setDrugTotal(response.data.total || 0);
+    } catch (error) {
+      console.error("Error fetching drugs:", error);
+    }
+  };
+
+  const fetchInvoices = async (page = 0, limit = 10) => {
+    try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
+      const response = await axios.get(
+        `${api}/pharmacist/invoices?page=${page + 1}&limit=${limit}`,
+      );
+      setInvoices(response.data.data || []);
+      setInvoiceTotal(response.data.total || 0);
+    } catch (error) {
+      console.error("Error fetching invoices:", error);
+    }
+  };
+
+  const fetchDashboardStats = async () => {
+    try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
+      const response = await axios.get(`${api}/pharmacist/stats`);
+      if (response.data.success) {
+        setStats(response.data.stats);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+    }
+  };
+
   React.useEffect(() => {
-    fetchPrescriptions();
-  }, []);
+    fetchPrescriptions(prescriptionPage, prescriptionRowsPerPage);
+    fetchDashboardStats();
+  }, [prescriptionPage, prescriptionRowsPerPage]);
+
+  React.useEffect(() => {
+    fetchDrugs(drugPage, drugRowsPerPage);
+    fetchDashboardStats();
+  }, [drugPage, drugRowsPerPage]);
+
+  React.useEffect(() => {
+    fetchInvoices(invoicePage, invoiceRowsPerPage);
+    fetchDashboardStats();
+  }, [invoicePage, invoiceRowsPerPage]);
+
+  const handleOpenPrescription = (row) => {
+    setSelectedPrescription(row);
+    setPrescriptionModalOpen(true);
+  };
+
+  const handleClosePrescription = () => {
+    setPrescriptionModalOpen(false);
+    setSelectedPrescription(null);
+  };
 
   const handleOpenUserMenu = (event) => setAnchorEl(event.currentTarget);
   const handleCloseUserMenu = () => setAnchorEl(null);
@@ -165,6 +313,376 @@ const PharmacistsPage = () => {
   const handleLogout = () => {
     sessionStorage.removeItem("authUser");
     navigate("/login");
+  };
+
+  const handleAddDrugToInvoice = () => {
+    if (!selectedDrugForInvoice) return;
+
+    const qty = parseInt(quantityForInvoice);
+    if (isNaN(qty) || qty < 1) {
+      toast.error("Please enter a valid quantity (minimum 1)");
+      return;
+    }
+
+    if (qty > selectedDrugForInvoice.stock) {
+      toast.error(
+        `Not enough stock. Available: ${selectedDrugForInvoice.stock}`,
+      );
+      return;
+    }
+
+    const newItem = {
+      drugId: selectedDrugForInvoice._id,
+      name: selectedDrugForInvoice.name,
+      quantity: parseInt(quantityForInvoice),
+      price: selectedDrugForInvoice.price,
+      total: selectedDrugForInvoice.price * quantityForInvoice,
+    };
+
+    setNewInvoiceData((prev) => ({
+      ...prev,
+      items: [...prev.items, newItem],
+    }));
+
+    setSelectedDrugForInvoice(null);
+    setQuantityForInvoice(1);
+  };
+
+  const calculateInvoiceTotal = () => {
+    const subtotal = newInvoiceData.items.reduce(
+      (sum, item) => sum + item.total,
+      0,
+    );
+    return Number((subtotal * 1.05).toFixed(2));
+  };
+
+  const generateInvoicePDF = (invoice) => {
+    const doc = new jsPDF();
+
+    // Theme Colors
+    const primaryBlue = [19, 127, 236]; // #137fec
+    const lightBlue = [207, 230, 253]; // #cfe6fd (Light blue for notes)
+    const grayText = [100, 116, 139]; // #64748b
+    const darkSlate = [15, 23, 42]; // #0f172a
+
+    // -- HEADER SECTION (Ultra Compact Solid Blue) --
+    doc.setFillColor(...primaryBlue);
+    doc.rect(0, 0, 210, 28, "F");
+
+    // Monitor/Invoice Icon Placeholder (Scaled Down)
+    doc.setDrawColor(255, 255, 255);
+    doc.setLineWidth(0.8);
+    doc.roundedRect(15, 4, 12, 9, 2, 2, "D"); // Monitor screen
+    doc.line(18, 13, 18, 15); // Monitor neck
+    doc.line(24, 13, 24, 15);
+    doc.line(16, 15, 26, 15); // Monitor base
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(6);
+    doc.text("</>", 21, 10, { align: "center" });
+
+    // "Invoice" Text (Compact Font)
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("Invoice", 15, 24);
+
+    // Hospital Details (Ultra Compact & Centered in new height)
+    doc.setFontSize(14);
+    doc.text("City General Hospital", 195, 12, { align: "right" });
+    doc.setFontSize(7);
+    doc.setFont("helvetica", "normal");
+    doc.text("Ahmedabad, Gujarat, India", 195, 19, { align: "right" });
+    doc.text("Postal Code: 380001", 195, 23, { align: "right" });
+
+    // -- WATERMARK (Premium LocalHospitalIcon Vector) --
+    doc.saveGraphicsState();
+    doc.setGState(new doc.GState({ opacity: 0.015 })); // Extreme subtlety for true watermark look
+    doc.setFillColor(180, 180, 180);
+
+    // Draw Icon Body (Filled Rounded Square)
+    doc.roundedRect(65, 105, 80, 80, 12, 12, "F");
+
+    // Draw Centered Cross (Plus sign as a knockout/white fill)
+    doc.setFillColor(255, 255, 255);
+    doc.rect(100, 120, 10, 50, "F"); // Vertical bar
+    doc.rect(80, 140, 50, 10, "F"); // Horizontal bar
+    doc.restoreGraphicsState();
+
+    // -- MIDDLE SECTION (Bill To & Metadata) --
+    const middleY = 45;
+    doc.setTextColor(...darkSlate);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text("BILL TO:", 15, middleY);
+    doc.setFontSize(14);
+    doc.text(invoice.patientName, 15, middleY + 8);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...grayText);
+    doc.text(`Contact: ${invoice.mobileNumber}`, 15, middleY + 15);
+    if (invoice.emailId) {
+      doc.text(`Email: ${invoice.emailId}`, 15, middleY + 20);
+    }
+
+    // Invoice Metadata (Right Aligned)
+    doc.setTextColor(...darkSlate);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.text("INVOICE #", 195, middleY, { align: "right" });
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...darkSlate);
+    doc.text(invoice.invoiceNumber || "N/A", 195, middleY + 5, {
+      align: "right",
+    });
+
+    doc.setFont("helvetica", "bold");
+    doc.text("DATE", 195, middleY + 15, { align: "right" });
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      new Date(invoice.createdAt || Date.now()).toLocaleDateString(),
+      195,
+      middleY + 20,
+      { align: "right" },
+    );
+
+    // -- ITEMS TABLE --
+    const tableData = invoice.items.map((item, index) => [
+      `Item ${index + 1}`,
+      item.name,
+      item.quantity,
+      `Rs. ${item.price.toLocaleString()}`,
+      `Rs. ${item.total.toLocaleString()}`,
+    ]);
+
+    autoTable(doc, {
+      startY: middleY + 30,
+      head: [["ITEMS", "DESCRIPTION", "QUANTITY", "PRICE", "AMOUNT"]],
+      body: tableData,
+      theme: "plain",
+      headStyles: {
+        textColor: [0, 0, 0],
+        fontSize: 8,
+        fontStyle: "bold",
+        cellPadding: 4,
+      },
+      bodyStyles: {
+        textColor: darkSlate,
+        fontSize: 9,
+        cellPadding: 4,
+      },
+      columnStyles: {
+        0: { cellWidth: 25 },
+        1: { cellWidth: "auto" },
+        2: { halign: "center", cellWidth: 25 },
+        3: { halign: "center", cellWidth: 28 },
+        4: { halign: "right", cellWidth: 32 },
+      },
+      margin: { left: 15, right: 15 },
+    });
+
+    // -- SUMMARY SECTION (Calculations) --
+    const subtotal = invoice.items.reduce((sum, item) => sum + item.total, 0);
+    const taxAmount = subtotal * 0.05;
+    const summaryY = doc.lastAutoTable.finalY + 8;
+
+    doc.setFontSize(8);
+    doc.setTextColor(...grayText);
+    doc.text(`Sub-total:`, 160, summaryY, { align: "right" });
+    doc.text(`Rs. ${subtotal.toLocaleString()}`, 195, summaryY, {
+      align: "right",
+    });
+
+    doc.text(`Tax (5%):`, 160, summaryY + 5, { align: "right" });
+    doc.text(`Rs. ${taxAmount.toLocaleString()}`, 195, summaryY + 5, {
+      align: "right",
+    });
+
+    // -- FOOTER BOXES (Notes & Total Due) --
+    const footerY = summaryY + 10;
+
+    // Notes Box (Light Blue)
+    doc.setFillColor(...lightBlue);
+    doc.rect(15, footerY, 105, 28, "F");
+    doc.setTextColor(...darkSlate);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("NOTES:", 20, footerY + 8);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text(
+      "Medicine once sold cannot be returned. Please keep this invoice for your records. This invoice was generated with MedCore.",
+      20,
+      footerY + 15,
+      { maxWidth: 95 },
+    );
+
+    // Total Box (Solid Blue)
+    doc.setFillColor(...primaryBlue);
+    doc.rect(120, footerY, 75, 28, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.text("TOTAL DUE", 188, footerY + 10, { align: "right" });
+    doc.setFontSize(16);
+    doc.text(`Rs. ${invoice.totalAmount.toLocaleString()}`, 188, footerY + 22, {
+      align: "right",
+    });
+    doc.save(`Invoice_${invoice.invoiceNumber || Date.now()}.pdf`);
+  };
+
+  const handleGenerateInvoice = async () => {
+    try {
+      if (
+        !newInvoiceData.patientName ||
+        !newInvoiceData.mobileNumber ||
+        newInvoiceData.items.length === 0
+      ) {
+        toast.error("Please fill in required fields and add at least one drug");
+        return;
+      }
+
+      // 10-digit Mobile Number Validation
+      const mobileRegex = /^[0-9]{10}$/;
+      if (!mobileRegex.test(newInvoiceData.mobileNumber)) {
+        toast.error("Please enter a valid 10-digit mobile number");
+        return;
+      }
+
+      // Email ID Validation (if provided)
+      if (newInvoiceData.emailId) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(newInvoiceData.emailId)) {
+          toast.error("Please enter a valid email address");
+          return;
+        }
+      }
+
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
+      const response = await axios.post(`${api}/pharmacist/invoices`, {
+        patientName: newInvoiceData.patientName,
+        mobileNumber: newInvoiceData.mobileNumber,
+        emailId: newInvoiceData.emailId,
+        pharmacistId: authUser?.id,
+        items: newInvoiceData.items,
+        totalAmount: calculateInvoiceTotal(),
+      });
+
+      if (response.data.success) {
+        toast.success("Invoice generated successfully!");
+        setGeneratedInvoice(response.data.invoice);
+        setAddInvoiceModalOpen(false);
+        setSummaryModalOpen(true);
+        setNewInvoiceData({
+          patientName: "",
+          mobileNumber: "",
+          emailId: "",
+          items: [],
+        });
+        fetchInvoices(invoicePage, invoiceRowsPerPage);
+        fetchDrugs(drugPage, drugRowsPerPage); // Refresh stock
+        fetchDashboardStats();
+      }
+    } catch (error) {
+      console.error("Error creating invoice:", error);
+      toast.error(error.response?.data?.message || "Failed to create invoice");
+    }
+  };
+
+  const resetDrugForm = () => {
+    setDrugData({
+      name: "",
+      category: "",
+      manufacturerCompany: "",
+      stock: "",
+      price: "",
+      expiryDate: "",
+      content: "",
+    });
+    setIsEditMode(false);
+    setEditingDrugId(null);
+  };
+
+  const handleEditDrugClick = (drug) => {
+    setDrugData({
+      name: drug.name,
+      category: drug.category,
+      manufacturerCompany: drug.manufacturerCompany,
+      stock: drug.stock,
+      price: drug.price,
+      expiryDate: drug.expiryDate ? drug.expiryDate.split("T")[0] : "",
+      content: drug.content || "",
+    });
+    setEditingDrugId(drug._id);
+    setIsEditMode(true);
+    setAddDrugModalOpen(true);
+  };
+
+  const handleAddDrugChange = (e) => {
+    const { name, value } = e.target;
+    setDrugData({ ...drugData, [name]: value });
+  };
+
+  const handleAddDrugSubmit = async () => {
+    try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
+      let response;
+
+      if (isEditMode) {
+        response = await axios.put(
+          `${api}/pharmacist/update-drug/${editingDrugId}`,
+          {
+            ...drugData,
+            pharmacistId: authUser?.id,
+          },
+        );
+      } else {
+        response = await axios.post(`${api}/pharmacist/add-drug`, {
+          ...drugData,
+          pharmacistId: authUser?.id,
+        });
+      }
+
+      if (response.data.success) {
+        toast.success(
+          isEditMode
+            ? "Drug updated successfully!"
+            : "Drug added successfully!",
+        );
+        setAddDrugModalOpen(false);
+        resetDrugForm();
+        fetchDrugs(drugPage, drugRowsPerPage);
+        fetchDashboardStats();
+      }
+    } catch (error) {
+      console.error("Error saving drug:", error);
+      toast.error(error.response?.data?.message || "Failed to save drug");
+    }
+  };
+
+  const handleDeleteDrug = (drug) => {
+    setSelectedDrugForDeletion(drug);
+    setDeleteConfirmDialogOpen(true);
+  };
+
+  const confirmDeleteDrug = async () => {
+    if (!selectedDrugForDeletion) return;
+
+    try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
+      const response = await axios.delete(
+        `${api}/pharmacist/delete-drug/${selectedDrugForDeletion._id}`,
+      );
+
+      if (response.data.success) {
+        toast.success("Medicine deleted successfully!");
+        setDeleteConfirmDialogOpen(false);
+        setSelectedDrugForDeletion(null);
+        fetchDrugs(drugPage, drugRowsPerPage);
+        fetchDashboardStats();
+      }
+    } catch (error) {
+      console.error("Error deleting drug:", error);
+      toast.error(error.response?.data?.message || "Failed to delete drug");
+    }
   };
 
   const pharmacistName = authUser?.name || "Dr. Sarah Mills";
@@ -178,9 +696,9 @@ const PharmacistsPage = () => {
     <Box
       sx={{
         display: "flex",
-        height: "100vh",
+        minHeight: "100vh",
         bgcolor: "#f8fafc",
-        overflow: "hidden",
+        overflowY: "auto",
         fontFamily: "Inter, sans-serif",
       }}
     >
@@ -193,6 +711,9 @@ const PharmacistsPage = () => {
           bgcolor: "white",
           borderRight: "1px solid #e2e8f0",
           flexShrink: 0,
+          position: "sticky",
+          top: 0,
+          height: "100vh",
         }}
       >
         {/* <Box sx={{ p: 3, borderBottom: "1px solid #f8fafc" }}>
@@ -240,20 +761,31 @@ const PharmacistsPage = () => {
         <Box
           sx={{
             flex: 1,
-            overflowY: "auto",
+            overflow: "hidden",
             p: 2,
             display: "flex",
             flexDirection: "column",
             gap: 0.5,
           }}
         >
-          <NavItem icon={DashboardIcon} label="Overview" active />
-          <NavItem icon={ReceiptLongIcon} label="Prescriptions" badge="24" />
-          <NavItem icon={Inventory2Icon} label="Stock Control" />
-          <NavItem icon={GroupsIcon} label="Patients" />
-          <Divider sx={{ my: 2, borderColor: "#f1f5f9" }} />
-          <NavItem icon={BarChartIcon} label="Analytics" />
-          <NavItem icon={SettingsIcon} label="Settings" />
+          <NavItem
+            icon={DashboardIcon}
+            label="Overview"
+            active={activeTab === "Overview"}
+            onClick={() => setActiveTab("Overview")}
+          />
+          <NavItem
+            icon={Inventory2Icon}
+            label="Drugs Inventory"
+            active={activeTab === "Drugs Inventory"}
+            onClick={() => setActiveTab("Drugs Inventory")}
+          />
+          <NavItem
+            icon={AccountBalanceWalletIcon}
+            label="Billing"
+            active={activeTab === "Billing"}
+            onClick={() => setActiveTab("Billing")}
+          />
         </Box>
 
         <Box sx={{ p: 3 }}>
@@ -268,7 +800,7 @@ const PharmacistsPage = () => {
             <Box
               sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}
             >
-              <Avatar
+              {/* <Avatar
                 src={pharmacistAvatar}
                 sx={{
                   width: 40,
@@ -276,8 +808,8 @@ const PharmacistsPage = () => {
                   border: "2px solid white",
                   boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
                 }}
-              />
-              <Box sx={{ minWidth: 0 }}>
+              /> */}
+              {/* <Box sx={{ minWidth: 0 }}>
                 <Typography
                   sx={{
                     fontSize: "0.875rem",
@@ -300,9 +832,9 @@ const PharmacistsPage = () => {
                 >
                   {pharmacistRole}
                 </Typography>
-              </Box>
+              </Box> */}
             </Box>
-            <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
+            {/* <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
               <Button
                 size="small"
                 variant="outlined"
@@ -336,7 +868,7 @@ const PharmacistsPage = () => {
               >
                 Sign Out
               </Button>
-            </Box>
+            </Box> */}
           </Box>
         </Box>
       </Box>
@@ -362,6 +894,9 @@ const PharmacistsPage = () => {
             bgcolor: "white",
             borderBottom: "1px solid #e2e8f0",
             flexShrink: 0,
+            position: "sticky",
+            top: 0,
+            zIndex: 1100,
           }}
         >
           <Box>
@@ -373,35 +908,21 @@ const PharmacistsPage = () => {
                 letterSpacing: "-0.025em",
               }}
             >
-              Pharmacist Dashboard Overview
+              Pharmacist {activeTab}
             </Typography>
             <Typography
               sx={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}
             >
-              Daily operational summary for October 24, 2023
+              Daily operational summary for{" "}
+              {new Date().toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
             </Typography>
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <TextField
-              placeholder="Search orders, meds..."
-              variant="outlined"
-              size="small"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: "#94a3b8" }} />
-                  </InputAdornment>
-                ),
-                sx: {
-                  bgcolor: "#f1f5f9",
-                  borderRadius: "12px",
-                  border: "none",
-                  "& fieldset": { border: "none" },
-                },
-              }}
-              sx={{ display: { xs: "none", sm: "block" }, width: 256 }}
-            />
             <IconButton
               onClick={handleOpenUserMenu}
               sx={{
@@ -414,14 +935,14 @@ const PharmacistsPage = () => {
                 },
               }}
             >
-              <Avatar
+              {/* <Avatar
                 src={pharmacistAvatar}
                 sx={{
                   width: 40,
                   height: 40,
                   border: "2px solid white",
                 }}
-              />
+              /> */}
             </IconButton>
             <Menu
               anchorEl={anchorEl}
@@ -464,24 +985,34 @@ const PharmacistsPage = () => {
               </MenuItem>
             </Menu>
 
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              sx={{
-                bgcolor: "#137fec",
-                color: "white",
-                fontWeight: 700,
-                borderRadius: "12px",
-                px: 2,
-                py: 1,
-                fontSize: "0.875rem",
-                textTransform: "none",
-                boxShadow: "0 10px 15px -3px rgba(19, 127, 236, 0.2)",
-                "&:hover": { bgcolor: "rgba(19, 127, 236, 0.9)" },
-              }}
-            >
-              New Order
-            </Button>
+            {(activeTab === "Drugs Inventory" || activeTab === "Billing") && (
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => {
+                  if (activeTab === "Drugs Inventory") {
+                    resetDrugForm();
+                    setAddDrugModalOpen(true);
+                  } else {
+                    setAddInvoiceModalOpen(true);
+                  }
+                }}
+                sx={{
+                  bgcolor: "#137fec",
+                  color: "white",
+                  fontWeight: 700,
+                  borderRadius: "12px",
+                  px: 2,
+                  py: 1,
+                  fontSize: "0.875rem",
+                  textTransform: "none",
+                  boxShadow: "0 10px 15px -3px rgba(19, 127, 236, 0.2)",
+                  "&:hover": { bgcolor: "rgba(19, 127, 236, 0.9)" },
+                }}
+              >
+                {activeTab === "Drugs Inventory" ? "Add Drugs" : "New Invoice"}
+              </Button>
+            )}
           </Box>
         </Box>
 
@@ -489,513 +1020,460 @@ const PharmacistsPage = () => {
         <Box
           sx={{
             flex: 1,
-            overflowY: "auto",
-            p: 4,
-            "&::-webkit-scrollbar": { width: "6px" },
-            "&::-webkit-scrollbar-thumb": {
-              bgcolor: "#cbd5e1",
-              borderRadius: "3px",
-            },
+            px: 4,
+            py: 4,
+            display: "flex",
+            flexDirection: "column",
+            gap: 4,
+            overflow: "visible",
           }}
         >
-          {/* Top Cards */}
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr",
-                md: "repeat(2, 1fr)",
-                lg: "repeat(3, 1fr)",
-              },
-              gap: 3,
-              mb: 4,
-            }}
-          >
-            {/* Pending Prescriptions */}
-            <Box
-              sx={{
-                bgcolor: "white",
-                borderRadius: "24px",
-                p: 3,
-                border: "1px solid #e2e8f0",
-                position: "relative",
-                overflow: "hidden",
-                boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-                "&:hover .bg-icon": { transform: "scale(1.1)" },
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  position: "relative",
-                  zIndex: 1,
-                }}
-              >
-                <Box>
-                  <Typography
-                    sx={{
-                      color: "#64748b",
-                      fontSize: "0.875rem",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em",
-                      mb: 0.5,
-                    }}
-                  >
-                    Pending Prescriptions
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: "3rem",
-                      fontWeight: 900,
-                      color: "#0f172a",
-                      lineHeight: 1,
-                    }}
-                  >
-                    {prescriptions.length}
-                  </Typography>
-                </Box>
-                <Box sx={{ bgcolor: "#eff6ff", p: 2, borderRadius: "16px" }}>
-                  <ReceiptIcon sx={{ fontSize: 32, color: "#2563eb" }} />
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  mt: 3,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                  position: "relative",
-                  zIndex: 1,
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    bgcolor: "#ecfdf5",
-                    color: "#10b981",
-                    px: 1,
-                    py: 0.5,
-                    borderRadius: "8px",
-                  }}
-                >
-                  <TrendingUpIcon sx={{ fontSize: "0.875rem", mr: 0.5 }} />
-                  <Typography sx={{ fontSize: "0.75rem", fontWeight: 700 }}>
-                    12%
-                  </Typography>
-                </Box>
-                <Typography
-                  sx={{
-                    fontSize: "0.75rem",
-                    color: "#94a3b8",
-                    fontWeight: 500,
-                  }}
-                >
-                  In the last 2 hours
-                </Typography>
-              </Box>
-              <PendingActionsIcon
-                className="bg-icon"
-                sx={{
-                  position: "absolute",
-                  right: -16,
-                  bottom: -16,
-                  fontSize: 140,
-                  color: "rgba(0,0,0,0.03)",
-                  transition: "transform 0.7s",
-                  pointerEvents: "none",
-                }}
-              />
-            </Box>
-
-            {/* Low Stock Alerts */}
-            <Box
-              sx={{
-                bgcolor: "#fff1f2",
-                borderRadius: "24px",
-                p: 3,
-                border: "1px solid rgba(225, 29, 72, 0.3)",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-              }}
-            >
-              <Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    mb: 2,
-                  }}
-                >
-                  <Box>
-                    <Typography
-                      sx={{
-                        color: "#be123c",
-                        fontSize: "0.875rem",
-                        fontWeight: 700,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.05em",
-                        mb: 0.5,
-                      }}
-                    >
-                      Low Stock Alerts
-                    </Typography>
-                    <Box
-                      sx={{ display: "flex", alignItems: "baseline", gap: 1 }}
-                    >
-                      <Typography
-                        sx={{
-                          fontSize: "3rem",
-                          fontWeight: 900,
-                          color: "#e11d48",
-                          lineHeight: 1,
-                        }}
-                      >
-                        08
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: "0.875rem",
-                          fontWeight: 700,
-                          color: "#fb7185",
-                        }}
-                      >
-                        Items Critical
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <Box
-                    sx={{
-                      bgcolor: "#ffe4e6",
-                      p: 2,
-                      borderRadius: "16px",
-                      animation:
-                        "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-                    }}
-                  >
-                    <WarningIcon sx={{ fontSize: 32, color: "#e11d48" }} />
-                  </Box>
-                </Box>
-                <Typography
-                  sx={{
-                    fontSize: "0.875rem",
-                    color: "#9f1239",
-                    fontWeight: 500,
-                    lineHeight: 1.6,
-                    mb: 2,
-                  }}
-                >
-                  Essential medications like{" "}
-                  <Box component="span" sx={{ fontWeight: 700 }}>
-                    Amoxicillin
-                  </Box>{" "}
-                  and{" "}
-                  <Box component="span" sx={{ fontWeight: 700 }}>
-                    Lisinopril
-                  </Box>{" "}
-                  are below safety threshold.
-                </Typography>
-              </Box>
-              <Button
-                fullWidth
-                variant="contained"
-                sx={{
-                  bgcolor: "#e11d48",
-                  color: "white",
-                  fontWeight: 700,
-                  py: 1.5,
-                  borderRadius: "12px",
-                  textTransform: "none",
-                  fontSize: "0.875rem",
-                  boxShadow: "0 10px 15px -3px rgba(254, 205, 211, 1)",
-                  "&:hover": { bgcolor: "#be123c" },
-                  display: "flex",
-                  gap: 1,
-                  alignItems: "center",
-                }}
-              >
-                View Inventory Details{" "}
-                <ArrowForwardIcon sx={{ fontSize: "0.875rem" }} />
-              </Button>
-            </Box>
-
-            {/* Medicines Dispensed Today */}
-            <Box
-              sx={{
-                bgcolor: "white",
-                borderRadius: "24px",
-                p: 3,
-                border: "1px solid #e2e8f0",
-                boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  mb: 3,
-                }}
-              >
-                <Box>
-                  <Typography
-                    sx={{
-                      color: "#64748b",
-                      fontSize: "0.875rem",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em",
-                      mb: 0.5,
-                    }}
-                  >
-                    Medicines Dispensed Today
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: "3rem",
-                      fontWeight: 900,
-                      color: "#0f172a",
-                      lineHeight: 1,
-                    }}
-                  >
-                    128
-                  </Typography>
-                </Box>
-                <Box sx={{ bgcolor: "#ecfdf5", p: 2, borderRadius: "16px" }}>
-                  <MedicationIcon sx={{ fontSize: 32, color: "#059669" }} />
-                </Box>
-              </Box>
-
-              {/* Fake Bar Chart */}
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "flex-end",
-                  gap: 0.5,
-                  height: 80,
-                }}
-              >
-                {["40%", "65%", "90%", "50%", "75%", "85%"].map((h, i) => (
-                  <Box
-                    key={i}
-                    sx={{
-                      flex: 1,
-                      bgcolor: "#f1f5f9",
-                      height: h,
-                      borderRadius: "6px 6px 0 0",
-                      "&:hover": { bgcolor: "rgba(19, 127, 236, 0.4)" },
-                      transition: "background-color 0.2s",
-                    }}
-                  />
-                ))}
-                <Box
-                  sx={{
-                    flex: 1,
-                    bgcolor: "#137fec",
-                    height: "100%",
-                    borderRadius: "6px 6px 0 0",
-                  }}
-                />
-              </Box>
-              <Box
-                sx={{
-                  mt: 1,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: "0.625rem",
-                  fontWeight: 700,
-                  color: "#94a3b8",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.1em",
-                }}
-              >
-                <Typography variant="inherit">08:00</Typography>
-                <Typography variant="inherit">Current Hour</Typography>
-              </Box>
-            </Box>
-          </Box>
-
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", lg: "repeat(3, 1fr)" },
-              gap: 4,
-            }}
-          >
-            {/* Left Column Layout: Quick Stats & Recent Transactions */}
-            <Box sx={{ gridColumn: { lg: "span 2" } }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  mb: 3,
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: "1.25rem",
-                    fontWeight: 900,
-                    color: "#0f172a",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    letterSpacing: "-0.025em",
-                  }}
-                >
-                  <AnalyticsIcon sx={{ color: "#137fec" }} /> Quick Stats
-                </Typography>
-                <Button
-                  sx={{
-                    color: "#137fec",
-                    fontSize: "0.75rem",
-                    fontWeight: 700,
-                    textTransform: "none",
-                    "&:hover": {
-                      textDecoration: "underline",
-                      bgcolor: "transparent",
-                    },
-                  }}
-                >
-                  Download Detailed Report
-                </Button>
-              </Box>
-
-              {/* Stats Grid */}
+          {activeTab === "Overview" && (
+            <>
               <Box
                 sx={{
                   display: "grid",
-                  gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
-                  gap: 2,
-                  mb: 4,
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    sm: "repeat(2, 1fr)",
+                    md: "repeat(4, 1fr)",
+                  },
+                  gap: 3,
                 }}
               >
-                {[
-                  {
-                    title: "Avg. Fulfillment Time",
-                    value: "8.4",
-                    unit: "mins",
-                    status: "Efficient - Under target",
-                    statusColor: "#10b981",
-                    icon: SpeedIcon,
-                    iconColor: "#d97706",
-                    bg: "#fffbeb",
-                  },
-                  {
-                    title: "Inventory Value",
-                    value: "$242,500",
-                    unit: "",
-                    status: "Audit updated 2h ago",
-                    statusColor: "#94a3b8",
-                    icon: AccountBalanceWalletIcon,
-                    iconColor: "#4f46e5",
-                    bg: "#eef2ff",
-                  },
-                  {
-                    title: "Pharmacist Accuracy",
-                    value: "99.98%",
-                    unit: "",
-                    status: "Industry leading performance",
-                    statusColor: "#10b981",
-                    icon: VerifiedIcon,
-                    iconColor: "#9333ea",
-                    bg: "#faf5ff",
-                  },
-                  {
-                    title: "Patient Satisfaction",
-                    value: "4.9",
-                    unit: "/5.0",
-                    status: "Based on 1.2k reviews",
-                    statusColor: "#f59e0b",
-                    icon: Groups2Icon,
-                    iconColor: "#475569",
-                    bg: "#f8fafc",
-                  },
-                ].map((stat, i) => (
+                <Box
+                  sx={{
+                    bgcolor: "white",
+                    borderRadius: "24px",
+                    p: 3,
+                    border: "1px solid #e2e8f0",
+                    position: "relative",
+                    overflow: "hidden",
+                    boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                    "&:hover .bg-icon": { transform: "scale(1.1)" },
+                  }}
+                >
                   <Box
-                    key={i}
                     sx={{
-                      bgcolor: "white",
-                      p: 3,
-                      borderRadius: "16px",
-                      border: "1px solid #f1f5f9",
                       display: "flex",
-                      alignItems: "center",
-                      gap: 2.5,
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      position: "relative",
+                      zIndex: 1,
                     }}
                   >
-                    <Box
-                      sx={{
-                        width: 56,
-                        height: 56,
-                        borderRadius: "16px",
-                        bgcolor: stat.bg,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <stat.icon sx={{ color: stat.iconColor, fontSize: 28 }} />
-                    </Box>
                     <Box>
                       <Typography
                         sx={{
-                          fontSize: "0.75rem",
+                          color: "#64748b",
+                          fontSize: "0.875rem",
                           fontWeight: 700,
-                          color: "#94a3b8",
                           textTransform: "uppercase",
                           letterSpacing: "0.05em",
                           mb: 0.5,
                         }}
                       >
-                        {stat.title}
+                        Total Monthly Revenue
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: "1.5rem",
+                          fontSize: "2.5rem",
                           fontWeight: 900,
                           color: "#0f172a",
-                          display: "flex",
-                          alignItems: "baseline",
+                          lineHeight: 1,
                         }}
                       >
-                        {stat.value}
-                        {stat.unit && (
-                          <Typography
-                            component="span"
-                            sx={{
-                              fontSize: "0.875rem",
-                              fontWeight: 500,
-                              ml: 0.5,
-                            }}
-                          >
-                            {stat.unit}
-                          </Typography>
-                        )}
+                        ₹{stats.totalMonthlyRevenue?.toLocaleString()}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{ bgcolor: "#eff6ff", p: 2, borderRadius: "16px" }}
+                    >
+                      <AccountBalanceWalletIcon
+                        sx={{ fontSize: 32, color: "#2563eb" }}
+                      />
+                    </Box>
+                  </Box>
+                  <TrendingUpIcon
+                    className="bg-icon"
+                    sx={{
+                      position: "absolute",
+                      right: -16,
+                      bottom: -16,
+                      fontSize: 100,
+                      color: "rgba(0,0,0,0.03)",
+                      transition: "transform 0.7s",
+                      pointerEvents: "none",
+                    }}
+                  />
+                </Box>
+
+                {/* Total Medicines Card */}
+                <Box
+                  sx={{
+                    bgcolor: "white",
+                    borderRadius: "24px",
+                    p: 3,
+                    border: "1px solid #e2e8f0",
+                    position: "relative",
+                    overflow: "hidden",
+                    boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                    "&:hover .bg-icon": { transform: "scale(1.1)" },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      position: "relative",
+                      zIndex: 1,
+                    }}
+                  >
+                    <Box>
+                      <Typography
+                        sx={{
+                          color: "#64748b",
+                          fontSize: "0.875rem",
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          mb: 0.5,
+                        }}
+                      >
+                        Total Medicines
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          color: stat.statusColor,
-                          mt: 0.5,
+                          fontSize: "2.5rem",
+                          fontWeight: 900,
+                          color: "#0f172a",
+                          lineHeight: 1,
                         }}
                       >
-                        {stat.status}
+                        {stats.totalMedicines}
                       </Typography>
                     </Box>
+                    <Box
+                      sx={{ bgcolor: "#f0fdf4", p: 2, borderRadius: "16px" }}
+                    >
+                      <MedicationIcon sx={{ fontSize: 32, color: "#16a34a" }} />
+                    </Box>
                   </Box>
-                ))}
+                  <MedicationIcon
+                    className="bg-icon"
+                    sx={{
+                      position: "absolute",
+                      right: -16,
+                      bottom: -16,
+                      fontSize: 100,
+                      color: "rgba(0,0,0,0.03)",
+                      transition: "transform 0.7s",
+                      pointerEvents: "none",
+                    }}
+                  />
+                </Box>
+
+                {/* Out of Stock Card */}
+                <Box
+                  sx={{
+                    bgcolor: "white",
+                    borderRadius: "24px",
+                    p: 3,
+                    border: "1px solid #e2e8f0",
+                    position: "relative",
+                    overflow: "hidden",
+                    boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                    "&:hover .bg-icon": { transform: "scale(1.1)" },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      position: "relative",
+                      zIndex: 1,
+                    }}
+                  >
+                    <Box>
+                      <Typography
+                        sx={{
+                          color: "#64748b",
+                          fontSize: "0.875rem",
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          mb: 0.5,
+                        }}
+                      >
+                        Low Stock
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: "2.5rem",
+                          fontWeight: 900,
+                          color: "#dc2626",
+                          lineHeight: 1,
+                        }}
+                      >
+                        {stats.outOfStock}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{ bgcolor: "#fef2f2", p: 2, borderRadius: "16px" }}
+                    >
+                      <ErrorOutlineIcon
+                        sx={{ fontSize: 32, color: "#dc2626" }}
+                      />
+                    </Box>
+                  </Box>
+                  <ReportProblemIcon
+                    className="bg-icon"
+                    sx={{
+                      position: "absolute",
+                      right: -16,
+                      bottom: -16,
+                      fontSize: 100,
+                      color: "rgba(0,0,0,0.03)",
+                      transition: "transform 0.7s",
+                      pointerEvents: "none",
+                    }}
+                  />
+                </Box>
+
+                {/* Completed Invoices Card */}
+                <Box
+                  sx={{
+                    bgcolor: "white",
+                    borderRadius: "24px",
+                    p: 3,
+                    border: "1px solid #e2e8f0",
+                    position: "relative",
+                    overflow: "hidden",
+                    boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                    "&:hover .bg-icon": { transform: "scale(1.1)" },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      position: "relative",
+                      zIndex: 1,
+                    }}
+                  >
+                    <Box>
+                      <Typography
+                        sx={{
+                          color: "#64748b",
+                          fontSize: "0.875rem",
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          mb: 0.5,
+                        }}
+                      >
+                        Total Invoices
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: "2.5rem",
+                          fontWeight: 900,
+                          color: "#0f172a",
+                          lineHeight: 1,
+                        }}
+                      >
+                        {stats.completedInvoices}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{ bgcolor: "#faf5ff", p: 2, borderRadius: "16px" }}
+                    >
+                      <AssignmentIcon sx={{ fontSize: 32, color: "#9333ea" }} />
+                    </Box>
+                  </Box>
+                  <AssignmentTurnedInIcon
+                    className="bg-icon"
+                    sx={{
+                      position: "absolute",
+                      right: -16,
+                      bottom: -16,
+                      fontSize: 100,
+                      color: "rgba(0,0,0,0.03)",
+                      transition: "transform 0.7s",
+                      pointerEvents: "none",
+                    }}
+                  />
+                </Box>
               </Box>
 
-              {/* Recent Transactions Table */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 4,
+                }}
+              >
+                <Box>
+                  {/* Recent Transactions Table */}
+                  <Box
+                    sx={{
+                      bgcolor: "white",
+                      borderRadius: "24px",
+                      border: "1px solid #e2e8f0",
+                      overflow: "hidden",
+                      boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        px: 3,
+                        py: 2.5,
+                        borderBottom: "1px solid #f1f5f9",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography sx={{ fontWeight: 700, color: "#0f172a" }}>
+                        Recent Transactions
+                      </Typography>
+                      <IconButton
+                        size="small"
+                        sx={{
+                          color: "#94a3b8",
+                          "&:hover": { bgcolor: "#f8fafc" },
+                          borderRadius: "8px",
+                        }}
+                      >
+                        <FilterListIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                    <TableContainer>
+                      <Table sx={{ minWidth: 600 }}>
+                        <TableHead sx={{ bgcolor: "rgba(248, 250, 252, 0.5)" }}>
+                          <TableRow>
+                            {[
+                              "Patient Name",
+                              "Doctor Name",
+                              "Concern",
+                              "Prescription",
+                            ].map((h, i) => (
+                              <TableCell
+                                key={i}
+                                sx={{
+                                  color: "#94a3b8",
+                                  fontSize: "0.625rem",
+                                  fontWeight: 700,
+                                  textTransform: "uppercase",
+                                  py: 1.5,
+                                  borderBottom: "1px solid #f1f5f9",
+                                }}
+                              >
+                                {h}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {prescriptions.map((row) => (
+                            <TableRow
+                              key={row._id}
+                              hover
+                              sx={{
+                                "&:hover": {
+                                  bgcolor: "rgba(248, 250, 252, 0.5)",
+                                },
+                                transition: "background-color 0.2s",
+                              }}
+                            >
+                              <TableCell
+                                sx={{
+                                  fontWeight: 600,
+                                  color: "#334155",
+                                  borderBottom: "1px solid #f8fafc",
+                                }}
+                              >
+                                {row.patientId?.firstName}{" "}
+                                {row.patientId?.lastName}
+                              </TableCell>
+                              <TableCell
+                                sx={{
+                                  color: "#334155",
+                                  borderBottom: "1px solid #f8fafc",
+                                }}
+                              >
+                                Dr. {row.doctorId?.firstName}{" "}
+                                {row.doctorId?.lastName}
+                              </TableCell>
+                              <TableCell
+                                sx={{
+                                  color: "#64748b",
+                                  fontSize: "0.875rem",
+                                  borderBottom: "1px solid #f8fafc",
+                                }}
+                              >
+                                {row.concern}
+                              </TableCell>
+                              <TableCell
+                                sx={{
+                                  fontWeight: 600,
+                                  color: "#137fec",
+                                  borderBottom: "1px solid #f8fafc",
+                                  maxWidth: "250px",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  cursor: "pointer",
+                                  "&:hover": { textDecoration: "underline" },
+                                }}
+                                onClick={() => handleOpenPrescription(row)}
+                              >
+                                {row.prescription}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                          {!loading && prescriptions.length === 0 && (
+                            <TableRow>
+                              <TableCell
+                                colSpan={4}
+                                align="center"
+                                sx={{ py: 4, color: "#94a3b8" }}
+                              >
+                                No prescriptions found.
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                    <TablePagination
+                      rowsPerPageOptions={[5, 10, 25]}
+                      component="div"
+                      count={prescriptionTotal}
+                      rowsPerPage={prescriptionRowsPerPage}
+                      page={prescriptionPage}
+                      onPageChange={(e, newPage) =>
+                        setPrescriptionPage(newPage)
+                      }
+                      onRowsPerPageChange={(e) => {
+                        setPrescriptionRowsPerPage(
+                          parseInt(e.target.value, 10),
+                        );
+                        setPrescriptionPage(0);
+                      }}
+                    />
+                  </Box>
+                </Box>
+              </Box>
+            </>
+          )}
+
+          {activeTab === "Drugs Inventory" && (
+            <Box>
+              {/* Drug Inventory Table */}
               <Box
                 sx={{
                   bgcolor: "white",
@@ -1016,7 +1494,7 @@ const PharmacistsPage = () => {
                   }}
                 >
                   <Typography sx={{ fontWeight: 700, color: "#0f172a" }}>
-                    Recent Transactions
+                    Drug Inventory
                   </Typography>
                   <IconButton
                     size="small"
@@ -1030,30 +1508,36 @@ const PharmacistsPage = () => {
                   </IconButton>
                 </Box>
                 <TableContainer>
-                  <Table sx={{ minWidth: 600 }}>
+                  <Table sx={{ minWidth: 800 }}>
                     <TableHead sx={{ bgcolor: "rgba(248, 250, 252, 0.5)" }}>
                       <TableRow>
-                        {["ID", "Medication", "Patient", "Status", "Time"].map(
-                          (h, i) => (
-                            <TableCell
-                              key={i}
-                              sx={{
-                                color: "#94a3b8",
-                                fontSize: "0.625rem",
-                                fontWeight: 700,
-                                textTransform: "uppercase",
-                                py: 1.5,
-                                borderBottom: "1px solid #f1f5f9",
-                              }}
-                            >
-                              {h}
-                            </TableCell>
-                          ),
-                        )}
+                        {[
+                          "Product Name",
+                          "Manufacturer",
+                          "Category",
+                          "Stock",
+                          "Price",
+                          "Expiry Date",
+                          "Actions",
+                        ].map((h, i) => (
+                          <TableCell
+                            key={i}
+                            sx={{
+                              color: "#94a3b8",
+                              fontSize: "0.625rem",
+                              fontWeight: 700,
+                              textTransform: "uppercase",
+                              py: 1.5,
+                              borderBottom: "1px solid #f1f5f9",
+                            }}
+                          >
+                            {h}
+                          </TableCell>
+                        ))}
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {prescriptions.slice(0, 10).map((row) => (
+                      {drugs.map((row) => (
                         <TableRow
                           key={row._id}
                           hover
@@ -1062,47 +1546,43 @@ const PharmacistsPage = () => {
                             transition: "background-color 0.2s",
                           }}
                         >
-                          <TableCell
-                            sx={{
-                              color: "#137fec",
-                              fontFamily: "monospace",
-                              fontSize: "0.75rem",
-                              fontWeight: 600,
-                              borderBottom: "1px solid #f8fafc",
-                            }}
-                          >
-                            #{row._id.slice(-4).toUpperCase()}
+                          <TableCell sx={{ borderBottom: "1px solid #f8fafc" }}>
+                            <Box
+                              sx={{ display: "flex", flexDirection: "column" }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontWeight: 700,
+                                  color: "#334155",
+                                  fontSize: "0.875rem",
+                                }}
+                              >
+                                {row.name}
+                              </Typography>
+                              <Typography
+                                sx={{ color: "#64748b", fontSize: "0.75rem" }}
+                              >
+                                {row.content}
+                              </Typography>
+                            </Box>
                           </TableCell>
                           <TableCell
                             sx={{
-                              fontWeight: 600,
-                              color: "#334155",
-                              borderBottom: "1px solid #f8fafc",
-                              maxWidth: "200px",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                            }}
-                          >
-                            {row.prescription}
-                          </TableCell>
-                          <TableCell
-                            sx={{
-                              color: "#334155",
+                              color: "#475569",
+                              fontSize: "0.875rem",
                               borderBottom: "1px solid #f8fafc",
                             }}
                           >
-                            {row.patientId?.firstName} {row.patientId?.lastName}
+                            {row.manufacturerCompany}
                           </TableCell>
                           <TableCell sx={{ borderBottom: "1px solid #f8fafc" }}>
                             <Chip
-                              label="Dispensed"
+                              label={row.category}
                               sx={{
-                                bgcolor: "#ecfdf5",
-                                color: "#059669",
-                                fontWeight: 700,
+                                bgcolor: "#eff6ff",
+                                color: "#137fec",
+                                fontWeight: 600,
                                 fontSize: "0.625rem",
-                                textTransform: "uppercase",
                                 borderRadius: "6px",
                                 height: 24,
                               }}
@@ -1110,253 +1590,265 @@ const PharmacistsPage = () => {
                           </TableCell>
                           <TableCell
                             sx={{
-                              color: "#94a3b8",
+                              fontWeight: 700,
+                              color:
+                                row.stock > 100
+                                  ? "#059669"
+                                  : row.stock > 10
+                                    ? "#d97706"
+                                    : "#dc2626",
+                              borderBottom: "1px solid #f8fafc",
+                            }}
+                          >
+                            {row.stock}
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              fontWeight: 700,
+                              color: "#1e293b",
+                              borderBottom: "1px solid #f8fafc",
+                            }}
+                          >
+                            ₹{row.price}
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              color: "#64748b",
                               fontSize: "0.75rem",
                               borderBottom: "1px solid #f8fafc",
                             }}
                           >
-                            {new Date(row.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            {new Date(row.expiryDate).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell sx={{ borderBottom: "1px solid #f8fafc" }}>
+                            <IconButton
+                              size="small"
+                              onClick={() => handleEditDrugClick(row)}
+                              sx={{
+                                color: "#137fec",
+                                "&:hover": { bgcolor: "#eff6ff" },
+                              }}
+                            >
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                            <IconButton
+                              size="small"
+                              onClick={() => handleDeleteDrug(row)}
+                              sx={{
+                                color: "#dc2626",
+                                "&:hover": { bgcolor: "#fef2f2" },
+                              }}
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
                           </TableCell>
                         </TableRow>
                       ))}
-                      {!loading && prescriptions.length === 0 && (
+                      {!loading && drugs.length === 0 && (
                         <TableRow>
-                          <TableCell colSpan={5} align="center" sx={{ py: 4, color: "#94a3b8" }}>
-                            No prescriptions found.
+                          <TableCell
+                            colSpan={6}
+                            align="center"
+                            sx={{ py: 4, color: "#94a3b8" }}
+                          >
+                            No drugs found in inventory.
                           </TableCell>
                         </TableRow>
                       )}
                     </TableBody>
                   </Table>
                 </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="div"
+                  count={drugTotal}
+                  rowsPerPage={drugRowsPerPage}
+                  page={drugPage}
+                  onPageChange={(e, newPage) => setDrugPage(newPage)}
+                  onRowsPerPageChange={(e) => {
+                    setDrugRowsPerPage(parseInt(e.target.value, 10));
+                    setDrugPage(0);
+                  }}
+                />
               </Box>
             </Box>
+          )}
 
-            {/* Right Column Layout: Insights & Staff */}
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              {/* Stock Insights */}
-              <Box
-                sx={{
-                  bgcolor: "#0f172a",
-                  p: 3,
-                  borderRadius: "24px",
-                  color: "white",
-                  boxShadow: "0 20px 25px -5px rgba(226, 232, 240, 0.5)",
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: "0.875rem",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                    color: "#94a3b8",
-                    mb: 2,
-                  }}
-                >
-                  Stock Insights
-                </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Box sx={{ display: "flex", gap: 2 }}>
-                    <Box
-                      sx={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: "50%",
-                        bgcolor: "#f43f5e",
-                        mt: 1,
-                        flexShrink: 0,
-                      }}
-                    />
-                    <Box>
-                      <Typography
-                        sx={{ fontSize: "0.875rem", fontWeight: 700 }}
-                      >
-                        Amoxicillin 500mg
-                      </Typography>
-                      <Typography
-                        sx={{ fontSize: "0.75rem", color: "#94a3b8" }}
-                      >
-                        Critical: 5 units remaining in rack B4
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <Box sx={{ display: "flex", gap: 2 }}>
-                    <Box
-                      sx={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: "50%",
-                        bgcolor: "#f59e0b",
-                        mt: 1,
-                        flexShrink: 0,
-                      }}
-                    />
-                    <Box>
-                      <Typography
-                        sx={{ fontSize: "0.875rem", fontWeight: 700 }}
-                      >
-                        Lisinopril 10mg
-                      </Typography>
-                      <Typography
-                        sx={{ fontSize: "0.75rem", color: "#94a3b8" }}
-                      >
-                        Reorder trigger hit: 24 units left
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Box>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  sx={{
-                    mt: 3,
-                    color: "white",
-                    borderColor: "rgba(255,255,255,0.1)",
-                    bgcolor: "rgba(255,255,255,0.1)",
-                    textTransform: "none",
-                    fontSize: "0.75rem",
-                    fontWeight: 700,
-                    borderRadius: "12px",
-                    py: 1.5,
-                    "&:hover": {
-                      bgcolor: "rgba(255,255,255,0.2)",
-                      borderColor: "rgba(255,255,255,0.1)",
-                    },
-                  }}
-                >
-                  Manage Replenishment
-                </Button>
-              </Box>
-
-              {/* Staff on Duty */}
+          {activeTab === "Billing" && (
+            <Box>
+              {/* Billing History Table */}
               <Box
                 sx={{
                   bgcolor: "white",
-                  p: 3,
                   borderRadius: "24px",
                   border: "1px solid #e2e8f0",
+                  overflow: "hidden",
+                  boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
                 }}
               >
                 <Box
                   sx={{
+                    px: 3,
+                    py: 2.5,
+                    borderBottom: "1px solid #f1f5f9",
                     display: "flex",
-                    alignItems: "center",
                     justifyContent: "space-between",
-                    mb: 3,
+                    alignItems: "center",
                   }}
                 >
-                  <Typography
-                    sx={{
-                      fontSize: "0.875rem",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                      color: "#64748b",
-                    }}
-                  >
-                    Staff on Duty
+                  <Typography sx={{ fontWeight: 700, color: "#0f172a" }}>
+                    Invoice History
                   </Typography>
-                  <Box
-                    sx={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: "50%",
-                      bgcolor: "#10b981",
-                    }}
-                  />
                 </Box>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <Avatar
-                      sx={{
-                        bgcolor: "#dbeafe",
-                        color: "#2563eb",
-                        fontWeight: 700,
-                        fontSize: "0.75rem",
-                        width: 40,
-                        height: 40,
-                      }}
-                    >
-                      JD
-                    </Avatar>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        sx={{
-                          fontSize: "0.875rem",
-                          fontWeight: 700,
-                          color: "#0f172a",
-                        }}
-                      >
-                        Jane Doe
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: "0.625rem",
-                          fontWeight: 500,
-                          color: "#64748b",
-                        }}
-                      >
-                        Assistant Pharmacist
-                      </Typography>
-                    </Box>
-                    <Typography
-                      sx={{
-                        fontSize: "0.625rem",
-                        fontWeight: 700,
-                        color: "#94a3b8",
-                      }}
-                    >
-                      08:00 - 16:00
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <Avatar
-                      sx={{
-                        bgcolor: "#e0e7ff",
-                        color: "#4f46e5",
-                        fontWeight: 700,
-                        fontSize: "0.75rem",
-                        width: 40,
-                        height: 40,
-                      }}
-                    >
-                      RK
-                    </Avatar>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        sx={{
-                          fontSize: "0.875rem",
-                          fontWeight: 700,
-                          color: "#0f172a",
-                        }}
-                      >
-                        Robert King
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: "0.625rem",
-                          fontWeight: 500,
-                          color: "#64748b",
-                        }}
-                      >
-                        Pharmacy Tech
-                      </Typography>
-                    </Box>
-                    <Typography
-                      sx={{
-                        fontSize: "0.625rem",
-                        fontWeight: 700,
-                        color: "#94a3b8",
-                      }}
-                    >
-                      09:00 - 17:00
-                    </Typography>
-                  </Box>
-                </Box>
+                <TableContainer>
+                  <Table sx={{ minWidth: 800 }}>
+                    <TableHead sx={{ bgcolor: "rgba(248, 250, 252, 0.5)" }}>
+                      <TableRow>
+                        {[
+                          "Invoice #",
+                          "Patient Name",
+                          "Date",
+                          "Items",
+                          "Total Amount",
+                          "Status",
+                          "Actions",
+                        ].map((h, i) => (
+                          <TableCell
+                            key={i}
+                            sx={{
+                              color: "#94a3b8",
+                              fontSize: "0.625rem",
+                              fontWeight: 700,
+                              textTransform: "uppercase",
+                              py: 1.5,
+                              borderBottom: "1px solid #f1f5f9",
+                            }}
+                          >
+                            {h}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {invoices.map((row) => (
+                        <TableRow
+                          key={row._id}
+                          hover
+                          sx={{
+                            "&:hover": { bgcolor: "rgba(248, 250, 252, 0.5)" },
+                            transition: "background-color 0.2s",
+                          }}
+                        >
+                          <TableCell sx={{ borderBottom: "1px solid #f8fafc" }}>
+                            <Typography
+                              sx={{
+                                fontWeight: 700,
+                                color: "#0f172a",
+                                fontSize: "0.8125rem",
+                              }}
+                            >
+                              {row.invoiceNumber}
+                            </Typography>
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              color: "#475569",
+                              fontSize: "0.875rem",
+                              borderBottom: "1px solid #f8fafc",
+                            }}
+                          >
+                            {row.patientName}
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              color: "#64748b",
+                              fontSize: "0.75rem",
+                              borderBottom: "1px solid #f8fafc",
+                            }}
+                          >
+                            {new Date(row.createdAt).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              color: "#64748b",
+                              fontSize: "0.75rem",
+                              borderBottom: "1px solid #f8fafc",
+                            }}
+                          >
+                            {row.items.length} items
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              fontWeight: 700,
+                              color: "#1e293b",
+                              borderBottom: "1px solid #f8fafc",
+                            }}
+                          >
+                            ₹{row.totalAmount}
+                          </TableCell>
+                          <TableCell sx={{ borderBottom: "1px solid #f8fafc" }}>
+                            <Chip
+                              label={row.status}
+                              sx={{
+                                bgcolor: "#f0fdf4",
+                                color: "#16a34a",
+                                fontWeight: 600,
+                                fontSize: "0.625rem",
+                                borderRadius: "6px",
+                                height: 24,
+                                textTransform: "capitalize",
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell sx={{ borderBottom: "1px solid #f8fafc" }}>
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                setViewingInvoice(row);
+                                setViewInvoiceModalOpen(true);
+                              }}
+                              sx={{
+                                color: "#137fec",
+                                "&:hover": {
+                                  bgcolor: "rgba(19, 127, 236, 0.1)",
+                                },
+                              }}
+                              title="Preview & Print"
+                            >
+                              <ReceiptIcon fontSize="small" />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {invoices.length === 0 && (
+                        <TableRow>
+                          <TableCell
+                            colSpan={7}
+                            align="center"
+                            sx={{ py: 4, color: "#94a3b8" }}
+                          >
+                            No invoices generated yet.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="div"
+                  count={invoiceTotal}
+                  rowsPerPage={invoiceRowsPerPage}
+                  page={invoicePage}
+                  onPageChange={(e, newPage) => setInvoicePage(newPage)}
+                  onRowsPerPageChange={(e) => {
+                    setInvoiceRowsPerPage(parseInt(e.target.value, 10));
+                    setInvoicePage(0);
+                  }}
+                />
               </Box>
             </Box>
-          </Box>
+          )}
         </Box>
       </Box>
 
@@ -1517,6 +2009,1484 @@ const PharmacistsPage = () => {
           </Box>
         )}
       </Drawer>
+      {/* Add Drug Modal */}
+      <Dialog
+        open={addDrugModalOpen}
+        onClose={() => {
+          setAddDrugModalOpen(false);
+          resetDrugForm();
+        }}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: { borderRadius: "20px", p: 1 },
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 900, fontSize: "1.5rem" }}>
+          {isEditMode ? "Edit Drug Details" : "Add New Drug to Inventory"}
+        </DialogTitle>
+        <DialogContent>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2.5,
+              mt: 2,
+            }}
+          >
+            <TextField
+              fullWidth
+              label="Drug Name"
+              name="name"
+              value={drugData.name}
+              onChange={handleAddDrugChange}
+              placeholder="e.g. Amoxicillin 500mg"
+            />
+            <TextField
+              fullWidth
+              label="Content"
+              name="content"
+              value={drugData.content}
+              onChange={handleAddDrugChange}
+              placeholder="e.g. 500mg"
+            />
+            <TextField
+              fullWidth
+              label="Manufacturer Company"
+              name="manufacturerCompany"
+              value={drugData.manufacturerCompany}
+              onChange={handleAddDrugChange}
+              placeholder="e.g. Square Pharmaceuticals Ltd"
+            />
+
+            <FormControl fullWidth>
+              <InputLabel>Category</InputLabel>
+              <Select
+                name="category"
+                value={drugData.category}
+                label="Category"
+                onChange={handleAddDrugChange}
+              >
+                <MenuItem value="Antibiotic">Antibiotic</MenuItem>
+                <MenuItem value="Analgesic">Analgesic</MenuItem>
+                <MenuItem value="Antipyretic">Antipyretic</MenuItem>
+                <MenuItem value="Antiseptic">Antiseptic</MenuItem>
+                <MenuItem value="Supplement">Supplement</MenuItem>
+                <MenuItem value="Antacid">Antacid</MenuItem>
+                <MenuItem value="Antihistamine">Antihistamine</MenuItem>
+                <MenuItem value="Antiviral">Antiviral</MenuItem>
+                <MenuItem value="Antifungal">Antifungal</MenuItem>
+                <MenuItem value="Vaccine">Vaccine</MenuItem>
+                <MenuItem value="Hormone">Hormone</MenuItem>
+                <MenuItem value="Vitamin">Vitamin</MenuItem>
+                <MenuItem value="Cardiovascular">Cardiovascular</MenuItem>
+                <MenuItem value="Gastrointestinal">Gastrointestinal</MenuItem>
+                <MenuItem value="Respiratory">Respiratory</MenuItem>
+                <MenuItem value="Neurological">Neurological</MenuItem>
+                <MenuItem value="Dermatological">Dermatological</MenuItem>
+                <MenuItem value="Cholesterol">Cholesterol</MenuItem>
+                <MenuItem value="Diabetes">Diabetes</MenuItem>
+                <MenuItem value="Blood Pressure">Blood Pressure</MenuItem>
+                <MenuItem value="Pain Relief">Pain Relief</MenuItem>
+                <MenuItem value="Allergy">Allergy</MenuItem>
+                <MenuItem value="Eye Care">Eye Care</MenuItem>
+                <MenuItem value="Ear Care">Ear Care</MenuItem>
+                <MenuItem value="Oral Care">Oral Care</MenuItem>
+                <MenuItem value="Skin Care">Skin Care</MenuItem>
+                <MenuItem value="Vitamins">Vitamins</MenuItem>
+              </Select>
+            </FormControl>
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <TextField
+                fullWidth
+                label="Stock Quantity"
+                name="stock"
+                type="text"
+                placeholder="e.g. 100"
+                value={drugData.stock}
+                onChange={handleAddDrugChange}
+              />
+            </Box>
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <TextField
+                fullWidth
+                label="Price per Unit"
+                name="price"
+                type="text"
+                placeholder="e.g. 10"
+                value={drugData.price}
+                onChange={handleAddDrugChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">₹</InputAdornment>
+                  ),
+                }}
+                onKeyPress={(e) => {
+                  if (!/[0-9.]/.test(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+              />
+              <TextField
+                fullWidth
+                label="Expiry Date"
+                name="expiryDate"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={drugData.expiryDate}
+                onChange={handleAddDrugChange}
+              />
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ p: 3, gap: 1 }}>
+          <Button
+            onClick={() => {
+              setAddDrugModalOpen(false);
+              resetDrugForm();
+            }}
+            sx={{
+              color: "#64748b",
+              fontWeight: 700,
+              textTransform: "none",
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleAddDrugSubmit}
+            sx={{
+              bgcolor: "#137fec",
+              fontWeight: 700,
+              textTransform: "none",
+              borderRadius: "10px",
+              px: 4,
+            }}
+          >
+            {isEditMode ? "Update Drug" : "Save Drug"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Prescription Detail Modal */}
+      <Dialog
+        open={prescriptionModalOpen}
+        onClose={handleClosePrescription}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: { borderRadius: "24px", p: 1 },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            fontWeight: 900,
+            fontSize: "1.5rem",
+            color: "#0f172a",
+            pb: 1,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          Prescription Details
+          <IconButton
+            onClick={handleClosePrescription}
+            sx={{ color: "#94a3b8" }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
+          {selectedPrescription && (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 2,
+                  p: 2.5,
+                  bgcolor: "#f8fafc",
+                  borderRadius: "16px",
+                  border: "1px solid #e2e8f0",
+                }}
+              >
+                <Box>
+                  <Typography
+                    sx={{
+                      fontSize: "0.7rem",
+                      fontWeight: 700,
+                      color: "#64748b",
+                      textTransform: "uppercase",
+                      mb: 0.5,
+                    }}
+                  >
+                    Patient Name
+                  </Typography>
+                  <Typography sx={{ fontWeight: 700, color: "#1e293b" }}>
+                    {selectedPrescription.patientId?.firstName}{" "}
+                    {selectedPrescription.patientId?.lastName}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography
+                    sx={{
+                      fontSize: "0.7rem",
+                      fontWeight: 700,
+                      color: "#64748b",
+                      textTransform: "uppercase",
+                      mb: 0.5,
+                    }}
+                  >
+                    Date
+                  </Typography>
+                  <Typography sx={{ fontWeight: 700, color: "#1e293b" }}>
+                    {new Date(
+                      selectedPrescription.updatedAt,
+                    ).toLocaleDateString()}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography
+                    sx={{
+                      fontSize: "0.7rem",
+                      fontWeight: 700,
+                      color: "#64748b",
+                      textTransform: "uppercase",
+                      mb: 0.5,
+                    }}
+                  >
+                    Doctor Name
+                  </Typography>
+                  <Typography sx={{ fontWeight: 700, color: "#1e293b" }}>
+                    Dr. {selectedPrescription.doctorId?.firstName}{" "}
+                    {selectedPrescription.doctorId?.lastName}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography
+                    sx={{
+                      fontSize: "0.7rem",
+                      fontWeight: 700,
+                      color: "#64748b",
+                      textTransform: "uppercase",
+                      mb: 0.5,
+                    }}
+                  >
+                    Condition/Concern
+                  </Typography>
+                  <Typography sx={{ fontWeight: 700, color: "#1e293b" }}>
+                    {selectedPrescription.concern}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box>
+                <Typography
+                  sx={{
+                    fontSize: "0.875rem",
+                    fontWeight: 700,
+                    color: "#0f172a",
+                    mb: 1.5,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  <MedicationIcon sx={{ color: "#137fec" }} />
+                  Full Prescription
+                </Typography>
+                <Box
+                  sx={{
+                    p: 3,
+                    bgcolor: "rgba(19, 127, 236, 0.03)",
+                    borderRadius: "16px",
+                    border: "1px dashed #137fec",
+                    minHeight: "100px",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      color: "#334155",
+                      lineHeight: 1.7,
+                      fontSize: "1rem",
+                      fontWeight: 500,
+                      whiteSpace: "pre-wrap",
+                    }}
+                  >
+                    {selectedPrescription.prescription}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button
+            variant="contained"
+            onClick={handleClosePrescription}
+            sx={{
+              bgcolor: "#137fec",
+              fontWeight: 700,
+              textTransform: "none",
+              borderRadius: "12px",
+              py: 1.5,
+            }}
+          >
+            Close Details
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* New Invoice Modal */}
+      <Dialog
+        open={addInvoiceModalOpen}
+        onClose={() => setAddInvoiceModalOpen(false)}
+        fullWidth
+        maxWidth="md"
+        PaperProps={{
+          sx: { borderRadius: "24px", p: 1 },
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 900, fontSize: "1.5rem" }}>
+          Generate New Invoice
+        </DialogTitle>
+        <DialogContent>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 3,
+              mt: 2,
+            }}
+          >
+            <Box>
+              <Typography
+                sx={{
+                  fontSize: "0.875rem",
+                  fontWeight: 700,
+                  color: "#475569",
+                  mb: 1,
+                }}
+              >
+                1. Patient Information
+              </Typography>
+              <TextField
+                fullWidth
+                label="Patient Name"
+                placeholder="Enter patient name"
+                required
+                autoComplete="off"
+                value={newInvoiceData.patientName}
+                onChange={(e) =>
+                  setNewInvoiceData({
+                    ...newInvoiceData,
+                    patientName: e.target.value,
+                  })
+                }
+              />
+            </Box>
+
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <TextField
+                fullWidth
+                label="Mobile Number"
+                placeholder="e.g. 9876543210"
+                required
+                autoComplete="off"
+                inputProps={{ maxLength: 10 }}
+                value={newInvoiceData.mobileNumber}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "");
+                  setNewInvoiceData({
+                    ...newInvoiceData,
+                    mobileNumber: value,
+                  });
+                }}
+              />
+              <TextField
+                fullWidth
+                label="Email ID (Optional)"
+                placeholder="e.g. patient@example.com"
+                autoComplete="off"
+                value={newInvoiceData.emailId}
+                onChange={(e) =>
+                  setNewInvoiceData({
+                    ...newInvoiceData,
+                    emailId: e.target.value,
+                  })
+                }
+              />
+            </Box>
+
+            <Divider />
+
+            <Box>
+              <Typography
+                sx={{
+                  fontSize: "0.875rem",
+                  fontWeight: 700,
+                  color: "#475569",
+                  mb: 1,
+                }}
+              >
+                2. Add Drugs to Invoice
+              </Typography>
+              <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
+                <Autocomplete
+                  sx={{ flex: 2 }}
+                  options={drugs.filter((d) => d.stock > 0)}
+                  getOptionLabel={(option) =>
+                    `${option.name} (Stock: ${option.stock}, Price: ₹${option.price})`
+                  }
+                  value={selectedDrugForInvoice}
+                  onChange={(event, newValue) =>
+                    setSelectedDrugForInvoice(newValue)
+                  }
+                  renderInput={(params) => (
+                    <TextField {...params} label="Select Drug" />
+                  )}
+                />
+                <TextField
+                  sx={{ flex: 0.5 }}
+                  label="Qty"
+                  type="number"
+                  inputProps={{ min: 1 }}
+                  value={quantityForInvoice}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    if (val < 1) {
+                      setQuantityForInvoice(1);
+                    } else {
+                      setQuantityForInvoice(e.target.value);
+                    }
+                  }}
+                />
+                <Button
+                  variant="outlined"
+                  onClick={handleAddDrugToInvoice}
+                  sx={{
+                    height: "56px",
+                    px: 3,
+                    borderRadius: "12px",
+                    fontWeight: 700,
+                    textTransform: "none",
+                  }}
+                >
+                  Add
+                </Button>
+              </Box>
+            </Box>
+
+            {newInvoiceData.items.length > 0 && (
+              <Box>
+                <Typography
+                  sx={{
+                    fontSize: "0.875rem",
+                    fontWeight: 700,
+                    color: "#475569",
+                    mb: 1,
+                  }}
+                >
+                  3. Invoice Summary
+                </Typography>
+                <TableContainer
+                  component={Paper}
+                  variant="outlined"
+                  sx={{ borderRadius: "16px", overflow: "hidden" }}
+                >
+                  <Table size="small">
+                    <TableHead sx={{ bgcolor: "#f8fafc" }}>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 700 }}>Item</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 700 }}>
+                          Price
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 700 }}>
+                          Qty
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 700 }}>
+                          Total
+                        </TableCell>
+                        <TableCell align="right"></TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {newInvoiceData.items.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{item.name}</TableCell>
+                          <TableCell align="right">₹{item.price}</TableCell>
+                          <TableCell align="right">{item.quantity}</TableCell>
+                          <TableCell align="right">₹{item.total}</TableCell>
+                          <TableCell align="right">
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                setNewInvoiceData({
+                                  ...newInvoiceData,
+                                  items: newInvoiceData.items.filter(
+                                    (_, i) => i !== index,
+                                  ),
+                                });
+                              }}
+                              sx={{ color: "#ef4444" }}
+                            >
+                              <CloseIcon fontSize="small" />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      <TableRow sx={{ bgcolor: "#f8fafc" }}>
+                        <TableCell
+                          colSpan={3}
+                          align="right"
+                          sx={{ fontWeight: 900 }}
+                        >
+                          Grand Total:
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          sx={{
+                            fontWeight: 900,
+                            color: "#137fec",
+                            fontSize: "1.1rem",
+                          }}
+                        >
+                          ₹{calculateInvoiceTotal()}
+                        </TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ p: 3, gap: 1 }}>
+          <Button
+            onClick={() => setAddInvoiceModalOpen(false)}
+            sx={{ color: "#64748b", fontWeight: 700, textTransform: "none" }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleGenerateInvoice}
+            disabled={
+              newInvoiceData.items.length === 0 || !newInvoiceData.patientName
+            }
+            sx={{
+              bgcolor: "#137fec",
+              fontWeight: 700,
+              textTransform: "none",
+              borderRadius: "12px",
+              px: 4,
+            }}
+          >
+            Generate Invoice
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Invoice Summary Modal */}
+      <Dialog
+        open={summaryModalOpen}
+        onClose={() => setSummaryModalOpen(false)}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            borderRadius: "16px",
+            p: 0,
+            overflow: "hidden",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.2)",
+          },
+        }}
+      >
+        <DialogContent sx={{ p: 0, bgcolor: "white" }}>
+          {generatedInvoice && (
+            <Box>
+              {/* -- HEADER SECTION (Compact Blue) -- */}
+              <Box
+                sx={{
+                  bgcolor: "#137fec",
+                  px: 4,
+                  py: 3,
+                  color: "white",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-end",
+                }}
+              >
+                <Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      mb: 1,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "relative",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        mb: 0.5,
+                      }}
+                    >
+                      <DesktopWindowsIcon sx={{ fontSize: 40 }} />
+                      <ReceiptIcon
+                        sx={{
+                          position: "absolute",
+                          fontSize: 14,
+                          top: "22%",
+                          color: "white",
+                        }}
+                      />
+                    </Box>
+                    <Typography
+                      sx={{ fontSize: "2rem", fontWeight: 900, lineHeight: 1 }}
+                    >
+                      Invoice
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box sx={{ textAlign: "right" }}>
+                  <Typography
+                    sx={{ fontSize: "1.25rem", fontWeight: 900, mb: 0.5 }}
+                  >
+                    City General Hospital
+                  </Typography>
+                  <Typography sx={{ fontSize: "0.75rem", opacity: 0.9 }}>
+                    Ahmedabad, Gujarat, India
+                  </Typography>
+                  <Typography sx={{ fontSize: "0.75rem", opacity: 0.9 }}>
+                    Postal Code: 380001
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box sx={{ p: 3 }}>
+                {/* -- MIDDLE SECTION (Compact) -- */}
+                <Grid
+                  container
+                  spacing={2}
+                  sx={{
+                    mb: 3,
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Grid item xs={6}>
+                    <Typography
+                      sx={{
+                        fontSize: "0.65rem",
+                        fontWeight: 900,
+                        color: "#000",
+                        textTransform: "uppercase",
+                        mb: 0.5,
+                      }}
+                    >
+                      BILL TO:
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: "1rem",
+                        fontWeight: 700,
+                        color: "#000",
+                        mb: 0.5,
+                      }}
+                    >
+                      {generatedInvoice.patientName}
+                    </Typography>
+                    <Typography sx={{ fontSize: "0.75rem", color: "#475569" }}>
+                      Contact: {generatedInvoice.mobileNumber}
+                    </Typography>
+                    {generatedInvoice.emailId && (
+                      <Typography
+                        sx={{ fontSize: "0.75rem", color: "#475569" }}
+                      >
+                        Email: {generatedInvoice.emailId}
+                      </Typography>
+                    )}
+                  </Grid>
+                  <Grid item xs={6} sx={{ textAlign: "right" }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1.5,
+                        alignItems: "flex-end",
+                      }}
+                    >
+                      <Box>
+                        <Typography
+                          sx={{
+                            fontSize: "0.65rem",
+                            fontWeight: 900,
+                            color: "#000",
+                          }}
+                        >
+                          INVOICE #
+                        </Typography>
+                        <Typography sx={{ fontSize: "0.75rem", color: "#000" }}>
+                          {generatedInvoice.invoiceNumber}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          sx={{
+                            fontSize: "0.65rem",
+                            fontWeight: 900,
+                            color: "#000",
+                          }}
+                        >
+                          DATE
+                        </Typography>
+                        <Typography sx={{ fontSize: "0.75rem", color: "#000" }}>
+                          {new Date(
+                            generatedInvoice.createdAt || Date.now(),
+                          ).toLocaleDateString()}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
+                </Grid>
+
+                {/* -- ITEMS TABLE (Compact) -- */}
+                <TableContainer component={Box} sx={{ mb: 3 }}>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell
+                          sx={{ fontWeight: 900, fontSize: "0.65rem", py: 0.5 }}
+                        >
+                          ITEMS
+                        </TableCell>
+                        <TableCell
+                          sx={{ fontWeight: 900, fontSize: "0.65rem", py: 0.5 }}
+                        >
+                          DESCRIPTION
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          sx={{ fontWeight: 900, fontSize: "0.65rem", py: 0.5 }}
+                        >
+                          QUANTITY
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          sx={{ fontWeight: 900, fontSize: "0.65rem", py: 0.5 }}
+                        >
+                          PRICE
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          sx={{ fontWeight: 900, fontSize: "0.65rem", py: 0.5 }}
+                        >
+                          AMOUNT
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {generatedInvoice.items.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell
+                            sx={{ fontSize: "0.75rem", border: "none" }}
+                          >
+                            Item {index + 1}
+                          </TableCell>
+                          <TableCell
+                            sx={{ fontSize: "0.75rem", border: "none" }}
+                          >
+                            {item.name}
+                          </TableCell>
+                          <TableCell
+                            align="center"
+                            sx={{ fontSize: "0.75rem", border: "none" }}
+                          >
+                            {item.quantity}
+                          </TableCell>
+                          <TableCell
+                            align="center"
+                            sx={{ fontSize: "0.75rem", border: "none" }}
+                          >
+                            ₹{item.price.toLocaleString()}
+                          </TableCell>
+                          <TableCell
+                            align="right"
+                            sx={{
+                              fontSize: "0.75rem",
+                              fontWeight: 700,
+                              border: "none",
+                            }}
+                          >
+                            ₹{item.total.toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+
+                {/* -- SUMMARY CALCULATION (Clean Breakdown) -- */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                    gap: 0.5,
+                    px: 1,
+                    mb: 1.5,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      width: "100%",
+                      gap: 4,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "0.75rem",
+                        color: "#64748b",
+                        fontWeight: 500,
+                      }}
+                    >
+                      Sub-total:
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: "0.75rem",
+                        color: "#0f172a",
+                        fontWeight: 700,
+                        width: 80,
+                        textAlign: "right",
+                      }}
+                    >
+                      ₹{(generatedInvoice.totalAmount / 1.05).toLocaleString()}
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      width: "100%",
+                      gap: 4,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "0.75rem",
+                        color: "#64748b",
+                        fontWeight: 500,
+                      }}
+                    >
+                      Tax (5%):
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: "0.75rem",
+                        color: "#0f172a",
+                        fontWeight: 700,
+                        width: 80,
+                        textAlign: "right",
+                      }}
+                    >
+                      ₹
+                      {(
+                        generatedInvoice.totalAmount -
+                        generatedInvoice.totalAmount / 1.05
+                      ).toLocaleString()}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* -- FOOTER BOXES (Compact) -- */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    height: "64px",
+                    borderRadius: "4px",
+                    overflow: "hidden",
+                    mb: 2,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      flex: 1.5,
+                      bgcolor: "#cfe6fd",
+                      p: 1.5,
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography
+                      sx={{ fontSize: "0.65rem", fontWeight: 900, mb: 0.2 }}
+                    >
+                      NOTES:
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: "0.625rem",
+                        lineHeight: 1.1,
+                        color: "#1e293b",
+                      }}
+                    >
+                      Medicine once sold cannot be returned. Please keep this
+                      invoice for your records. This invoice was generated with
+                      MedCore.
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      flex: 1,
+                      bgcolor: "#137fec",
+                      p: 1.5,
+                      color: "white",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "flex-end",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "0.65rem",
+                        fontWeight: 900,
+                        mb: 0.2,
+                        opacity: 0.9,
+                        letterSpacing: "0.05em",
+                      }}
+                    >
+                      TOTAL DUE
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: "1.75rem",
+                        fontWeight: 900,
+                        lineHeight: 1,
+                      }}
+                    >
+                      ₹{generatedInvoice.totalAmount.toLocaleString()}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ p: 4, pt: 0, gap: 2 }}>
+          <Button
+            onClick={() => setSummaryModalOpen(false)}
+            sx={{
+              color: "#64748b",
+              fontWeight: 700,
+              textTransform: "none",
+              fontSize: "0.95rem",
+              px: 3,
+            }}
+          >
+            Close
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => generateInvoicePDF(generatedInvoice)}
+            sx={{
+              bgcolor: "#137fec",
+              fontWeight: 800,
+              textTransform: "none",
+              borderRadius: "12px",
+              py: 1.5,
+              px: 4,
+              fontSize: "1rem",
+              boxShadow: "0 10px 15px -3px rgba(19, 127, 236, 0.2)",
+              "&:hover": {
+                bgcolor: "#0f6bd1",
+                boxShadow: "0 20px 25px -5px rgba(19, 127, 236, 0.3)",
+              },
+            }}
+          >
+            Print Invoice
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirmDialogOpen}
+        onClose={() => setDeleteConfirmDialogOpen(false)}
+        PaperProps={{
+          sx: { borderRadius: "24px", p: 1, maxWidth: "400px" },
+        }}
+      >
+        <DialogTitle sx={{ textAlign: "center", pt: 3 }}>
+          <Box
+            sx={{
+              bgcolor: "#fef2f2",
+              width: 60,
+              height: 60,
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto",
+              mb: 2,
+            }}
+          >
+            <ErrorOutlineIcon sx={{ color: "#dc2626", fontSize: 35 }} />
+          </Box>
+          <Typography
+            sx={{ fontWeight: 900, fontSize: "1.25rem", color: "#0f172a" }}
+          >
+            Confirm Deletion
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ textAlign: "center", pb: 1 }}>
+          <Typography sx={{ color: "#64748b", mb: 2 }}>
+            Are you sure you want to delete{" "}
+            <Box
+              component="span"
+              sx={{ fontWeight: 800, color: "#0f172a", fontSize: "1.1rem" }}
+            >
+              {selectedDrugForDeletion?.name}
+            </Box>
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ p: 3, gap: 1, justifyContent: "center" }}>
+          <Button
+            onClick={() => setDeleteConfirmDialogOpen(false)}
+            sx={{
+              color: "#64748b",
+              fontWeight: 700,
+              textTransform: "none",
+              px: 3,
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={confirmDeleteDrug}
+            sx={{
+              bgcolor: "#dc2626",
+              fontWeight: 700,
+              textTransform: "none",
+              borderRadius: "12px",
+              px: 4,
+              "&:hover": { bgcolor: "#b91c1c" },
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* View Invoice Preview Modal */}
+      <Dialog
+        open={viewInvoiceModalOpen}
+        onClose={() => setViewInvoiceModalOpen(false)}
+        fullWidth
+        maxWidth="md"
+        PaperProps={{
+          sx: { borderRadius: "24px", p: 1 },
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 900, fontSize: "1.5rem" }}>
+          Invoice Details
+        </DialogTitle>
+        <DialogContent>
+          {viewingInvoice && (
+            <Box
+              sx={{
+                p: 3,
+                bgcolor: "white",
+                borderRadius: "20px",
+                border: "1px solid #e2e8f0",
+              }}
+            >
+              {/* -- HOSPITAL HEADER (Premium Branding) -- */}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  mb: 4,
+                }}
+              >
+                <Box>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 900,
+                      color: "#137fec",
+                      letterSpacing: "-0.02em",
+                      mb: 0.5,
+                    }}
+                  >
+                    CITY GENERAL HOSPITAL
+                  </Typography>
+                  <Typography
+                    sx={{
+                      color: "#64748b",
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                    }}
+                  >
+                    123 HEALTHCARE AVE, SUITE 500
+                  </Typography>
+                  <Typography
+                    sx={{
+                      color: "#64748b",
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                    }}
+                  >
+                    PHONE: +91 1234567890 | EMAIL: SUPPORT@CITYGENERAL.IN
+                  </Typography>
+                </Box>
+                <Box sx={{ textAlign: "right" }}>
+                  <Typography
+                    sx={{
+                      fontWeight: 900,
+                      color: "#0f172a",
+                      fontSize: "1.25rem",
+                      mb: 0.5,
+                    }}
+                  >
+                    INVOICE
+                  </Typography>
+                  <Typography
+                    sx={{
+                      color: "#137fec",
+                      fontWeight: 700,
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    #{viewingInvoice.invoiceNumber}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Divider sx={{ mb: 4, borderColor: "#f1f5f9" }} />
+
+              {/* -- PATIENT & INVOICE META -- */}
+              <Grid container spacing={4} sx={{ mb: 4 }}>
+                <Grid item xs={6}>
+                  <Typography
+                    sx={{
+                      color: "#94a3b8",
+                      fontSize: "0.625rem",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      mb: 1,
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    BILL TO
+                  </Typography>
+                  <Typography
+                    sx={{ fontWeight: 800, color: "#1e293b", fontSize: "1rem" }}
+                  >
+                    {viewingInvoice.patientName}
+                  </Typography>
+                  <Typography sx={{ color: "#64748b", fontSize: "0.875rem" }}>
+                    Ph: {viewingInvoice.mobileNumber}
+                  </Typography>
+                  <Typography sx={{ color: "#64748b", fontSize: "0.875rem" }}>
+                    Email: {viewingInvoice.emailId || "N/A"}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6} sx={{ textAlign: "right" }}>
+                  <Typography
+                    sx={{
+                      color: "#94a3b8",
+                      fontSize: "0.625rem",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      mb: 1,
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    INVOICE DATE
+                  </Typography>
+                  <Typography
+                    sx={{ fontWeight: 800, color: "#1e293b", fontSize: "1rem" }}
+                  >
+                    {new Date(viewingInvoice.createdAt).toLocaleDateString()}
+                  </Typography>
+                </Grid>
+              </Grid>
+
+              {/* -- ITEMS TABLE (Compact & Clean) -- */}
+              <TableContainer
+                sx={{
+                  mb: 4,
+                  borderRadius: "12px",
+                  border: "1px solid #f1f5f9",
+                }}
+              >
+                <Table size="small">
+                  <TableHead sx={{ bgcolor: "#f8fafc" }}>
+                    <TableRow>
+                      <TableCell
+                        sx={{ fontSize: "0.65rem", fontWeight: 900, py: 1.5 }}
+                      >
+                        #
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontSize: "0.65rem", fontWeight: 900, py: 1.5 }}
+                      >
+                        ITEM DESCRIPTION
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{ fontSize: "0.65rem", fontWeight: 900, py: 1.5 }}
+                      >
+                        QTY
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{ fontSize: "0.65rem", fontWeight: 900, py: 1.5 }}
+                      >
+                        PRICE
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        sx={{ fontSize: "0.65rem", fontWeight: 900, py: 1.5 }}
+                      >
+                        SUBTOTAL
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {viewingInvoice.items.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell sx={{ fontSize: "0.75rem", border: "none" }}>
+                          {index + 1}
+                        </TableCell>
+                        <TableCell sx={{ fontSize: "0.75rem", border: "none" }}>
+                          {item.name}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          sx={{ fontSize: "0.75rem", border: "none" }}
+                        >
+                          {item.quantity}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          sx={{ fontSize: "0.75rem", border: "none" }}
+                        >
+                          ₹{item.price.toLocaleString()}
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          sx={{
+                            fontSize: "0.75rem",
+                            fontWeight: 700,
+                            border: "none",
+                          }}
+                        >
+                          ₹{item.total.toLocaleString()}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+              {/* -- SUMMARY CALCULATION (Clean Breakdown) -- */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  gap: 0.5,
+                  px: 1,
+                  mb: 1.5,
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    width: "100%",
+                    gap: 4,
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: "0.75rem",
+                      color: "#64748b",
+                      fontWeight: 500,
+                    }}
+                  >
+                    Sub-total:
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "0.75rem",
+                      color: "#0f172a",
+                      fontWeight: 700,
+                      width: 80,
+                      textAlign: "right",
+                    }}
+                  >
+                    ₹{(viewingInvoice.totalAmount / 1.05).toLocaleString()}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    width: "100%",
+                    gap: 4,
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: "0.75rem",
+                      color: "#64748b",
+                      fontWeight: 500,
+                    }}
+                  >
+                    Tax (5%):
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "0.75rem",
+                      color: "#0f172a",
+                      fontWeight: 700,
+                      width: 80,
+                      textAlign: "right",
+                    }}
+                  >
+                    ₹
+                    {(
+                      viewingInvoice.totalAmount -
+                      viewingInvoice.totalAmount / 1.05
+                    ).toLocaleString()}
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* -- FOOTER BOXES (Compact) -- */}
+              <Box
+                sx={{
+                  display: "flex",
+                  height: "64px",
+                  borderRadius: "4px",
+                  overflow: "hidden",
+                  mb: 2,
+                }}
+              >
+                <Box
+                  sx={{
+                    flex: 1.5,
+                    bgcolor: "#cfe6fd",
+                    p: 1.5,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography
+                    sx={{ fontSize: "0.65rem", fontWeight: 900, mb: 0.2 }}
+                  >
+                    NOTES:
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "0.625rem",
+                      lineHeight: 1.1,
+                      color: "#1e293b",
+                    }}
+                  >
+                    Medicine once sold cannot be returned. Please keep this
+                    invoice for your records. This invoice was generated with
+                    MedCore.
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    flex: 1,
+                    bgcolor: "#137fec",
+                    p: 1.5,
+                    color: "white",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: "0.65rem",
+                      fontWeight: 900,
+                      mb: 0.2,
+                      opacity: 0.9,
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    TOTAL DUE
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "1.75rem",
+                      fontWeight: 900,
+                      lineHeight: 1,
+                    }}
+                  >
+                    ₹{viewingInvoice.totalAmount.toLocaleString()}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ p: 4, pt: 0, gap: 2 }}>
+          <Button
+            onClick={() => setViewInvoiceModalOpen(false)}
+            sx={{
+              color: "#64748b",
+              fontWeight: 700,
+              textTransform: "none",
+              fontSize: "0.95rem",
+              px: 3,
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => generateInvoicePDF(viewingInvoice)}
+            sx={{
+              bgcolor: "#137fec",
+              fontWeight: 800,
+              textTransform: "none",
+              borderRadius: "12px",
+              py: 1.5,
+              px: 4,
+              fontSize: "1rem",
+              boxShadow: "0 10px 15px -3px rgba(19, 127, 236, 0.2)",
+              "&:hover": {
+                bgcolor: "#0f6bd1",
+                boxShadow: "0 20px 25px -5px rgba(19, 127, 236, 0.3)",
+              },
+            }}
+          >
+            Print Invoice
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

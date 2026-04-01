@@ -27,6 +27,7 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import axios from "axios";
+import ForgotPasswordModal from "../components/ForgotPasswordModal";
 
 const Login = () => {
   const [role, setRole] = useState("Doctor");
@@ -34,6 +35,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleRoleChange = (event, newRole) => {
@@ -265,6 +267,7 @@ const Login = () => {
                   />
                   <Typography
                     variant="body2"
+                    onClick={() => setForgotPasswordOpen(true)}
                     sx={{
                       color: "primary.main",
                       fontWeight: 700,
@@ -391,6 +394,12 @@ const Login = () => {
           </Typography>
         </Box>
       </footer>
+
+      <ForgotPasswordModal
+        open={forgotPasswordOpen}
+        onClose={() => setForgotPasswordOpen(false)}
+        role={role}
+      />
     </Box>
   );
 };
