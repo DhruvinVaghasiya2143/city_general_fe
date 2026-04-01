@@ -29,6 +29,7 @@ import {
   TablePagination,
   Autocomplete,
   Grid,
+  CircularProgress,
 } from "@mui/material";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -211,6 +212,7 @@ const PharmacistsPage = () => {
 
   const [viewInvoiceModalOpen, setViewInvoiceModalOpen] = React.useState(false);
   const [viewingInvoice, setViewingInvoice] = React.useState(null);
+  const [isGeneratingInvoice, setIsGeneratingInvoice] = React.useState(false);
 
   const [deleteConfirmDialogOpen, setDeleteConfirmDialogOpen] =
     React.useState(false);
@@ -556,6 +558,7 @@ const PharmacistsPage = () => {
         }
       }
 
+      setIsGeneratingInvoice(true);
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.post(`${api}/pharmacist/invoices`, {
         patientName: newInvoiceData.patientName,
@@ -584,6 +587,8 @@ const PharmacistsPage = () => {
     } catch (error) {
       console.error("Error creating invoice:", error);
       toast.error(error.response?.data?.message || "Failed to create invoice");
+    } finally {
+      setIsGeneratingInvoice(false);
     }
   };
 
@@ -2573,7 +2578,9 @@ const PharmacistsPage = () => {
             variant="contained"
             onClick={handleGenerateInvoice}
             disabled={
-              newInvoiceData.items.length === 0 || !newInvoiceData.patientName
+              isGeneratingInvoice ||
+              newInvoiceData.items.length === 0 ||
+              !newInvoiceData.patientName
             }
             sx={{
               bgcolor: "#137fec",
@@ -2581,9 +2588,14 @@ const PharmacistsPage = () => {
               textTransform: "none",
               borderRadius: "12px",
               px: 4,
+              minWidth: "160px", // Maintain width when loading
             }}
           >
-            Generate Invoice
+            {isGeneratingInvoice ? (
+              <CircularProgress size={24} sx={{ color: "white" }} />
+            ) : (
+              "Generate Invoice"
+            )}
           </Button>
         </DialogActions>
       </Dialog>
