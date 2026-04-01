@@ -44,8 +44,12 @@ const ForgotPasswordModal = ({ open, onClose, role }) => {
       return;
     }
 
-    setLoading(true);
+    let processingToast;
     try {
+      // Close modal immediately and show a processing toast
+      onClose();
+      processingToast = toast.info("Processing password reset...", { autoClose: false });
+
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.post(`${api}/auth/reset-password`, {
         email,
@@ -55,15 +59,16 @@ const ForgotPasswordModal = ({ open, onClose, role }) => {
 
       if (response.data.success) {
         toast.success("Password reset successfully! You can now sign in.");
-        onClose();
-        // Reset fields
-        setEmail("");
-        setNewPassword("");
-        setConfirmPassword("");
       }
+      
+      // Reset fields
+      setEmail("");
+      setNewPassword("");
+      setConfirmPassword("");
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to reset password. Please try again.");
+      toast.error(err.response?.data?.message || "Failed to reset password. Please try again.");
     } finally {
+      if (processingToast) toast.dismiss(processingToast);
       setLoading(false);
     }
   };
