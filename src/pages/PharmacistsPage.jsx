@@ -1030,292 +1030,282 @@ const PharmacistsPage = () => {
         >
           {activeTab === "Overview" && (
             <>
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: {
-                    xs: "1fr",
-                    sm: "repeat(2, 1fr)",
-                    md: "repeat(4, 1fr)",
-                  },
-                  gap: 3,
-                }}
-              >
-                <Box
-                  sx={{
-                    bgcolor: "white",
-                    borderRadius: "24px",
-                    p: 3,
-                    border: "1px solid #e2e8f0",
-                    position: "relative",
-                    overflow: "hidden",
-                    boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-                    "&:hover .bg-icon": { transform: "scale(1.1)" },
-                  }}
-                >
+              <Grid container spacing={2}>
+                {/* Monthly Revenue Card */}
+                <Grid item xs={12} sm={6} md={3}>
                   <Box
                     sx={{
+                      bgcolor: "white",
+                      borderRadius: "20px",
+                      p: 2.5,
+                      border: "1px solid #e2e8f0",
+                      boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
                       display: "flex",
                       justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      position: "relative",
-                      zIndex: 1,
+                      alignItems: "center",
+                      height: "100%",
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                      "&:hover": {
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                      },
                     }}
                   >
-                    <Box>
+                    <Box sx={{ minWidth: 0, flex: 1, pr: 1 }}>
                       <Typography
+                        variant="subtitle2"
                         sx={{
                           color: "#64748b",
-                          fontSize: "0.875rem",
                           fontWeight: 700,
+                          fontSize: "0.75rem",
                           textTransform: "uppercase",
                           letterSpacing: "0.05em",
                           mb: 0.5,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         }}
                       >
-                        Total Monthly Revenue
+                        Monthly Revenue
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: "2.5rem",
+                          fontSize: "1.5rem",
                           fontWeight: 900,
                           color: "#0f172a",
-                          lineHeight: 1,
+                          lineHeight: 1.2,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         }}
                         title={`₹${stats.totalMonthlyRevenue?.toLocaleString()}`}
                       >
-                        ₹
-                        {(() => {
+                        ₹{(() => {
                           const val = stats.totalMonthlyRevenue || 0;
-                          if (val >= 10000000) return (val / 10000000).toFixed(1) + " Cr";
-                          if (val >= 100000) return (val / 100000).toFixed(1) + " L";
-                          if (val >= 1000) return (val / 1000).toFixed(1) + " k";
+                          if (val >= 10000000) return (val / 10000000).toFixed(1) + "Cr";
+                          if (val >= 100000) return (val / 100000).toFixed(1) + "L";
+                          if (val >= 1000) return (val / 1000).toFixed(1) + "k";
                           return val.toLocaleString();
                         })()}
                       </Typography>
                     </Box>
                     <Box
-                      sx={{ bgcolor: "#eff6ff", p: 2, borderRadius: "16px" }}
+                      sx={{
+                        bgcolor: "#eff6ff",
+                        p: 1.25,
+                        borderRadius: "14px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
                     >
-                      <AccountBalanceWalletIcon
-                        sx={{ fontSize: 32, color: "#2563eb" }}
-                      />
+                      <AccountBalanceWalletIcon sx={{ fontSize: 24, color: "#2563eb" }} />
                     </Box>
                   </Box>
-                  <TrendingUpIcon
-                    className="bg-icon"
-                    sx={{
-                      position: "absolute",
-                      right: -16,
-                      bottom: -16,
-                      fontSize: 100,
-                      color: "rgba(0,0,0,0.03)",
-                      transition: "transform 0.7s",
-                      pointerEvents: "none",
-                    }}
-                  />
-                </Box>
+                </Grid>
 
                 {/* Total Medicines Card */}
-                <Box
-                  sx={{
-                    bgcolor: "white",
-                    borderRadius: "24px",
-                    p: 3,
-                    border: "1px solid #e2e8f0",
-                    position: "relative",
-                    overflow: "hidden",
-                    boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-                    "&:hover .bg-icon": { transform: "scale(1.1)" },
-                  }}
-                >
+                <Grid item xs={12} sm={6} md={3}>
                   <Box
                     sx={{
+                      bgcolor: "white",
+                      borderRadius: "20px",
+                      p: 2.5,
+                      border: "1px solid #e2e8f0",
+                      boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
                       display: "flex",
                       justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      position: "relative",
-                      zIndex: 1,
+                      alignItems: "center",
+                      height: "100%",
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                      "&:hover": {
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                      },
                     }}
                   >
-                    <Box>
+                    <Box sx={{ minWidth: 0, flex: 1, pr: 1 }}>
                       <Typography
+                        variant="subtitle2"
                         sx={{
                           color: "#64748b",
-                          fontSize: "0.875rem",
                           fontWeight: 700,
+                          fontSize: "0.75rem",
                           textTransform: "uppercase",
                           letterSpacing: "0.05em",
                           mb: 0.5,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         }}
                       >
                         Total Medicines
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: "2.5rem",
+                          fontSize: "1.5rem",
                           fontWeight: 900,
                           color: "#0f172a",
-                          lineHeight: 1,
+                          lineHeight: 1.2,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         }}
                       >
                         {stats.totalMedicines}
                       </Typography>
                     </Box>
                     <Box
-                      sx={{ bgcolor: "#f0fdf4", p: 2, borderRadius: "16px" }}
+                      sx={{
+                        bgcolor: "#f0fdf4",
+                        p: 1.25,
+                        borderRadius: "14px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
                     >
-                      <MedicationIcon sx={{ fontSize: 32, color: "#16a34a" }} />
+                      <MedicationIcon sx={{ fontSize: 24, color: "#16a34a" }} />
                     </Box>
                   </Box>
-                  <MedicationIcon
-                    className="bg-icon"
-                    sx={{
-                      position: "absolute",
-                      right: -16,
-                      bottom: -16,
-                      fontSize: 100,
-                      color: "rgba(0,0,0,0.03)",
-                      transition: "transform 0.7s",
-                      pointerEvents: "none",
-                    }}
-                  />
-                </Box>
+                </Grid>
 
-                {/* Out of Stock Card */}
-                <Box
-                  sx={{
-                    bgcolor: "white",
-                    borderRadius: "24px",
-                    p: 3,
-                    border: "1px solid #e2e8f0",
-                    position: "relative",
-                    overflow: "hidden",
-                    boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-                    "&:hover .bg-icon": { transform: "scale(1.1)" },
-                  }}
-                >
+                {/* Low Stock Card */}
+                <Grid item xs={12} sm={6} md={3}>
                   <Box
                     sx={{
+                      bgcolor: "white",
+                      borderRadius: "20px",
+                      p: 2.5,
+                      border: "1px solid #e2e8f0",
+                      boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
                       display: "flex",
                       justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      position: "relative",
-                      zIndex: 1,
+                      alignItems: "center",
+                      height: "100%",
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                      "&:hover": {
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                      },
                     }}
                   >
-                    <Box>
+                    <Box sx={{ minWidth: 0, flex: 1, pr: 1 }}>
                       <Typography
+                        variant="subtitle2"
                         sx={{
                           color: "#64748b",
-                          fontSize: "0.875rem",
                           fontWeight: 700,
+                          fontSize: "0.75rem",
                           textTransform: "uppercase",
                           letterSpacing: "0.05em",
                           mb: 0.5,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         }}
                       >
                         Low Stock
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: "2.5rem",
+                          fontSize: "1.5rem",
                           fontWeight: 900,
                           color: "#dc2626",
-                          lineHeight: 1,
+                          lineHeight: 1.2,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         }}
                       >
                         {stats.outOfStock}
                       </Typography>
                     </Box>
                     <Box
-                      sx={{ bgcolor: "#fef2f2", p: 2, borderRadius: "16px" }}
+                      sx={{
+                        bgcolor: "#fef2f2",
+                        p: 1.25,
+                        borderRadius: "14px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
                     >
-                      <ErrorOutlineIcon
-                        sx={{ fontSize: 32, color: "#dc2626" }}
-                      />
+                      <ErrorOutlineIcon sx={{ fontSize: 24, color: "#dc2626" }} />
                     </Box>
                   </Box>
-                  <ReportProblemIcon
-                    className="bg-icon"
-                    sx={{
-                      position: "absolute",
-                      right: -16,
-                      bottom: -16,
-                      fontSize: 100,
-                      color: "rgba(0,0,0,0.03)",
-                      transition: "transform 0.7s",
-                      pointerEvents: "none",
-                    }}
-                  />
-                </Box>
+                </Grid>
 
-                {/* Completed Invoices Card */}
-                <Box
-                  sx={{
-                    bgcolor: "white",
-                    borderRadius: "24px",
-                    p: 3,
-                    border: "1px solid #e2e8f0",
-                    position: "relative",
-                    overflow: "hidden",
-                    boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-                    "&:hover .bg-icon": { transform: "scale(1.1)" },
-                  }}
-                >
+                {/* Total Invoices Card */}
+                <Grid item xs={12} sm={6} md={3}>
                   <Box
                     sx={{
+                      bgcolor: "white",
+                      borderRadius: "20px",
+                      p: 2.5,
+                      border: "1px solid #e2e8f0",
+                      boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
                       display: "flex",
                       justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      position: "relative",
-                      zIndex: 1,
+                      alignItems: "center",
+                      height: "100%",
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                      "&:hover": {
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                      },
                     }}
                   >
-                    <Box>
+                    <Box sx={{ minWidth: 0, flex: 1, pr: 1 }}>
                       <Typography
+                        variant="subtitle2"
                         sx={{
                           color: "#64748b",
-                          fontSize: "0.875rem",
                           fontWeight: 700,
+                          fontSize: "0.75rem",
                           textTransform: "uppercase",
                           letterSpacing: "0.05em",
                           mb: 0.5,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         }}
                       >
                         Total Invoices
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: "2.5rem",
+                          fontSize: "1.5rem",
                           fontWeight: 900,
                           color: "#0f172a",
-                          lineHeight: 1,
+                          lineHeight: 1.2,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         }}
                       >
                         {stats.completedInvoices}
                       </Typography>
                     </Box>
                     <Box
-                      sx={{ bgcolor: "#faf5ff", p: 2, borderRadius: "16px" }}
+                      sx={{
+                        bgcolor: "#faf5ff",
+                        p: 1.25,
+                        borderRadius: "14px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
                     >
-                      <AssignmentIcon sx={{ fontSize: 32, color: "#9333ea" }} />
+                      <AssignmentIcon sx={{ fontSize: 24, color: "#9333ea" }} />
                     </Box>
                   </Box>
-                  <AssignmentTurnedInIcon
-                    className="bg-icon"
-                    sx={{
-                      position: "absolute",
-                      right: -16,
-                      bottom: -16,
-                      fontSize: 100,
-                      color: "rgba(0,0,0,0.03)",
-                      transition: "transform 0.7s",
-                      pointerEvents: "none",
-                    }}
-                  />
-                </Box>
-              </Box>
+                </Grid>
+              </Grid>
 
               <Box
                 sx={{
