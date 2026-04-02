@@ -17,6 +17,7 @@ import {
   DialogActions,
   IconButton,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
@@ -62,6 +63,7 @@ const DoctorsPage = () => {
   const [error, setError] = useState({});
   const [appointment, setAppointment] = useState([]);
   const [recentAppointments, setRecentAppointments] = useState([]);
+  const [isBooking, setIsBooking] = useState(false);
   const handleCompleteAppointment = async (id) => {
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
@@ -88,9 +90,7 @@ const DoctorsPage = () => {
     if (!formData.lastName) {
       newError.lastName = "Last name is required";
     }
-    if (!formData.email) {
-      newError.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
       newError.email = "Email is invalid";
     }
     if (!formData.phone) {
@@ -123,12 +123,14 @@ const DoctorsPage = () => {
     console.log("payload", payload);
 
     try {
+      setIsBooking(true);
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.post(`${api}/public/appointment`, payload);
       console.log(response.data);
     } catch (error) {
       console.error(error);
     } finally {
+      setIsBooking(false);
       setOpenBookNow(false);
       setFormData({
         firstName: "",
@@ -676,7 +678,7 @@ const DoctorsPage = () => {
               </Box>
               <Box>
                 <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>
-                  Email Address
+                  Email Address (Optional)
                 </Typography>
                 <TextField
                   name="email"
@@ -773,15 +775,20 @@ const DoctorsPage = () => {
               <Button
                 type="submit"
                 variant="contained"
-                startIcon={<SearchIcon />}
+                disabled={isBooking}
                 sx={{
                   px: 4,
                   borderRadius: "8px",
                   fontWeight: 700,
                   textTransform: "none",
+                  minWidth: "160px",
                 }}
               >
-                Confirm Booking
+                {isBooking ? (
+                  <CircularProgress size={24} sx={{ color: "white" }} />
+                ) : (
+                  "Confirm Booking"
+                )}
               </Button>
             </Box>
           </Box>

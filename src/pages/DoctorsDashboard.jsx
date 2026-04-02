@@ -980,17 +980,21 @@ const DoctorsDashboard = () => {
                               </Typography>
                             </TableCell>
                             <TableCell sx={{ py: 2 }}>
-                              <Typography
+                              <Chip
+                                label={apt.status === "completed" ? "Completed" : apt.status === "cancelled" ? "Cancelled" : "Pending"}
+                                size="small"
                                 sx={{
-                                  fontSize: "0.875rem",
-                                  color: "#64748b",
-                                  textTransform: "capitalize",
+                                  fontWeight: 700,
+                                  textTransform: "uppercase",
+                                  fontSize: "0.7rem",
+                                  bgcolor: 
+                                    apt.status === "completed" ? "#dcfce7" : 
+                                    apt.status === "cancelled" ? "#fee2e2" : "#e0f2fe",
+                                  color: 
+                                    apt.status === "completed" ? "#15803d" : 
+                                    apt.status === "cancelled" ? "#991b1b" : "#0369a1",
                                 }}
-                              >
-                                {apt.status === "completed"
-                                  ? "Completed"
-                                  : "Pending"}
-                              </Typography>
+                              />
                             </TableCell>
                             <TableCell sx={{ py: 2 }}>
                               <Button
@@ -1576,7 +1580,7 @@ const DoctorsDashboard = () => {
                     "No specific concern provided."}
                 </Typography>
               </Box>
-              {selectedAppointment.status !== "completed" && (
+              {selectedAppointment.status === "pending" && (
                 <Box>
                   <Typography
                     sx={{
@@ -1639,11 +1643,13 @@ const DoctorsDashboard = () => {
           <Button
             onClick={() => handleMarkAsCompleted(selectedAppointment?._id)}
             variant="contained"
-            disabled={selectedAppointment?.status === "completed"}
+            disabled={selectedAppointment?.status !== "pending"}
             sx={{
               bgcolor:
                 selectedAppointment?.status === "completed"
-                  ? "#94a3b8"
+                  ? "#10b981"
+                  : selectedAppointment?.status === "cancelled"
+                  ? "#fee2e2"
                   : "#137fec",
               boxShadow: "none",
               textTransform: "none",
@@ -1653,19 +1659,31 @@ const DoctorsDashboard = () => {
               px: 3,
               "&:hover": {
                 bgcolor:
-                  selectedAppointment?.status === "completed"
-                    ? "#94a3b8"
-                    : "#0f6bd1",
+                  selectedAppointment?.status === "pending"
+                    ? "#0f6bd1"
+                    : "inherit",
                 boxShadow: "none",
               },
               "&.Mui-disabled": {
-                bgcolor: "#e2e8f0",
-                color: "#94a3b8",
+                bgcolor:
+                  selectedAppointment?.status === "cancelled"
+                    ? "#fee2e2"
+                    : "#f1f5f9",
+                color:
+                  selectedAppointment?.status === "cancelled"
+                    ? "#991b1b"
+                    : "#94a3b8",
+                border:
+                  selectedAppointment?.status === "cancelled"
+                    ? "1px solid #fecaca"
+                    : "none",
               },
             }}
           >
             {selectedAppointment?.status === "completed"
-              ? "Marked as Completed"
+              ? "Completed"
+              : selectedAppointment?.status === "cancelled"
+              ? "Appointment Cancelled"
               : "Mark as Completed"}
           </Button>
         </DialogActions>

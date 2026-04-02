@@ -9,6 +9,7 @@ import {
   DialogContent,
   IconButton,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
@@ -27,6 +28,7 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
   });
   const [doctors, setDoctors] = useState([]);
   const [error, setError] = useState({});
+  const [isBooking, setIsBooking] = useState(false);
 
   useEffect(() => {
     if (!open) {
@@ -71,7 +73,9 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
     let newErrors = {};
     if (!formData.firstName) newErrors.firstName = "First name is required";
     if (!formData.lastName) newErrors.lastName = "Last name is required";
-    if (!formData.email) newErrors.email = "Email is required";
+    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email is invalid";
+    }
     if (!formData.phone) newErrors.phone = "Phone is required";
     if (!formData.doctorId) newErrors.doctorId = "Please select a doctor";
     if (!formData.date) newErrors.date = "Date is required";
@@ -88,6 +92,7 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
     }
 
     try {
+      setIsBooking(true);
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.post(
         `${api}/public/appointment`,
@@ -113,6 +118,8 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
       });
     } catch (err) {
       console.error("Error booking appointment:", err);
+    } finally {
+      setIsBooking(false);
     }
   };
 
@@ -171,7 +178,7 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
             </Box>
             <Box>
               <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>
-                Email Address
+                Email Address (Optional)
               </Typography>
               <TextField
                 name="email"
@@ -280,15 +287,20 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
             <Button
               type="submit"
               variant="contained"
-              startIcon={<SearchIcon />}
+              disabled={isBooking}
               sx={{
                 px: 4,
                 borderRadius: "8px",
                 fontWeight: 700,
                 textTransform: "none",
+                minWidth: "160px",
               }}
             >
-              Confirm Booking
+              {isBooking ? (
+                <CircularProgress size={24} sx={{ color: "white" }} />
+              ) : (
+                "Confirm Booking"
+              )}
             </Button>
           </Box>
         </Box>

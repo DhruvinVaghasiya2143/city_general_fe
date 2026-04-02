@@ -209,6 +209,31 @@ const ReceptionistDashboard = () => {
     }
   };
 
+  const handleCancelAppointment = async (appointmentId) => {
+    try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
+      await axios.put(
+        `${api}/receptionist/appointments/${appointmentId}/cancel`,
+      );
+      setAppointments((prevAppointments) =>
+        prevAppointments.map((appointment) =>
+          appointment._id === appointmentId
+            ? { ...appointment, status: "cancelled" }
+            : appointment,
+        ),
+      );
+
+      setSelectedAppointment((prev) =>
+        prev?._id === appointmentId ? { ...prev, status: "cancelled" } : prev,
+      );
+
+      fetchAppointments(page, rowsPerPage, filter);
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+    }
+  };
+
   const fetchAppointments = async (pageIndex, limit, currentFilter) => {
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
@@ -1118,15 +1143,21 @@ const ReceptionistDashboard = () => {
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ py: 2 }}>
-                      <Typography
+                      <Chip
+                        label={row.status}
+                        size="small"
                         sx={{
-                          fontSize: "0.875rem",
-                          color: "#64748b",
-                          textTransform: "capitalize",
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          fontSize: "0.7rem",
+                          bgcolor: 
+                            row.status === "completed" ? "#dcfce7" : 
+                            row.status === "cancelled" ? "#fee2e2" : "#e0f2fe",
+                          color: 
+                            row.status === "completed" ? "#15803d" : 
+                            row.status === "cancelled" ? "#991b1b" : "#0369a1",
                         }}
-                      >
-                        {row.status}
-                      </Typography>
+                      />
                     </TableCell>
                     <TableCell sx={{ py: 2 }}>
                       <Typography
@@ -1586,7 +1617,22 @@ const ReceptionistDashboard = () => {
             </>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 2, pt: 0 }}>
+        <DialogActions sx={{ p: 2, pt: 0, gap: 1 }}>
+          <Button
+            onClick={() => handleCancelAppointment(selectedAppointment._id)}
+            variant="outlined"
+            color="error"
+            disabled={selectedAppointment?.status !== "pending"}
+            sx={{
+              textTransform: "none",
+              fontWeight: 600,
+              borderRadius: "8px",
+              px: 3
+            }}
+          >
+            Cancel Appointment
+          </Button>
+          <Box sx={{ flexGrow: 1 }} />
           <Button
             onClick={handleCloseDialog}
             variant="contained"
@@ -1605,11 +1651,13 @@ const ReceptionistDashboard = () => {
             onClick={() => handleCompleteAppointment(selectedAppointment._id)}
             variant="contained"
             color="success"
-            disabled={selectedAppointment?.status === "completed"}
+            disabled={selectedAppointment?.status !== "pending"}
             sx={{
               bgcolor:
                 selectedAppointment?.status === "completed"
                   ? "#94a3b8"
+                  : selectedAppointment?.status === "cancelled"
+                  ? "#cbd5e1"
                   : "#137fec",
               boxShadow: "none",
               textTransform: "none",
