@@ -46,9 +46,7 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
       const fetchDoctors = async () => {
         try {
           const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-          const response = await axios.get(
-            `${api}/public/doctors`,
-          );
+          const response = await axios.get(`${api}/public/doctors`);
           console.log("Fetched doctors:", response.data);
           const fetchedDoctors = response.data.data || response.data || [];
           setDoctors(Array.isArray(fetchedDoctors) ? fetchedDoctors : []);
@@ -63,6 +61,9 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     console.log(`Field ${name} changed to:`, value);
+    if (name === "phone" && !/^\d*$/.test(value)) {
+      return;
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (error[name]) {
       setError((prev) => ({ ...prev, [name]: "" }));
@@ -94,10 +95,7 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
     try {
       setIsBooking(true);
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      const response = await axios.post(
-        `${api}/public/appointment`,
-        formData,
-      );
+      const response = await axios.post(`${api}/public/appointment`, formData);
       console.log("Appointment booked:", response.data);
 
       // Call success callback if provided

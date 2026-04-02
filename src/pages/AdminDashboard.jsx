@@ -45,7 +45,7 @@ const AdminDashboard = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalUsers, setTotalUsers] = useState(0);
-  
+
   const [isEditService, setIsEditService] = useState(false);
   const [currentService, setCurrentService] = useState(null);
 
@@ -55,10 +55,10 @@ const AdminDashboard = () => {
         activeRole === "service"
           ? "services"
           : activeRole === "doctor"
-          ? "doctors"
-          : activeRole === "patient"
-            ? "patients"
-            : "admins";
+            ? "doctors"
+            : activeRole === "patient"
+              ? "patients"
+              : "admins";
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.get(
         `${api}/admin/${endpoint}?page=${page}&limit=${rowsPerPage}`,
@@ -383,12 +383,26 @@ const AdminDashboard = () => {
                       {activeRole === "service" ? (
                         <>
                           <td style={{ fontWeight: 600, color: "#1e293b" }}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1.5,
+                              }}
+                            >
                               <Avatar src={user.imageUrl} variant="rounded" />
                               {user.name}
                             </Box>
                           </td>
-                          <td style={{ color: "#64748b", maxWidth: "300px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          <td
+                            style={{
+                              color: "#64748b",
+                              maxWidth: "300px",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
                             {user.description}
                           </td>
                           <td>
@@ -397,7 +411,11 @@ const AdminDashboard = () => {
                                 size="small"
                                 variant="outlined"
                                 onClick={() => handleEditService(user)}
-                                sx={{ textTransform: "none", fontWeight: 700, borderRadius: "6px" }}
+                                sx={{
+                                  textTransform: "none",
+                                  fontWeight: 700,
+                                  borderRadius: "6px",
+                                }}
                               >
                                 Edit
                               </Button>
@@ -406,7 +424,11 @@ const AdminDashboard = () => {
                                 variant="outlined"
                                 color="error"
                                 onClick={() => handleDeleteService(user._id)}
-                                sx={{ textTransform: "none", fontWeight: 700, borderRadius: "6px" }}
+                                sx={{
+                                  textTransform: "none",
+                                  fontWeight: 700,
+                                  borderRadius: "6px",
+                                }}
                               >
                                 Delete
                               </Button>
@@ -421,10 +443,14 @@ const AdminDashboard = () => {
                               : `${user.firstName || ""} ${user.lastName || ""}`}
                           </td>
                           <td style={{ color: "#64748b" }}>
-                            {activeRole === "doctor" ? user.userId?.email : user.email}
+                            {activeRole === "doctor"
+                              ? user.userId?.email
+                              : user.email}
                           </td>
                           <td style={{ color: "#64748b" }}>
-                            {activeRole === "doctor" ? user.userId?.phone : user.phone}
+                            {activeRole === "doctor"
+                              ? user.userId?.phone
+                              : user.phone}
                           </td>
                           {activeRole === "doctor" && (
                             <>
@@ -444,7 +470,9 @@ const AdminDashboard = () => {
                                   {user.specialty}
                                 </Box>
                               </td>
-                              <td style={{ color: "#64748b" }}>{user.hospitalName}</td>
+                              <td style={{ color: "#64748b" }}>
+                                {user.hospitalName}
+                              </td>
                             </>
                           )}
                           {activeRole !== "doctor" && (
@@ -455,8 +483,14 @@ const AdminDashboard = () => {
                                   px: 1,
                                   py: 0.5,
                                   borderRadius: "6px",
-                                  bgcolor: activeRole === "patient" ? "#ecfdf5" : "#f5f3ff",
-                                  color: activeRole === "patient" ? "#10b981" : "#8b5cf6",
+                                  bgcolor:
+                                    activeRole === "patient"
+                                      ? "#ecfdf5"
+                                      : "#f5f3ff",
+                                  color:
+                                    activeRole === "patient"
+                                      ? "#10b981"
+                                      : "#8b5cf6",
                                   fontSize: "0.85rem",
                                   fontWeight: 600,
                                   textTransform: "capitalize",

@@ -139,6 +139,7 @@ const DoctorsDashboard = () => {
     currentFilter,
   ) => {
     try {
+      console.log("doctorId", doctorId);
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.get(
         `${api}/appointment/appointments/${doctorId}?page=${page}&limit=${limit}&filter=${currentFilter}`,
@@ -236,7 +237,7 @@ const DoctorsDashboard = () => {
     }
   }, [user?.id, schedulePage, rowsPerPage, filter]);
 
-  console.log(assignedAppointments);
+  console.log("assigned_appointments =>", assignedAppointments);
 
   return (
     <Box
@@ -981,18 +982,30 @@ const DoctorsDashboard = () => {
                             </TableCell>
                             <TableCell sx={{ py: 2 }}>
                               <Chip
-                                label={apt.status === "completed" ? "Completed" : apt.status === "cancelled" ? "Cancelled" : "Pending"}
+                                label={
+                                  apt.status === "completed"
+                                    ? "Completed"
+                                    : apt.status === "cancelled"
+                                      ? "Cancelled"
+                                      : "Pending"
+                                }
                                 size="small"
                                 sx={{
                                   fontWeight: 700,
                                   textTransform: "uppercase",
                                   fontSize: "0.7rem",
-                                  bgcolor: 
-                                    apt.status === "completed" ? "#dcfce7" : 
-                                    apt.status === "cancelled" ? "#fee2e2" : "#e0f2fe",
-                                  color: 
-                                    apt.status === "completed" ? "#15803d" : 
-                                    apt.status === "cancelled" ? "#991b1b" : "#0369a1",
+                                  bgcolor:
+                                    apt.status === "completed"
+                                      ? "#dcfce7"
+                                      : apt.status === "cancelled"
+                                        ? "#fee2e2"
+                                        : "#e0f2fe",
+                                  color:
+                                    apt.status === "completed"
+                                      ? "#15803d"
+                                      : apt.status === "cancelled"
+                                        ? "#991b1b"
+                                        : "#0369a1",
                                 }}
                               />
                             </TableCell>
@@ -1608,7 +1621,9 @@ const DoctorsDashboard = () => {
                     }}
                     error={prescriptionError}
                     helperText={
-                      prescriptionError ? "* if no prescription then please write none" : ""
+                      prescriptionError
+                        ? "* if no prescription then please write none"
+                        : ""
                     }
                     required
                     sx={{
@@ -1619,7 +1634,6 @@ const DoctorsDashboard = () => {
                       },
                     }}
                   />
-                
                 </Box>
               )}
             </>
@@ -1649,8 +1663,8 @@ const DoctorsDashboard = () => {
                 selectedAppointment?.status === "completed"
                   ? "#10b981"
                   : selectedAppointment?.status === "cancelled"
-                  ? "#fee2e2"
-                  : "#137fec",
+                    ? "#fee2e2"
+                    : "#137fec",
               boxShadow: "none",
               textTransform: "none",
               fontWeight: 600,
@@ -1683,8 +1697,8 @@ const DoctorsDashboard = () => {
             {selectedAppointment?.status === "completed"
               ? "Completed"
               : selectedAppointment?.status === "cancelled"
-              ? "Appointment Cancelled"
-              : "Mark as Completed"}
+                ? "Appointment Cancelled"
+                : "Mark as Completed"}
           </Button>
         </DialogActions>
       </Dialog>

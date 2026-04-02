@@ -26,6 +26,7 @@ import {
   Typography,
   TablePagination,
   Pagination,
+  CircularProgress,
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -149,6 +150,7 @@ const ReceptionistDashboard = () => {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [totalItems, setTotalItems] = React.useState(0);
   const [filter, setFilter] = React.useState("today");
+  const [cancelling, setCancelling] = React.useState(false);
 
   const handleOpenBookNow = () => {
     setOpenBookNow(true);
@@ -211,6 +213,7 @@ const ReceptionistDashboard = () => {
 
   const handleCancelAppointment = async (appointmentId) => {
     try {
+      setCancelling(true);
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       await axios.put(
         `${api}/receptionist/appointments/${appointmentId}/cancel`,
@@ -231,6 +234,8 @@ const ReceptionistDashboard = () => {
       handleCloseDialog();
     } catch (error) {
       console.error("Error cancelling appointment:", error);
+    } finally {
+      setCancelling(false);
     }
   };
 
@@ -1150,12 +1155,18 @@ const ReceptionistDashboard = () => {
                           fontWeight: 700,
                           textTransform: "uppercase",
                           fontSize: "0.7rem",
-                          bgcolor: 
-                            row.status === "completed" ? "#dcfce7" : 
-                            row.status === "cancelled" ? "#fee2e2" : "#e0f2fe",
-                          color: 
-                            row.status === "completed" ? "#15803d" : 
-                            row.status === "cancelled" ? "#991b1b" : "#0369a1",
+                          bgcolor:
+                            row.status === "completed"
+                              ? "#dcfce7"
+                              : row.status === "cancelled"
+                                ? "#fee2e2"
+                                : "#e0f2fe",
+                          color:
+                            row.status === "completed"
+                              ? "#15803d"
+                              : row.status === "cancelled"
+                                ? "#991b1b"
+                                : "#0369a1",
                         }}
                       />
                     </TableCell>
@@ -1622,15 +1633,20 @@ const ReceptionistDashboard = () => {
             onClick={() => handleCancelAppointment(selectedAppointment._id)}
             variant="outlined"
             color="error"
-            disabled={selectedAppointment?.status !== "pending"}
+            disabled={selectedAppointment?.status !== "pending" || cancelling}
             sx={{
               textTransform: "none",
               fontWeight: 600,
               borderRadius: "8px",
-              px: 3
+              px: 3,
+              minWidth: "160px", // Fixed width to prevent jumping when loading
             }}
           >
-            Cancel Appointment
+            {cancelling ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              "Cancel Appointment"
+            )}
           </Button>
           <Box sx={{ flexGrow: 1 }} />
           <Button
@@ -1657,8 +1673,8 @@ const ReceptionistDashboard = () => {
                 selectedAppointment?.status === "completed"
                   ? "#94a3b8"
                   : selectedAppointment?.status === "cancelled"
-                  ? "#cbd5e1"
-                  : "#137fec",
+                    ? "#cbd5e1"
+                    : "#137fec",
               boxShadow: "none",
               textTransform: "none",
               fontWeight: 600,
