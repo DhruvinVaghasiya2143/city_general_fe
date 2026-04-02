@@ -25,6 +25,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Popover,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -50,7 +51,14 @@ import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined
 import PersonSearchOutlinedIcon from "@mui/icons-material/PersonSearchOutlined";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import axios from "axios";
+
+// FullCalendar imports
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
 
 // Helper: get initials from a full name
 const getInitials = (name = "") =>
@@ -104,10 +112,50 @@ const DoctorsDashboard = () => {
   const navigate = useNavigate();
 
   const [assignedAppointments, setAssignedAppointments] = React.useState([]);
+  const [calendarAppointments, setCalendarAppointments] = React.useState([]);
   const [selectedAppointment, setSelectedAppointment] = React.useState(null);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
+  const [isLoadingCalendar, setIsLoadingCalendar] = React.useState(false);
+  const [tooltipAnchorEl, setTooltipAnchorEl] = React.useState(null);
+  const [hoveredAppointment, setHoveredAppointment] = React.useState(null);
   const [prescription, setPrescription] = React.useState("");
   const [prescriptionError, setPrescriptionError] = React.useState(false);
+
+  const handleEventMouseEnter = (info) => {
+    const apt = calendarAppointments.find((a) => a._id === info.event.id);
+    if (apt) {
+      setHoveredAppointment(apt);
+      setTooltipAnchorEl(info.el);
+    }
+  };
+
+  const handleEventMouseLeave = () => {
+    setTooltipAnchorEl(null);
+    setHoveredAppointment(null);
+  };
+
+  const fetchCalendarAppointments = async () => {
+    if (!user?.id) return;
+    try {
+      setIsLoadingCalendar(true);
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
+      // Fetch with filter=all and a large limit to get everything for the calendar
+      const response = await axios.get(
+        `${api}/appointment/appointments/${user.id}?filter=all&limit=1000`,
+      );
+      setCalendarAppointments(response.data.data || []);
+    } catch (error) {
+      console.error("Error fetching calendar appointments:", error);
+    } finally {
+      setIsLoadingCalendar(false);
+    }
+  };
+
+  const handleOpenCalendar = () => {
+    setIsCalendarOpen(true);
+    fetchCalendarAppointments();
+  };
 
   const handleViewAppointment = (appointment) => {
     setSelectedAppointment(appointment);
@@ -519,25 +567,55 @@ const DoctorsDashboard = () => {
             mb: 4,
           }}
         >
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-            <Typography
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+          >
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+              <Typography
+                sx={{
+                  fontSize: "1.875rem",
+                  fontWeight: 900,
+                  color: "#0f172a",
+                  lineHeight: 1.25,
+                  letterSpacing: "-0.025em",
+                }}
+              >
+                Doctor Dashboard
+              </Typography>
+              <Typography sx={{ fontSize: "1.125rem", color: "#64748b" }}>
+                Welcome back,{" "}
+                {doctorName.startsWith("Dr.")
+                  ? doctorName.split(" ").slice(1).join(" ")
+                  : doctorName}
+                . You have {todayAppointmentsCount} appointments today.
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              startIcon={<CalendarTodayOutlinedIcon />}
+              onClick={handleOpenCalendar}
               sx={{
-                fontSize: "1.875rem",
-                fontWeight: 900,
-                color: "#0f172a",
-                lineHeight: 1.25,
-                letterSpacing: "-0.025em",
+                bgcolor: "#137fec",
+                color: "white",
+                fontWeight: 700,
+                textTransform: "none",
+                borderRadius: "10px",
+                px: 3,
+                py: 1.5,
+                boxShadow: "0 4px 6px -1px rgba(19, 127, 236, 0.2)",
+                "&:hover": {
+                  bgcolor: "#0f6bd1",
+                  boxShadow: "0 10px 15px -3px rgba(19, 127, 236, 0.4)",
+                },
               }}
             >
-              Doctor Dashboard
-            </Typography>
-            <Typography sx={{ fontSize: "1.125rem", color: "#64748b" }}>
-              Welcome back,{" "}
-              {doctorName.startsWith("Dr.")
-                ? doctorName.split(" ").slice(1).join(" ")
-                : doctorName}
-              . You have {todayAppointmentsCount} appointments today.
-            </Typography>
+              View Calendar
+            </Button>
           </Box>
         </Box>
 
@@ -1702,6 +1780,353 @@ const DoctorsDashboard = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Calendar Dialog */}
+      <Dialog
+        fullWidth
+        maxWidth="lg"
+        open={isCalendarOpen}
+        onClose={() => setIsCalendarOpen(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: "16px",
+            height: "90vh",
+            maxHeight: "900px",
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            borderBottom: "1px solid #e2e8f0",
+            px: { xs: 2, md: 3 },
+            py: 2,
+          }}
+        >
+          <Typography
+            sx={{ fontSize: "1.25rem", fontWeight: 800, color: "#0f172a" }}
+          >
+            My Clinical Appointments
+          </Typography>
+          <IconButton
+            onClick={() => setIsCalendarOpen(false)}
+            sx={{ color: "#64748b" }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ p: { xs: 1, md: 3 }, bgcolor: "#f8fafc" }}>
+          <Box
+            sx={{
+              height: "100%",
+              "& .fc": {
+                height: "100%",
+                fontFamily: "Inter, sans-serif",
+                "--fc-border-color": "#e2e8f0",
+                "--fc-button-bg-color": "#fff",
+                "--fc-button-border-color": "#e2e8f0",
+                "--fc-button-text-color": "#64748b",
+                "--fc-button-hover-bg-color": "#f1f5f9",
+                "--fc-button-active-bg-color": "#eff6ff",
+                "--fc-button-active-border-color": "#3b82f6",
+                "--fc-event-bg-color": "#eff6ff",
+                "--fc-event-border-color": "#3b82f6",
+                "--fc-event-text-color": "#2563eb",
+                "--fc-today-bg-color": "rgba(59, 130, 246, 0.05)",
+                borderRadius: "12px",
+                overflow: "hidden",
+                bgcolor: "white",
+                p: 2,
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)",
+              },
+              "& .fc-header-toolbar": {
+                mb: 3,
+                "@media (max-width: 600px)": {
+                  flexDirection: "column",
+                  gap: 2,
+                },
+              },
+              "& .fc-button": {
+                fontWeight: 700,
+                textTransform: "capitalize",
+                boxShadow: "none !important",
+                fontSize: "0.875rem",
+                borderRadius: "8px !important",
+                mx: "2px",
+              },
+              "& .fc-col-header-cell-cushion": {
+                py: 1.5,
+                fontSize: "0.875rem",
+                fontWeight: 800,
+                color: "#475569",
+                textDecoration: "none !important",
+              },
+              "& .fc-timegrid-slot-label-cushion": {
+                fontSize: "0.75rem",
+                color: "#94a3b8",
+                fontWeight: 700,
+              },
+              "& .fc-event": {
+                borderRadius: "8px",
+                p: 0.5,
+                border: "none !important",
+                borderLeft: "5px solid #3b82f6 !important",
+                cursor: "pointer",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                "&:hover": {
+                  transform: "scale(1.02)",
+                  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+                  zIndex: 5,
+                },
+              },
+              "& .fc-v-event": {
+                bgcolor: "rgba(59, 130, 246, 0.08)",
+              },
+              "& .fc-timegrid-now-indicator-line": {
+                borderTopWidth: "3px",
+                borderColor: "#ef4444",
+                zIndex: 10,
+              },
+              "& .fc-timegrid-now-indicator-arrow": {
+                borderColor: "#ef4444",
+                borderWidth: "6px",
+                marginTop: "-5px",
+              },
+            }}
+          >
+            <FullCalendar
+              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+              initialView="timeGridWeek"
+              headerToolbar={{
+                left: "prev,next today",
+                center: "title",
+                right: "dayGridMonth,timeGridWeek,timeGridDay",
+              }}
+              events={calendarAppointments.map((apt) => {
+                const endTime = new Date(new Date(apt.date).getTime() + 30 * 60000);
+                const isPast = endTime < new Date();
+                
+                return {
+                  id: apt._id,
+                  title: `${apt.patientId?.firstName || "Patient"} - ${apt.concern}`,
+                  start: apt.date,
+                  end: endTime.toISOString(),
+                  backgroundColor: isPast 
+                    ? "rgba(226, 232, 240, 0.4)" 
+                    : (apt.status === "completed" ? "rgba(16, 185, 129, 0.08)" : "rgba(59, 130, 246, 0.08)"),
+                  borderColor: isPast 
+                    ? "#cbd5e1" 
+                    : (apt.status === "completed" ? "#10b981" : "#3b82f6"),
+                  textColor: isPast 
+                    ? "#94a3b8" 
+                    : (apt.status === "completed" ? "#065f46" : "#2563eb"),
+                  className: isPast ? "fc-event-past" : "",
+                };
+              })}
+              slotMinTime="00:00:00"
+              slotMaxTime="24:00:00"
+              allDaySlot={true}
+              nowIndicator={true}
+              scrollTime={new Date().toLocaleTimeString("en-US", {
+                hour12: false,
+              })}
+              eventClick={(info) => {
+                const apt = calendarAppointments.find(
+                  (a) => a._id === info.event.id,
+                );
+                if (apt) {
+                  handleViewAppointment(apt);
+                  setIsCalendarOpen(false);
+                }
+              }}
+              height="100%"
+              eventMouseEnter={handleEventMouseEnter}
+              eventMouseLeave={handleEventMouseLeave}
+            />
+          </Box>
+        </DialogContent>
+      </Dialog>
+
+      {/* Calendar Hover Fly-over Popover */}
+      <Popover
+        sx={{
+          pointerEvents: "none",
+          "& .MuiPaper-root": {
+            borderRadius: "16px",
+            boxShadow: "0 10px 40px rgba(0,0,0,0.12)",
+            border: "1px solid #e2e8f0",
+            bgcolor: "rgba(255, 255, 255, 0.95)",
+            backdropFilter: "blur(8px)",
+            minWidth: "280px",
+            p: 2.5,
+            mt: -1,
+          },
+        }}
+        open={Boolean(tooltipAnchorEl)}
+        anchorEl={tooltipAnchorEl}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        transformOrigin={{ vertical: "bottom", horizontal: "center" }}
+        onClose={handleEventMouseLeave}
+        disableRestoreFocus
+      >
+        {hoveredAppointment && (
+          <Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                mb: 2,
+              }}
+            >
+              <Box>
+                <Typography
+                  sx={{
+                    fontSize: "0.75rem",
+                    color: "#64748b",
+                    fontWeight: 700,
+                    mb: 0.5,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Patient Detail
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "1.125rem",
+                    color: "#0f172a",
+                    fontWeight: 800,
+                  }}
+                >
+                  {hoveredAppointment.patientId?.firstName}{" "}
+                  {hoveredAppointment.patientId?.lastName}
+                </Typography>
+              </Box>
+              <Chip
+                label={hoveredAppointment.status}
+                size="small"
+                sx={{
+                  bgcolor:
+                    hoveredAppointment.status === "completed"
+                      ? "#ecfdf5"
+                      : "#eff6ff",
+                  color:
+                    hoveredAppointment.status === "completed"
+                      ? "#10b981"
+                      : "#3b82f6",
+                  fontWeight: 700,
+                  textTransform: "capitalize",
+                  fontSize: "0.7rem",
+                  height: "22px",
+                }}
+              />
+            </Box>
+
+            <Divider sx={{ mb: 2, borderStyle: "dashed" }} />
+
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                <Box
+                  sx={{
+                    p: 0.8,
+                    bgcolor: "#f8fafc",
+                    borderRadius: "8px",
+                    display: "flex",
+                  }}
+                >
+                  <EmailIcon sx={{ fontSize: "16px", color: "#64748b" }} />
+                </Box>
+                <Typography
+                  sx={{
+                    fontSize: "0.875rem",
+                    color: "#334155",
+                    fontWeight: 500,
+                  }}
+                >
+                  {hoveredAppointment.patientId?.email}
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                <Box
+                  sx={{
+                    p: 0.8,
+                    bgcolor: "#f8fafc",
+                    borderRadius: "8px",
+                    display: "flex",
+                  }}
+                >
+                  <BadgeIcon sx={{ fontSize: "16px", color: "#64748b" }} />
+                </Box>
+                <Typography
+                  sx={{
+                    fontSize: "0.875rem",
+                    color: "#334155",
+                    fontWeight: 500,
+                  }}
+                >
+                  {hoveredAppointment.patientId?.phone || "No phone"}
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
+                <Box
+                  sx={{
+                    p: 0.8,
+                    bgcolor: "#f8fafc",
+                    borderRadius: "8px",
+                    display: "flex",
+                    mt: 0.2,
+                  }}
+                >
+                  <ChatBubbleIcon sx={{ fontSize: "16px", color: "#64748b" }} />
+                </Box>
+                <Box>
+                  <Typography
+                    sx={{
+                      fontSize: "0.7rem",
+                      color: "#94a3b8",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      mt: 0.2,
+                    }}
+                  >
+                    Reason for Visit
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "0.875rem",
+                      color: "#334155",
+                      fontWeight: 500,
+                      fontStyle: "italic",
+                    }}
+                  >
+                    "{hoveredAppointment.concern}"
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                mt: 2.5,
+                p: 1.2,
+                bgcolor: "#f1f5f9",
+                borderRadius: "8px",
+                textAlign: "center",
+              }}
+            >
+              <Typography
+                sx={{ fontSize: "0.7rem", color: "#64748b", fontWeight: 600 }}
+              >
+                Click appointment block to open details
+              </Typography>
+            </Box>
+          </Box>
+        )}
+      </Popover>
     </Box>
   );
 };
