@@ -34,7 +34,10 @@ const AdminRegistration = () => {
   const [serverError, setServerError] = useState("");
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
+    if (name === "phone") {
+      value = value.replace(/\D/g, "");
+    }
     setFormData({ ...formData, [name]: value });
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
@@ -324,6 +327,7 @@ const AdminRegistration = () => {
                   helperText={errors.phone}
                   variant="outlined"
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
+                  inputProps={{ maxLength: 10 }}
                 />
 
                 <TextField

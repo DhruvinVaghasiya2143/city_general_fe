@@ -1697,6 +1697,12 @@ const DoctorsDashboard = () => {
                         setPrescriptionError(false);
                       }
                     }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleMarkAsCompleted(selectedAppointment?._id);
+                      }
+                    }}
                     error={prescriptionError}
                     helperText={
                       prescriptionError
@@ -1905,23 +1911,19 @@ const DoctorsDashboard = () => {
                 right: "dayGridMonth,timeGridWeek,timeGridDay",
               }}
               events={calendarAppointments.map((apt) => {
-                const endTime = new Date(new Date(apt.date).getTime() + 30 * 60000);
+                const endTime = new Date(
+                  new Date(apt.date).getTime() + 30 * 60000,
+                );
                 const isPast = endTime < new Date();
-                
+
                 return {
                   id: apt._id,
                   title: `${apt.patientId?.firstName || "Patient"} - ${apt.concern}`,
                   start: apt.date,
                   end: endTime.toISOString(),
-                  backgroundColor: isPast 
-                    ? "rgba(226, 232, 240, 0.4)" 
-                    : (apt.status === "completed" ? "rgba(16, 185, 129, 0.08)" : "rgba(59, 130, 246, 0.08)"),
-                  borderColor: isPast 
-                    ? "#cbd5e1" 
-                    : (apt.status === "completed" ? "#10b981" : "#3b82f6"),
-                  textColor: isPast 
-                    ? "#94a3b8" 
-                    : (apt.status === "completed" ? "#065f46" : "#2563eb"),
+                  backgroundColor: isPast ? "#caccd1" : "#cfe1ff",
+                  borderColor: isPast ? "#a0a0a5" : "#137fec",
+                  textColor: isPast ? "#4b5563" : "#1e40af",
                   className: isPast ? "fc-event-past" : "",
                 };
               })}

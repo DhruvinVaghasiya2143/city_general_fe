@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Container,
@@ -17,8 +17,20 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PhoneIcon from "@mui/icons-material/Phone";
 import BusinessIcon from "@mui/icons-material/Business";
 import SendIcon from "@mui/icons-material/Send";
+import axios from "axios";
+import { CircularProgress } from "@mui/material";
+import { toast } from "react-toastify";
 
 const ContactUs = () => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    department: "General Inquiry",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+
   const departments = [
     "General Inquiry",
     "Cardiology",
@@ -27,6 +39,41 @@ const ContactUs = () => {
     "Emergency Care",
     "Billing & Insurance",
   ];
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
+      const response = await axios.post(`${api}/public/contact`, formData);
+
+      if (response.status === 201) {
+        toast.success(
+          `Thank you, ${formData.firstName}! We have received your inquiry.`,
+        );
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          department: "General Inquiry",
+          message: "",
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to submit inquiry. Please try again later.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Box sx={{ bgcolor: "#f6f7f8", minHeight: "100vh" }}>
@@ -78,7 +125,12 @@ const ContactUs = () => {
                   </Typography>
                 </Box>
 
-                <Box component="form" noValidate sx={{ mt: 1 }}>
+                <Box
+                  component="form"
+                  noValidate
+                  onSubmit={handleSubmit}
+                  sx={{ mt: 1 }}
+                >
                   <Box
                     sx={{
                       display: "flex",
@@ -90,36 +142,47 @@ const ContactUs = () => {
                       <TextField
                         required
                         fullWidth
+                        name="firstName"
                         label="First Name"
                         placeholder="Jane"
                         variant="outlined"
+                        value={formData.firstName}
+                        onChange={handleChange}
                       />
                     </Box>
                     <Box sx={{ width: { xs: "100%", sm: "calc(50% - 12px)" } }}>
                       <TextField
                         required
                         fullWidth
+                        name="lastName"
                         label="Last Name"
                         placeholder="Smith"
                         variant="outlined"
+                        value={formData.lastName}
+                        onChange={handleChange}
                       />
                     </Box>
                     <Box sx={{ width: "100%" }}>
                       <TextField
                         required
                         fullWidth
+                        name="email"
                         label="Email Address"
                         placeholder="jane.smith@example.com"
                         type="email"
                         variant="outlined"
+                        value={formData.email}
+                        onChange={handleChange}
                       />
                     </Box>
                     <Box sx={{ width: "100%" }}>
                       <FormControl fullWidth>
                         <InputLabel>Department</InputLabel>
                         <Select
+                          name="department"
                           label="Department"
-                          defaultValue="General Inquiry"
+                          value={formData.department}
+                          onChange={handleChange}
                         >
                           {departments.map((dept) => (
                             <MenuItem key={dept} value={dept}>
@@ -133,11 +196,20 @@ const ContactUs = () => {
                       <TextField
                         required
                         fullWidth
+                        name="message"
                         label="Your Message"
                         placeholder="How can we help you today?"
                         multiline
                         rows={6}
                         variant="outlined"
+                        value={formData.message}
+                        onChange={handleChange}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSubmit(e);
+                          }
+                        }}
                       />
                     </Box>
                   </Box>
@@ -147,6 +219,7 @@ const ContactUs = () => {
                     variant="contained"
                     size="large"
                     endIcon={<SendIcon />}
+                    disabled={loading}
                     sx={{
                       mt: 4,
                       py: 2,
@@ -156,7 +229,11 @@ const ContactUs = () => {
                       fontSize: "1.1rem",
                     }}
                   >
-                    Submit Inquiry
+                    {loading ? (
+                      <CircularProgress size={24} color="inherit" />
+                    ) : (
+                      "Submit Inquiry"
+                    )}
                   </Button>
                 </Box>
               </CardContent>

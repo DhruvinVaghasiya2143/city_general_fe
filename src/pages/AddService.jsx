@@ -120,7 +120,16 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        component: "form",
+        onSubmit: handleSubmit,
+      }}
+    >
       <DialogTitle sx={{ pb: 1 }}>
         <Typography
           variant="h5"
@@ -208,7 +217,13 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
                 name="description"
                 placeholder="Describe the medical services provided..."
                 value={formData.description}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit(e);
+                  }
+                }}
                 error={!!error.description}
                 helperText={error.description}
                 sx={textFieldStyles}
@@ -241,7 +256,7 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
             Cancel
           </Button>
           <Button
-            onClick={handleSubmit}
+            type="submit"
             variant="contained"
             startIcon={<SaveIcon />}
             sx={{

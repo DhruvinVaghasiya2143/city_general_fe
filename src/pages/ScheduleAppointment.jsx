@@ -79,7 +79,15 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
     }
     if (!formData.phone) newErrors.phone = "Phone is required";
     if (!formData.doctorId) newErrors.doctorId = "Please select a doctor";
-    if (!formData.date) newErrors.date = "Date is required";
+    if (!formData.date) {
+      newErrors.date = "Date is required";
+    } else {
+      const selectedDate = new Date(formData.date);
+      const now = new Date();
+      if (selectedDate < now.setMinutes(now.getMinutes() - 1)) {
+        newErrors.date = "Appointment time cannot be in the past";
+      }
+    }
     if (!formData.concern) newErrors.concern = "Concern is required";
     return newErrors;
   };
@@ -254,6 +262,13 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
               InputLabelProps={{ shrink: true }}
               error={!!error.date}
               helperText={error.date}
+              inputProps={{
+                min: new Date(
+                  new Date().getTime() - new Date().getTimezoneOffset() * 60000,
+                )
+                  .toISOString()
+                  .slice(0, 16),
+              }}
             />
           </Box>
           <Box>
@@ -264,6 +279,12 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
               name="concern"
               value={formData.concern}
               onChange={handleChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleBookNow(e);
+                }
+              }}
               fullWidth
               multiline
               rows={3}

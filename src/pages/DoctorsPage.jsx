@@ -100,6 +100,13 @@ const DoctorsPage = () => {
     }
     if (!formData.date) {
       newError.date = "Date is required";
+    } else {
+      const selectedDate = new Date(formData.date);
+      const now = new Date();
+      // Only allow appointments from now onwards
+      if (selectedDate < now.setMinutes(now.getMinutes() - 1)) {
+        newError.date = "Appointment time cannot be in the past";
+      }
     }
     if (!formData.concern) {
       newError.concern = "Concern is required";
@@ -109,6 +116,7 @@ const DoctorsPage = () => {
   };
   const handleBookNow = async (e) => {
     e.preventDefault();
+
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setError(errors);
@@ -727,6 +735,14 @@ const DoctorsPage = () => {
                 fullWidth
                 type="datetime-local"
                 InputLabelProps={{ shrink: true }}
+                inputProps={{
+                  min: new Date(
+                    new Date().getTime() -
+                      new Date().getTimezoneOffset() * 60000,
+                  )
+                    .toISOString()
+                    .slice(0, 16),
+                }}
               />
               {error.date && (
                 <Typography sx={{ color: "red", mt: 0.5 }}>
@@ -742,6 +758,12 @@ const DoctorsPage = () => {
                 name="concern"
                 value={formData.concern}
                 onChange={handleChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleBookNow(e);
+                  }
+                }}
                 fullWidth
                 multiline
                 rows={3}

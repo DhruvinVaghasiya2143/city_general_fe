@@ -80,6 +80,8 @@ const ForgotPasswordModal = ({ open, onClose, role }) => {
       fullWidth
       maxWidth="xs"
       PaperProps={{
+        component: "form",
+        onSubmit: handleReset,
         sx: { borderRadius: "20px", p: 1 },
       }}
     >
@@ -105,7 +107,7 @@ const ForgotPasswordModal = ({ open, onClose, role }) => {
         </Box>
       </DialogTitle>
       <DialogContent>
-        <Box component="form" sx={{ mt: 1 }}>
+        <Box sx={{ mt: 1 }}>
           {error && (
             <Alert severity="error" sx={{ mb: 2, borderRadius: "10px" }}>
               {error}
@@ -198,7 +200,7 @@ const ForgotPasswordModal = ({ open, onClose, role }) => {
         </Button>
         <Button
           variant="contained"
-          onClick={handleReset}
+          type="submit"
           disabled={loading}
           sx={{
             borderRadius: "10px",
@@ -209,6 +211,7 @@ const ForgotPasswordModal = ({ open, onClose, role }) => {
             boxShadow: "0 4px 12px rgba(19, 127, 236, 0.2)",
           }}
         >
+          
           {loading ? (
             <CircularProgress size={24} sx={{ color: "white" }} />
           ) : (

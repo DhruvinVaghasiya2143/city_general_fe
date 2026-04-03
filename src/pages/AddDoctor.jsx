@@ -208,7 +208,16 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        component: "form",
+        onSubmit: handleSubmit,
+      }}
+    >
       <DialogTitle sx={{ pb: 1 }}>
         <Typography
           variant="h5"
@@ -641,6 +650,12 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
                   placeholder="Enter doctor's biography..."
                   value={formData.bio}
                   onChange={handleChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSubmit(e);
+                    }
+                  }}
                   error={!!error.bio}
                   helperText={error.bio}
                   sx={textFieldStyles}
@@ -655,7 +670,7 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
             Cancel
           </Button>
           <Button
-            onClick={handleSubmit}
+            type="submit"
             variant="contained"
             startIcon={<SaveIcon />}
             sx={{

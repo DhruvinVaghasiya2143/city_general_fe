@@ -531,7 +531,8 @@ const PharmacistsPage = () => {
     doc.save(`Invoice_${invoice.invoiceNumber || Date.now()}.pdf`);
   };
 
-  const handleGenerateInvoice = async () => {
+  const handleGenerateInvoice = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
     try {
       if (
         !newInvoiceData.patientName ||
@@ -626,7 +627,8 @@ const PharmacistsPage = () => {
     setDrugData({ ...drugData, [name]: value });
   };
 
-  const handleAddDrugSubmit = async () => {
+  const handleAddDrugSubmit = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       let response;
@@ -2022,6 +2024,8 @@ const PharmacistsPage = () => {
         fullWidth
         maxWidth="sm"
         PaperProps={{
+          component: "form",
+          onSubmit: handleAddDrugSubmit,
           sx: { borderRadius: "20px", p: 1 },
         }}
       >
@@ -2137,7 +2141,7 @@ const PharmacistsPage = () => {
                 type="date"
                 InputLabelProps={{ shrink: true }}
                 value={drugData.expiryDate}
-                onChange={handleAddDrugChange}
+                onChange={(e)=>handleAddDrugChange(e)}
               />
             </Box>
           </Box>
@@ -2148,6 +2152,7 @@ const PharmacistsPage = () => {
               setAddDrugModalOpen(false);
               resetDrugForm();
             }}
+            
             sx={{
               color: "#64748b",
               fontWeight: 700,
@@ -2158,7 +2163,7 @@ const PharmacistsPage = () => {
           </Button>
           <Button
             variant="contained"
-            onClick={handleAddDrugSubmit}
+            type="submit"
             sx={{
               bgcolor: "#137fec",
               fontWeight: 700,
@@ -2349,6 +2354,8 @@ const PharmacistsPage = () => {
         fullWidth
         maxWidth="md"
         PaperProps={{
+          component: "form",
+          onSubmit: handleGenerateInvoice,
           sx: { borderRadius: "24px", p: 1 },
         }}
       >
@@ -2576,7 +2583,7 @@ const PharmacistsPage = () => {
           </Button>
           <Button
             variant="contained"
-            onClick={handleGenerateInvoice}
+            type="submit"
             disabled={
               isGeneratingInvoice ||
               newInvoiceData.items.length === 0 ||
@@ -3034,6 +3041,11 @@ const PharmacistsPage = () => {
         open={deleteConfirmDialogOpen}
         onClose={() => setDeleteConfirmDialogOpen(false)}
         PaperProps={{
+          component: "form",
+          onSubmit: (e) => {
+            e.preventDefault();
+            confirmDeleteDrug();
+          },
           sx: { borderRadius: "24px", p: 1, maxWidth: "400px" },
         }}
       >
@@ -3084,7 +3096,7 @@ const PharmacistsPage = () => {
           </Button>
           <Button
             variant="contained"
-            onClick={confirmDeleteDrug}
+            type="submit"
             sx={{
               bgcolor: "#dc2626",
               fontWeight: 700,
