@@ -122,7 +122,7 @@ const ScheduleAppointment = ({
         if (formData.date) {
           const selectedDateStr = formData.date.split("T")[0];
           const bookingsRes = await axios.get(
-            `${api}/public/appointments-by-doctor/${formData.doctorId}?date=${selectedDateStr}`,
+            `${api}/public/appointments-by-doctor/${formData.doctorId}?date=${selectedDateStr}&limit=100`,
           );
           if (!ignore) {
             setBookedSlots(bookingsRes.data.data || []);
@@ -191,10 +191,19 @@ const ScheduleAppointment = ({
       datePart = new Date().toISOString().split("T")[0];
     }
 
-    const newDateTime = `${datePart}T${slot.startTime}`;
+    const daySplit = datePart.split("-");
+    const timeSplit = slot.startTime.split(":");
+    const slotDate = new Date(
+      parseInt(daySplit[0]),
+      parseInt(daySplit[1]) - 1,
+      parseInt(daySplit[2]),
+      parseInt(timeSplit[0]),
+      parseInt(timeSplit[1]),
+    );
+
     setFormData((prev) => ({
       ...prev,
-      date: newDateTime,
+      date: slotDate.toISOString(),
       timeSlot: slot.startTime,
     }));
 
@@ -428,13 +437,25 @@ const ScheduleAppointment = ({
                 name="date"
                 value={formData.date ? formData.date.split("T")[0] : ""}
                 onChange={(e) => {
-                  const newDate = e.target.value;
-                  setFormData((prev) => ({
-                    ...prev,
-                    date: prev.timeSlot
-                      ? `${newDate}T${prev.timeSlot}`
-                      : newDate,
-                  }));
+                  const newDateStr = e.target.value;
+                  setFormData((prev) => {
+                    const next = { ...prev };
+                    if (prev.timeSlot) {
+                      const daySplit = newDateStr.split("-");
+                      const timeSplit = prev.timeSlot.split(":");
+                      const nextDate = new Date(
+                        parseInt(daySplit[0]),
+                        parseInt(daySplit[1]) - 1,
+                        parseInt(daySplit[2]),
+                        parseInt(timeSplit[0]),
+                        parseInt(timeSplit[1]),
+                      );
+                      next.date = nextDate.toISOString();
+                    } else {
+                      next.date = newDateStr;
+                    }
+                    return next;
+                  });
                 }}
                 fullWidth
                 type="date"
