@@ -558,7 +558,10 @@ const ReceptionistDashboard = () => {
             </Typography>
             <Typography sx={{ fontSize: "1rem", color: "#64748b" }}>
               Welcome back, {receptionistName.split(" ").pop()}. Managing
-              patient flow for Monday, Oct 24, 2023
+              patient flow for{" "}
+              {filter === "today"
+                ? new Date().toLocaleDateString("en-IN", { dateStyle: "full" })
+                : "All Records"}
             </Typography>
           </Box>
           <Box sx={{ display: "flex", gap: 1.5 }}>

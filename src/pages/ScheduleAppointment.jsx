@@ -16,7 +16,36 @@ import CloseIcon from "@mui/icons-material/Close";
 import MenuItem from "@mui/material/MenuItem";
 import axios from "axios";
 
-const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
+const defaultSchedule = [
+  { startTime: "09:00", endTime: "09:30" },
+  { startTime: "09:30", endTime: "10:00" },
+  { startTime: "10:00", endTime: "10:30" },
+  { startTime: "10:30", endTime: "11:00" },
+  { startTime: "11:00", endTime: "11:30" },
+  { startTime: "11:30", endTime: "12:00" },
+  { startTime: "13:00", endTime: "13:30" },
+  { startTime: "13:30", endTime: "14:00" },
+  { startTime: "14:00", endTime: "14:30" },
+  { startTime: "14:30", endTime: "15:00" },
+  { startTime: "15:00", endTime: "15:30" },
+  { startTime: "15:30", endTime: "16:00" },
+  { startTime: "16:00", endTime: "16:30" },
+  { startTime: "16:30", endTime: "17:00" },
+  { startTime: "17:00", endTime: "17:30" },
+  { startTime: "17:30", endTime: "18:00" },
+  { startTime: "18:00", endTime: "18:30" },
+  { startTime: "18:30", endTime: "19:00" },
+  { startTime: "19:00", endTime: "19:30" },
+  { startTime: "19:30", endTime: "20:00" },
+];
+
+const ScheduleAppointment = ({
+  open,
+  onClose,
+  onSuccess,
+  doctorId: initialDoctorId = "",
+  hideDoctorSelection = false,
+}) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -24,11 +53,14 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
     phone: "",
     doctorId: "",
     date: "",
+    timeSlot: "",
     concern: "",
   });
   const [doctors, setDoctors] = useState([]);
   const [error, setError] = useState({});
   const [isBooking, setIsBooking] = useState(false);
+  const [doctorSchedule, setDoctorSchedule] = useState([]);
+  const [bookedSlots, setBookedSlots] = useState([]);
 
   useEffect(() => {
     if (!open) {
@@ -39,11 +71,19 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
         phone: "",
         doctorId: "",
         date: "",
+        timeSlot: "",
         concern: "",
       });
+      setDoctorSchedule([]);
+      setBookedSlots([]);
       setError({});
     } else {
+      if (initialDoctorId) {
+        setFormData((prev) => ({ ...prev, doctorId: initialDoctorId }));
+      }
+
       const fetchDoctors = async () => {
+        if (hideDoctorSelection) return;
         try {
           const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
           const response = await axios.get(`${api}/public/doctors`);
@@ -56,17 +96,111 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
       };
       fetchDoctors();
     }
-  }, [open]);
+  }, [open, initialDoctorId, hideDoctorSelection]);
+
+  useEffect(() => {
+    let ignore = false;
+    const fetchScheduleAndBookings = async () => {
+      if (!formData.doctorId) {
+        setBookedSlots([]);
+        setDoctorSchedule([]);
+        return;
+      }
+
+      try {
+        const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
+
+        // Fetch Doctor details to get schedule
+        const doctorRes = await axios.get(
+          `${api}/public/doctors/${formData.doctorId}`,
+        );
+        if (!ignore) {
+          setDoctorSchedule(doctorRes.data.schedule || []);
+        }
+
+        // Fetch booked appointments for the selected date
+        if (formData.date) {
+          const selectedDateStr = formData.date.split("T")[0];
+          const bookingsRes = await axios.get(
+            `${api}/public/appointments-by-doctor/${formData.doctorId}?date=${selectedDateStr}`,
+          );
+          if (!ignore) {
+            setBookedSlots(bookingsRes.data.data || []);
+          }
+        } else {
+          if (!ignore) {
+            setBookedSlots([]);
+          }
+        }
+      } catch (err) {
+        if (!ignore) {
+          console.error("Error fetching schedule/bookings:", err);
+        }
+      }
+    };
+
+    fetchScheduleAndBookings();
+    return () => {
+      ignore = true;
+    };
+  }, [formData.doctorId, formData.date]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(`Field ${name} changed to:`, value);
     if (name === "phone" && !/^\d*$/.test(value)) {
       return;
     }
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (error[name]) {
       setError((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleSlotClick = (slot, isBooked) => {
+    // Check if slot is booked (re-calculating strictly as per user request)
+    const matchesBooked = bookedSlots.some((apt) => {
+      const aptDate = new Date(apt.date);
+      // Extract local day string (YYYY-MM-DD in IST)
+      const aptDayStr = `${aptDate.getFullYear()}-${(aptDate.getMonth() + 1).toString().padStart(2, "0")}-${aptDate.getDate().toString().padStart(2, "0")}`;
+      const selectedDateStr = formData.date.split("T")[0];
+
+      const aptTime = `${aptDate.getHours().toString().padStart(2, "0")}:${aptDate.getMinutes().toString().padStart(2, "0")}`;
+      const matchesDoctor =
+        typeof apt.doctorId === "string"
+          ? apt.doctorId === formData.doctorId
+          : apt.doctorId?._id === formData.doctorId;
+      return (
+        aptTime === slot.startTime &&
+        aptDayStr === selectedDateStr &&
+        matchesDoctor
+      );
+    });
+
+    if (matchesBooked) {
+      setError((prev) => ({
+        ...prev,
+        timeSlot: "This slot is already booked please select another slot",
+      }));
+      // We will now allow updating the state so it shows in the box
+    }
+
+    let datePart = "";
+    if (formData.date) {
+      datePart = formData.date.split("T")[0];
+    } else {
+      datePart = new Date().toISOString().split("T")[0];
+    }
+
+    const newDateTime = `${datePart}T${slot.startTime}`;
+    setFormData((prev) => ({
+      ...prev,
+      date: newDateTime,
+      timeSlot: slot.startTime,
+    }));
+
+    // Clear any previous error when a valid slot (non-booked, non-past) is selected
+    if (!matchesBooked && (error.timeSlot || error.date)) {
+      setError((prev) => ({ ...prev, timeSlot: "", date: "" }));
     }
   };
 
@@ -81,7 +215,34 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
     if (!formData.doctorId) newErrors.doctorId = "Please select a doctor";
     if (!formData.date) {
       newErrors.date = "Date is required";
+    }
+    if (!formData.timeSlot) {
+      newErrors.timeSlot = "Please select a time slot";
     } else {
+      // Re-validate that the selected slot isn't booked
+      const isStillBooked = bookedSlots.some((apt) => {
+        const aptDate = new Date(apt.date);
+        // Extract local day string (YYYY-MM-DD in IST)
+        const aptDayStr = `${aptDate.getFullYear()}-${(aptDate.getMonth() + 1).toString().padStart(2, "0")}-${aptDate.getDate().toString().padStart(2, "0")}`;
+        const selectedDateStr = formData.date.split("T")[0];
+
+        const aptTime = `${aptDate.getHours().toString().padStart(2, "0")}:${aptDate.getMinutes().toString().padStart(2, "0")}`;
+        const matchesDoctor =
+          typeof apt.doctorId === "string"
+            ? apt.doctorId === formData.doctorId
+            : apt.doctorId?._id === formData.doctorId;
+        return (
+          aptTime === formData.timeSlot &&
+          aptDayStr === selectedDateStr &&
+          matchesDoctor
+        );
+      });
+      if (isStillBooked) {
+        newErrors.timeSlot =
+          "This slot is already booked please select another slot";
+      }
+    }
+    if (formData.date) {
       const selectedDate = new Date(formData.date);
       const now = new Date();
       if (selectedDate < now.setMinutes(now.getMinutes() - 1)) {
@@ -198,39 +359,41 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
                 helperText={error.email}
               />
             </Box>
-            <Box>
-              <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>
-                Select Doctor
-              </Typography>
-              <TextField
-                name="doctorId"
-                value={formData.doctorId || ""}
-                onChange={handleChange}
-                fullWidth
-                variant="outlined"
-                select
-                error={!!error.doctorId}
-                helperText={error.doctorId}
-                SelectProps={{
-                  displayEmpty: true,
-                }}
-              >
-                <MenuItem value="" disabled>
-                  Select a doctor
-                </MenuItem>
-                {doctors.map((doctor) => (
-                  <MenuItem
-                    key={doctor._id || doctor.id}
-                    value={doctor._id || doctor.id}
-                  >
-                    {doctor.firstName} {doctor.lastName}{" "}
-                    {doctor.specialization || doctor.specialty
-                      ? `- ${doctor.specialization || doctor.specialty}`
-                      : ""}
+            {!hideDoctorSelection && (
+              <Box>
+                <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>
+                  Select Doctor
+                </Typography>
+                <TextField
+                  name="doctorId"
+                  value={formData.doctorId || ""}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                  select
+                  error={!!error.doctorId}
+                  helperText={error.doctorId}
+                  SelectProps={{
+                    displayEmpty: true,
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select doctor
                   </MenuItem>
-                ))}
-              </TextField>
-            </Box>
+                  {doctors.map((doctor) => (
+                    <MenuItem
+                      key={doctor._id || doctor.id}
+                      value={doctor._id || doctor.id}
+                    >
+                      {doctor.firstName} {doctor.lastName}{" "}
+                      {doctor.specialization || doctor.specialty
+                        ? `- ${doctor.specialization || doctor.specialty}`
+                        : ""}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Box>
+            )}
             <Box>
               <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>
                 Phone Number
@@ -249,27 +412,227 @@ const ScheduleAppointment = ({ open, onClose, onSuccess }) => {
               />
             </Box>
           </Box>
-          <Box sx={{ mb: 2 }}>
-            <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>
-              Select Date & Time
-            </Typography>
-            <TextField
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              fullWidth
-              type="datetime-local"
-              InputLabelProps={{ shrink: true }}
-              error={!!error.date}
-              helperText={error.date}
-              inputProps={{
-                min: new Date(
-                  new Date().getTime() - new Date().getTimezoneOffset() * 60000,
-                )
-                  .toISOString()
-                  .slice(0, 16),
-              }}
-            />
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: 2,
+              mb: 2,
+            }}
+          >
+            <Box sx={{ flex: 1 }}>
+              <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>
+                Select Date
+              </Typography>
+              <TextField
+                name="date"
+                value={formData.date ? formData.date.split("T")[0] : ""}
+                onChange={(e) => {
+                  const newDate = e.target.value;
+                  setFormData((prev) => ({
+                    ...prev,
+                    date: prev.timeSlot
+                      ? `${newDate}T${prev.timeSlot}`
+                      : newDate,
+                  }));
+                }}
+                fullWidth
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                error={!!error.date}
+                helperText={error.date}
+                inputProps={{
+                  min: new Date().toISOString().split("T")[0],
+                }}
+                sx={{
+                  "& .MuiInputBase-input": {
+                    /* Specifically target and capitalize Chrome's native date format hints */
+                    "&::-webkit-datetime-edit": {
+                      textTransform: "uppercase",
+                    },
+                    "&::-webkit-datetime-edit-month-field": {
+                      textTransform: "uppercase",
+                    },
+                    "&::-webkit-datetime-edit-day-field": {
+                      textTransform: "uppercase",
+                    },
+                    "&::-webkit-datetime-edit-year-field": {
+                      textTransform: "uppercase",
+                    },
+                    "&::-webkit-datetime-edit-text": {
+                      textTransform: "uppercase",
+                    },
+                    /* Only show pointer cursor over the actual clickable calendar indicator */
+                    "&::-webkit-calendar-picker-indicator": {
+                      cursor: "pointer",
+                    },
+                  },
+                }}
+              />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>
+                Select Time Slot
+              </Typography>
+              <TextField
+                name="timeSlot"
+                value={formData.timeSlot || ""}
+                onChange={(e) => {
+                  const selectedStartTime = e.target.value;
+                  const slot = defaultSchedule.find(
+                    (s) => s.startTime === selectedStartTime,
+                  );
+                  if (slot) {
+                    handleSlotClick(slot, false);
+                  }
+                }}
+                fullWidth
+                variant="outlined"
+                select
+                error={!!error.timeSlot}
+                helperText={error.timeSlot}
+                SelectProps={{
+                  displayEmpty: true,
+                  renderValue: (selected) => {
+                    if (!selected) {
+                      return !formData.doctorId
+                        ? "Choose a doctor first"
+                        : !formData.date
+                          ? "Choose a date to see availability"
+                          : "Choose a time";
+                    }
+                    const slot = defaultSchedule.find(
+                      (s) => s.startTime === selected,
+                    );
+                    return slot
+                      ? `${slot.startTime} - ${slot.endTime}`
+                      : selected;
+                  },
+                  MenuProps: {
+                    PaperProps: {
+                      sx: {
+                        maxHeight: 250,
+                      },
+                    },
+                  },
+                }}
+              >
+                <MenuItem value="" disabled>
+                  {!formData.doctorId
+                    ? "Choose a doctor first"
+                    : !formData.date
+                      ? "Choose a date to see availability"
+                      : "Choose a time"}
+                </MenuItem>
+                {defaultSchedule.map((slot, index) => {
+                  const now = new Date();
+                  const todayStr = now.toISOString().split("T")[0];
+                  const currentTimeStr = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+                  const isToday =
+                    formData.date && formData.date.split("T")[0] === todayStr;
+
+                  const isBooked = bookedSlots.some((apt) => {
+                    const aptDate = new Date(apt.date);
+                    // Extract local day string (YYYY-MM-DD in IST)
+                    const aptDayStr = `${aptDate.getFullYear()}-${(aptDate.getMonth() + 1).toString().padStart(2, "0")}-${aptDate.getDate().toString().padStart(2, "0")}`;
+                    const selectedDateStr = formData.date.split("T")[0];
+
+                    const aptTime = `${aptDate.getHours().toString().padStart(2, "0")}:${aptDate.getMinutes().toString().padStart(2, "0")}`;
+                    // Strict doctor filtering: ensure the appointment belongs to the selected doctor
+                    const matchesDoctor =
+                      typeof apt.doctorId === "string"
+                        ? apt.doctorId === formData.doctorId
+                        : apt.doctorId?._id === formData.doctorId;
+
+                    return (
+                      aptTime === slot.startTime &&
+                      aptDayStr === selectedDateStr &&
+                      matchesDoctor
+                    );
+                  });
+
+                  const isPast = isToday && slot.startTime < currentTimeStr;
+                  const isDisabled = isBooked || isPast;
+
+                  let statusLabel = "Available";
+                  let statusColor = "#166534";
+                  let bgColor = "#f0fdf4";
+                  let dotColor = "#22c55e";
+
+                  if (isBooked) {
+                    statusLabel = "Booked";
+                    statusColor = "#b91c1c";
+                    bgColor = "#fee2e2";
+                    dotColor = "#ef4444";
+                  } else if (isPast) {
+                    statusLabel = "Passed";
+                    statusColor = "#64748b";
+                    bgColor = "#f1f5f9";
+                    dotColor = "#94a3b8";
+                  }
+
+                  return (
+                    <MenuItem
+                      key={index}
+                      value={slot.startTime}
+                      disabled={isPast}
+                      onClick={(e) => {
+                        if (isBooked) {
+                          // Prevent standard Select behavior if booked
+                          // but still allow handleSlotClick to set the error
+                          handleSlotClick(slot, true);
+                        }
+                      }}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        py: 1.5,
+                      }}
+                    >
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <Typography sx={{ fontWeight: 600 }}>
+                          {slot.startTime} - {slot.endTime}
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 0.5,
+                          bgcolor: bgColor,
+                          px: 1,
+                          py: 0.5,
+                          borderRadius: "4px",
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: "50%",
+                            bgcolor: dotColor,
+                          }}
+                        />
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: statusColor,
+                            fontWeight: 700,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.025em",
+                          }}
+                        >
+                          {statusLabel}
+                        </Typography>
+                      </Box>
+                    </MenuItem>
+                  );
+                })}
+              </TextField>
+            </Box>
           </Box>
           <Box>
             <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>

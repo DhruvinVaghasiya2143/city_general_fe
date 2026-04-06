@@ -26,6 +26,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import axios from "axios";
 import doctorImage from "../assets/doctor_image.jpg";
+import ScheduleAppointment from "./ScheduleAppointment";
 
 const SPECIALTIES = [
   "All",
@@ -50,19 +51,7 @@ const DoctorsPage = () => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [doctorProfile, setDoctorProfile] = useState(null);
   const [openBookNow, setOpenBookNow] = useState(false);
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    date: "",
-    concern: "",
-    doctorId: "",
-  });
   const [doctorId, setDoctorId] = useState("");
-  const [error, setError] = useState({});
-  const [appointment, setAppointment] = useState([]);
-  const [recentAppointments, setRecentAppointments] = useState([]);
   const [isBooking, setIsBooking] = useState(false);
   const handleCompleteAppointment = async (id) => {
     try {
@@ -82,107 +71,15 @@ const DoctorsPage = () => {
     }
   };
   console.log(doctorId);
-  const validateForm = () => {
-    let newError = {};
-    if (!formData.firstName) {
-      newError.firstName = "First name is required";
-    }
-    if (!formData.lastName) {
-      newError.lastName = "Last name is required";
-    }
-    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
-      newError.email = "Email is invalid";
-    }
-    if (!formData.phone) {
-      newError.phone = "Phone number is required";
-    } else if (!/^[0-9]{10}$/.test(formData.phone)) {
-      newError.phone = "Enter valid 10 digit phone number";
-    }
-    if (!formData.date) {
-      newError.date = "Date is required";
-    } else {
-      const selectedDate = new Date(formData.date);
-      const now = new Date();
-      // Only allow appointments from now onwards
-      if (selectedDate < now.setMinutes(now.getMinutes() - 1)) {
-        newError.date = "Appointment time cannot be in the past";
-      }
-    }
-    if (!formData.concern) {
-      newError.concern = "Concern is required";
-    }
-    console.log(newError);
-    return newError;
-  };
-  const handleBookNow = async (e) => {
-    e.preventDefault();
 
-    const errors = validateForm();
-    if (Object.keys(errors).length > 0) {
-      setError(errors);
-      return;
-    }
-
-    const payload = {
-      ...formData,
-      doctorId,
-    };
-
-    console.log("payload", payload);
-
-    try {
-      setIsBooking(true);
-      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      const response = await axios.post(`${api}/public/appointment`, payload);
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsBooking(false);
-      setOpenBookNow(false);
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        date: "",
-        concern: "",
-      });
-      setError({});
-    }
-  };
-
-  const handleChange = (e) => {
-    let { name, value } = e.target;
-    if (name === "phone") {
-      value = value.replace(/\D/g, "");
-    }
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    setError({
-      ...error,
-      [name]: "",
-    });
-  };
-
-  const handleOpenBookNow = (doctorId) => {
+  const handleOpenBookNow = (id) => {
+    setDoctorId(id);
     setOpenBookNow(true);
-    setDoctorId(doctorId);
   };
 
   const handleCloseBookNow = () => {
     setOpenBookNow(false);
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      date: "",
-      concern: "",
-    });
-    setError({});
+    setDoctorId("");
   };
 
   const getdoctorById = async (id) => {
@@ -624,198 +521,12 @@ const DoctorsPage = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog
+      <ScheduleAppointment
         open={openBookNow}
         onClose={handleCloseBookNow}
-        fullWidth
-        maxWidth="sm"
-        PaperProps={{
-          sx: { borderRadius: "16px", p: 1 },
-        }}
-      >
-        <DialogTitle sx={{ fontWeight: 900, fontSize: "1.5rem" }}>
-          Book Appointment
-          <IconButton
-            onClick={handleCloseBookNow}
-            sx={{ position: "absolute", right: 16, top: 16, color: "#94a3b8" }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <Divider />
-        <DialogContent>
-          <Box sx={{ pt: 1 }} component="form" onSubmit={handleBookNow}>
-            <Box
-              sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}
-            >
-              <Box>
-                <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>
-                  First Name
-                </Typography>
-                <TextField
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  fullWidth
-                  placeholder="Enter your first name"
-                  variant="outlined"
-                />
-                {error.firstName && (
-                  <Typography sx={{ color: "red", mt: 0.5 }}>
-                    {error.firstName}
-                  </Typography>
-                )}
-              </Box>
-              <Box>
-                <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>
-                  Last Name
-                </Typography>
-                <TextField
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  fullWidth
-                  placeholder="Enter your last name"
-                  variant="outlined"
-                />
-                {error.lastName && (
-                  <Typography sx={{ color: "red", mt: 0.5 }}>
-                    {error.lastName}
-                  </Typography>
-                )}
-              </Box>
-              <Box>
-                <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>
-                  Email Address (Optional)
-                </Typography>
-                <TextField
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  fullWidth
-                  placeholder="Enter your email"
-                  variant="outlined"
-                  type="email"
-                />
-                {error.email && (
-                  <Typography sx={{ color: "red", mt: 0.5 }}>
-                    {error.email}
-                  </Typography>
-                )}
-              </Box>
-              <Box>
-                <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>
-                  Phone Number
-                </Typography>
-                <TextField
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  fullWidth
-                  placeholder="Enter 10-digit phone"
-                  variant="outlined"
-                  type="text"
-                  inputProps={{ maxLength: 10 }}
-                />
-                {error.phone && (
-                  <Typography sx={{ color: "red", mt: 0.5 }}>
-                    {error.phone}
-                  </Typography>
-                )}
-              </Box>
-            </Box>
-            <Box sx={{ mb: 2 }}>
-              <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>
-                Select Date & Time
-              </Typography>
-              <TextField
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                fullWidth
-                type="datetime-local"
-                InputLabelProps={{ shrink: true }}
-                inputProps={{
-                  min: new Date(
-                    new Date().getTime() -
-                      new Date().getTimezoneOffset() * 60000,
-                  )
-                    .toISOString()
-                    .slice(0, 16),
-                }}
-              />
-              {error.date && (
-                <Typography sx={{ color: "red", mt: 0.5 }}>
-                  {error.date}
-                </Typography>
-              )}
-            </Box>
-            <Box>
-              <Typography sx={{ mb: 0.5, fontWeight: 600, color: "#334155" }}>
-                Briefly describe your concern
-              </Typography>
-              <TextField
-                name="concern"
-                value={formData.concern}
-                onChange={handleChange}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleBookNow(e);
-                  }
-                }}
-                fullWidth
-                multiline
-                rows={3}
-                placeholder="Briefly describe your concern"
-                variant="outlined"
-              />
-              {error.concern && (
-                <Typography sx={{ color: "red", mt: 0.5 }}>
-                  {error.concern}
-                </Typography>
-              )}
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: 2,
-                mt: 3,
-              }}
-            >
-              <Button
-                onClick={handleCloseBookNow}
-                sx={{
-                  color: "#64748b",
-                  fontWeight: 700,
-                  textTransform: "none",
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={isBooking}
-                sx={{
-                  px: 4,
-                  borderRadius: "8px",
-                  fontWeight: 700,
-                  textTransform: "none",
-                  minWidth: "160px",
-                }}
-              >
-                {isBooking ? (
-                  <CircularProgress size={24} sx={{ color: "white" }} />
-                ) : (
-                  "Confirm Booking"
-                )}
-              </Button>
-            </Box>
-          </Box>
-        </DialogContent>
-      </Dialog>
+        doctorId={doctorId}
+        hideDoctorSelection={true}
+      />
     </Box>
   );
 };
