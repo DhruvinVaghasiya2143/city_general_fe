@@ -22,6 +22,9 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
     imageUrl: "",
   });
   const [error, setError] = useState({});
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
+  const fileInputRef = React.useRef(null);
 
   React.useEffect(() => {
     if (open) {
@@ -40,6 +43,8 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
         });
       }
       setError({});
+      setSelectedFile(null);
+      setPreviewUrl(initialData?.imageUrl || "");
     }
   }, [open, isEdit, initialData]);
 
@@ -63,19 +68,43 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
     if (!formData.description) {
       newError.description = "Description is required";
     }
-    if (!formData.imageUrl) {
-      newError.imageUrl = "Image URL is required";
-    } else if (
-      !/^(http|https):\/\/[^ "]+$/.test(formData.imageUrl) &&
-      !formData.imageUrl.startsWith("/")
-    ) {
-      // Basic URL validation or local path
-      newError.imageUrl =
-        "Enter a valid image URL or project path (e.g., /services/...)";
+
+    // Pass validation if either a file is selected or a valid URL is provided
+    if (!selectedFile && !formData.imageUrl) {
+      newError.imageUrl = "Image is required";
+    } else if (!selectedFile && formData.imageUrl) {
+      if (
+        !/^(http|https):\/\/[^ "]+$/.test(formData.imageUrl) &&
+        !formData.imageUrl.startsWith("/")
+      ) {
+        newError.imageUrl = "Enter a valid image URL";
+      }
     }
     return newError;
   };
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+ 
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      setError({ ...error, imageUrl: "Please select an image file" });
+      return;
+    }
+ 
+    setSelectedFile(file);
+    setError({ ...error, imageUrl: "" });
+    
+    // Create local preview URL
+    const localUrl = URL.createObjectURL(file);
+    setPreviewUrl(localUrl);
+    
+    // Also update formData.imageUrl to pass validation if we are using it
+    setFormData(prev => ({ ...prev, imageUrl: file.name }));
+  };
+
+  console.log("formData", formData);
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = validateForm();
@@ -87,9 +116,25 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
 
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
+      
+      // Use FormData for multipart/form-data request
+      const payload = new FormData();
+      payload.append("name", formData.name);
+      payload.append("description", formData.description);
+      
+      if (selectedFile) {
+        payload.append("serviceImage", selectedFile);
+      } else {
+        payload.append("imageUrl", formData.imageUrl);
+      }
+
       const response = await (isEdit
-        ? axios.put(`${api}/admin/services/${initialData._id}`, formData)
-        : axios.post(`${api}/admin/services`, formData));
+        ? axios.put(`${api}/admin/services/${initialData._id}`, payload, {
+            headers: { "Content-Type": "multipart/form-data" },
+          })
+        : axios.post(`${api}/admin/services`, payload, {
+            headers: { "Content-Type": "multipart/form-data" },
+          }));
 
       if (response.data.success) {
         if (onSuccess) onSuccess();
@@ -235,18 +280,64 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
                 variant="body2"
                 sx={{ fontWeight: 700, mb: 1, color: "#334155" }}
               >
-                Image URL
+                Service Image
+              </Typography>
+              <Box sx={{ mb: 2, display: "flex", flexWrap: "wrap", gap: 2, alignItems: "flex-start" }}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                />
+                <Button
+                  variant="outlined"
+                  component="span"
+                  onClick={() => fileInputRef.current.click()}
+                  sx={{
+                    borderRadius: "8px",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    borderColor: "#3b82f6",
+                    color: "#3b82f6",
+                    "&:hover": { borderColor: "#2563eb", bgcolor: "#eff6ff" },
+                  }}
+                >
+                  {previewUrl ? "Change Image" : "Upload Image"}
+                </Button>
+                
+                {previewUrl && (
+                  <Box
+                    component="img"
+                    src={previewUrl}
+                    alt="Preview"
+                    sx={{
+                      width: 100,
+                      height: 100,
+                      objectFit: "cover",
+                      borderRadius: "8px",
+                      border: "1px solid #e2e8f0",
+                    }}
+                  />
+                )}
+              </Box>
+{/*               
+              <Typography
+                variant="caption"
+                sx={{ display: "block", mb: 1, color: "#64748b", fontWeight: 500 }}
+              >
+                Or paste an image URL directly:
               </Typography>
               <TextField
                 fullWidth
                 name="imageUrl"
-                placeholder="https://example.com/image.png or /services/path.png"
+                placeholder="https://example.com/image.png"
                 value={formData.imageUrl}
                 onChange={handleChange}
                 error={!!error.imageUrl}
                 helperText={error.imageUrl}
                 sx={textFieldStyles}
-              />
+              /> */}
             </Grid>
           </Grid>
         </Paper>
