@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  CircularProgress,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
@@ -39,6 +40,7 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
     bio: "",
     role: initialRole,
   });
+  const [loading, setLoading] = useState(false);
 
   React.useEffect(() => {
     if (open) {
@@ -48,14 +50,12 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
   }, [open, initialRole]);
 
   const handleAddDoctor = async () => {
+    setLoading(true);
     try {
       console.log("Sending Data:", formData);
 
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      const response = await axios.post(
-        `${api}/admin/add-staff`,
-        formData,
-      );
+      const response = await axios.post(`${api}/admin/add-staff`, formData);
 
       console.log("Response:", response.data);
       if (onSuccess) onSuccess();
@@ -89,6 +89,8 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
       } else {
         setError({ submit: "Failed to connect to server" });
       }
+    } finally {
+      setLoading(false);
     }
   };
   const [error, setError] = useState({});
@@ -672,7 +674,14 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
           <Button
             type="submit"
             variant="contained"
-            startIcon={<SaveIcon />}
+            disabled={loading}
+            startIcon={
+              loading ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                <SaveIcon />
+              )
+            }
             sx={{
               bgcolor: "#3b82f6",
               borderRadius: "8px",
@@ -682,8 +691,9 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
               "&:hover": { bgcolor: "#2563eb" },
             }}
           >
-            Save{" "}
-            {formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}
+            {loading
+              ? "Saving..."
+              : `Save ${formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}`}
           </Button>
         </DialogActions>
       </DialogContent>
