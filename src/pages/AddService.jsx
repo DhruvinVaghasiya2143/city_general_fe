@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  CircularProgress,
 } from "@mui/material";
 import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import SaveIcon from "@mui/icons-material/Save";
@@ -22,6 +23,7 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
     imageUrl: "",
   });
   const [error, setError] = useState({});
+  const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const fileInputRef = React.useRef(null);
@@ -114,6 +116,7 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
       return;
     }
 
+    setLoading(true);
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       
@@ -145,6 +148,8 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
       const serverError =
         err.response?.data?.message || `Server error during service ${isEdit ? "update" : "creation"}`;
       setError({ submit: serverError });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -349,7 +354,8 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
           <Button
             type="submit"
             variant="contained"
-            startIcon={<SaveIcon />}
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
             sx={{
               bgcolor: "#3b82f6",
               borderRadius: "8px",
@@ -359,7 +365,7 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
               "&:hover": { bgcolor: "#2563eb" },
             }}
           >
-            {isEdit ? "Update Service" : "Save Service"}
+            {loading ? (isEdit ? "Updating..." : "Saving...") : (isEdit ? "Update Service" : "Save Service")}
           </Button>
         </DialogActions>
       </DialogContent>
