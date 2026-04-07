@@ -84,10 +84,7 @@ const AdminRegistration = () => {
       };
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
 
-      const response = await axios.post(
-        `${api}/auth/register`,
-        payload,
-      );
+      const response = await axios.post(`${api}/auth/register`, payload);
 
       if (response) {
         console.log("registerResponse", response);
@@ -105,42 +102,30 @@ const AdminRegistration = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
         bgcolor: "#f8fafc",
       }}
     >
-      <Box sx={{ p: 2 }}>
-        <Button
-          component={RouterLink}
-          to="/admin/login"
-          startIcon={<ArrowBackIcon />}
-          sx={{ color: "#64748b", fontWeight: 600, textTransform: "none" }}
-        >
-          Back to Admin Login
-        </Button>
-      </Box>
-
       <Box
         sx={{
-          flex: 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          p: { xs: 2, md: 4 },
+          py: { xs: 2, md: 8 },
+          px: { xs: 2, md: 15 },
         }}
       >
-        <Grid container spacing={4} alignItems="center" maxWidth={1100}>
+        <Box
+          container
+          sx={{
+            display: "flex",
+            gap: 12,
+          }}
+        >
           {/* Left Content */}
-          <Grid
+          <Box
             item
             xs={12}
             lg={6}
             sx={{
               display: { xs: "none", lg: "flex" },
               flexDirection: "column",
-              gap: 4,
-              pr: 4,
             }}
           >
             <Box>
@@ -158,8 +143,8 @@ const AdminRegistration = () => {
                 <AdminPanelSettingsIcon fontSize="large" />
               </Box>
               <Typography
-                variant="h2"
-                fontWeight={900}
+                variant="h3"
+                fontWeight={600}
                 gutterBottom
                 sx={{ letterSpacing: "-0.04em", lineHeight: 1.1 }}
               >
@@ -229,10 +214,15 @@ const AdminRegistration = () => {
                 </Box>
               ))}
             </Box>
-          </Grid>
+          </Box>
 
           {/* Form Side */}
-          <Grid item xs={12} lg={6}>
+          <Box
+            sx={{
+              marginBlockStart: { xs: "25%", sm: "35%", md: "0%" },
+              marginInline: "auto",
+            }}
+          >
             <Paper
               elevation={0}
               sx={{
@@ -248,16 +238,9 @@ const AdminRegistration = () => {
                   variant="h4"
                   fontWeight={900}
                   gutterBottom
-                  sx={{ letterSpacing: "-0.02em" }}
+                  sx={{ letterSpacing: "-0.02em", textAlign: "center" }}
                 >
                   Register Admin
-                </Typography>
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  fontWeight={500}
-                >
-                  Configure credentials for a new system administrator.
                 </Typography>
               </Box>
 
@@ -272,38 +255,40 @@ const AdminRegistration = () => {
                 onSubmit={handleSubmit}
                 sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}
               >
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="First Name"
-                      fullWidth
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      error={!!errors.firstName}
-                      helperText={errors.firstName}
-                      variant="outlined"
-                      sx={{
-                        "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Last Name"
-                      fullWidth
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      error={!!errors.lastName}
-                      helperText={errors.lastName}
-                      variant="outlined"
-                      sx={{
-                        "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-                      }}
-                    />
-                  </Grid>
-                </Grid>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 2,
+                  }}
+                >
+                  <TextField
+                    label="First Name"
+                    fullWidth
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    error={!!errors.firstName}
+                    helperText={errors.firstName}
+                    variant="outlined"
+                    sx={{
+                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
+                    }}
+                  />
+
+                  <TextField
+                    label="Last Name"
+                    fullWidth
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    error={!!errors.lastName}
+                    helperText={errors.lastName}
+                    variant="outlined"
+                    sx={{
+                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
+                    }}
+                  />
+                </Box>
 
                 <TextField
                   label="Administrative Email"
@@ -330,43 +315,52 @@ const AdminRegistration = () => {
                   inputProps={{ maxLength: 10 }}
                 />
 
-                <TextField
-                  label="Access Password"
-                  type={showPassword ? "text" : "password"}
-                  fullWidth
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  error={!!errors.password}
-                  helperText={errors.password}
-                  variant="outlined"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowPassword(!showPassword)}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                    sx: { borderRadius: "12px" },
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 2,
                   }}
-                />
+                >
+                  <TextField
+                    label="Access Password"
+                    type={showPassword ? "text" : "password"}
+                    fullWidth
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    error={!!errors.password}
+                    helperText={errors.password}
+                    variant="outlined"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                      sx: { borderRadius: "12px" },
+                    }}
+                  />
 
-                <TextField
-                  label="Confirm Access Password"
-                  type="password"
-                  fullWidth
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  error={!!errors.confirmPassword}
-                  helperText={errors.confirmPassword}
-                  variant="outlined"
-                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
-                />
+                  <TextField
+                    label="Confirm Access Password"
+                    type="password"
+                    fullWidth
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    error={!!errors.confirmPassword}
+                    helperText={errors.confirmPassword}
+                    variant="outlined"
+                    sx={{
+                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
+                    }}
+                  />
+                </Box>
 
                 <Box sx={{ mt: 1 }}>
                   <Button
@@ -390,23 +384,30 @@ const AdminRegistration = () => {
                     Finalize Registration
                   </Button>
                 </Box>
-              </Box>
 
-              <Typography
-                variant="body2"
-                sx={{
-                  mt: 4,
-                  textAlign: "center",
-                  color: "#64748b",
-                  fontWeight: 500,
-                }}
-              >
-                System Access Agreement: By registering, you agree to uphold
-                City General's data protection and confidentiality standards.
-              </Typography>
+                <Box sx={{ mt: 1, textAlign: "center" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "#64748b", fontWeight: 600 }}
+                  >
+                    Already have an account?{" "}
+                    <RouterLink
+                      to="/admin/login"
+                      style={{
+                        color: "#137fec",
+                        fontWeight: 800,
+                        textDecoration: "none",
+                        marginLeft: "4px",
+                      }}
+                    >
+                      Log In
+                    </RouterLink>
+                  </Typography>
+                </Box>
+              </Box>
             </Paper>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Box>
     </Box>
   );

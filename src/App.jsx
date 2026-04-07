@@ -23,18 +23,22 @@ import AdminRegistration from "./pages/AdminRegistration";
 function App() {
   const location = useLocation();
 
-  const hideFooterRoutes = [
+  const authRoutes = ["/login", "/admin/login", "/admin/register", "/registration"];
+  const dashboardRoutes = [
     "/admin-dashboard",
     "/pharmacists-dashboard",
     "/doctor-dashboard",
     "/receptionist-dashboard",
   ];
 
-  const shouldShowFooter = !hideFooterRoutes.includes(location.pathname);
+  const shouldShowNavbar = !authRoutes.includes(location.pathname);
+  const shouldShowFooter =
+    !authRoutes.includes(location.pathname) &&
+    !dashboardRoutes.includes(location.pathname);
 
   return (
     <div>
-      <Navbar />
+      {shouldShowNavbar && <Navbar />}
       <ToastContainer />
       <Routes>
         <Route path="/" element={<Landing />} />
