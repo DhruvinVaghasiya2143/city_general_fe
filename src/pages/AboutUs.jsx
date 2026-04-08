@@ -27,10 +27,8 @@ const AboutUs = () => {
     const fetchDoctors = async () => {
       try {
         const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-        const response = await axios.get(
-          `${api}/public/doctors`,
-        );
-        
+        const response = await axios.get(`${api}/public/doctors`);
+
         // The API returns { data: [...], pagination: {...} }
         setDoctors(response.data.data || []);
       } catch (error) {
@@ -220,7 +218,7 @@ const AboutUs = () => {
                 variant="h3"
                 sx={{
                   fontWeight: 800,
-                  mb: 3,
+                  my: 3,
                   letterSpacing: "-0.02em",
                   fontSize: { xs: "1.75rem", sm: "2.25rem", md: "3rem" },
                 }}
