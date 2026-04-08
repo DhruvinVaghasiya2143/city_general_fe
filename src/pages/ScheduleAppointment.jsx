@@ -679,7 +679,13 @@ const ScheduleAppointment = ({
             />
           </Box>
           <Box
-            sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 3 }}
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column-reverse", sm: "row" },
+              justifyContent: "flex-end",
+              gap: 2,
+              mt: 3,
+            }}
           >
             <Button
               onClick={onClose}

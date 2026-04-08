@@ -14,8 +14,12 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
+  IconButton,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
+import CloseIcon from "@mui/icons-material/Close";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import SaveIcon from "@mui/icons-material/Save";
 import axios from "axios";
@@ -41,6 +45,9 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
     role: initialRole,
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState({});
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   React.useEffect(() => {
     if (open) {
@@ -93,8 +100,6 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
       setLoading(false);
     }
   };
-  const [error, setError] = useState({});
-  console.log("select errors =>", error);
   const handleChange = (e) => {
     let { name, value } = e.target;
     if (name === "phone") {
@@ -215,31 +220,54 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
       onClose={onClose}
       maxWidth="md"
       fullWidth
+      fullScreen={fullScreen}
       PaperProps={{
         component: "form",
         onSubmit: handleSubmit,
       }}
     >
-      <DialogTitle sx={{ pb: 1 }}>
-        <Typography
-          variant="h5"
-          component="span"
-          sx={{ fontWeight: 800, color: "#1e293b", mb: 0.5, display: "block" }}
+      <DialogTitle sx={{ pb: 1, px: { xs: 2, sm: 3 }, pt: { xs: 2, sm: 3 } }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+          }}
         >
-          Add New{" "}
-          {formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}
-        </Typography>
-        <Typography
-          variant="body2"
-          component="span"
-          sx={{ color: "#64748b", fontWeight: 500, display: "block" }}
-        >
-          Enter the professional and personal details of the new {formData.role}
-          .
-        </Typography>
+          <Box>
+            <Typography
+              variant="h5"
+              component="span"
+              sx={{
+                fontWeight: 800,
+                color: "#1e293b",
+                mb: 0.5,
+                display: "block",
+              }}
+            >
+              Add New{" "}
+              {formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}
+            </Typography>
+            <Typography
+              variant="body2"
+              component="span"
+              sx={{ color: "#64748b", fontWeight: 500, display: "block" }}
+            >
+              Enter the professional and personal details of the new{" "}
+              {formData.role}.
+            </Typography>
+          </Box>
+          {fullScreen && (
+            <IconButton onClick={onClose} sx={{ color: "#64748b" }}>
+              <CloseIcon />
+            </IconButton>
+          )}
+        </Box>
       </DialogTitle>
 
-      <DialogContent sx={{ bgcolor: "#f1f5f9", pt: 3 }}>
+      <DialogContent
+        sx={{ bgcolor: "#f1f5f9", pt: { xs: 2, sm: 3 }, px: { xs: 2, sm: 3 } }}
+      >
         {error.submit && (
           <Paper
             sx={{
@@ -259,7 +287,7 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
         <Paper
           elevation={0}
           sx={{
-            p: 3,
+            p: { xs: 2, sm: 3 },
             borderRadius: "12px",
             border: "1px solid #e2e8f0",
             mb: 3,
@@ -401,7 +429,7 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
           <Paper
             elevation={0}
             sx={{
-              p: 3,
+              p: { xs: 2, sm: 3 },
               borderRadius: "12px",
               border: "1px solid #e2e8f0",
               mb: 4,
@@ -667,8 +695,23 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
           </Paper>
         )}
 
-        <DialogActions sx={{ pb: 3, pt: 1 }}>
-          <Button onClick={onClose} sx={{ fontWeight: 700, color: "#64748b" }}>
+        <DialogActions
+          sx={{
+            pb: 3,
+            pt: 1,
+            px: 3,
+            gap: 1,
+            justifyContent: fullScreen ? "stretch" : "flex-end",
+          }}
+        >
+          <Button
+            onClick={onClose}
+            sx={{
+              fontWeight: 700,
+              color: "#64748b",
+              flex: fullScreen ? 1 : "initial",
+            }}
+          >
             Cancel
           </Button>
           <Button
@@ -685,9 +728,10 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
             sx={{
               bgcolor: "#3b82f6",
               borderRadius: "8px",
-              px: 3,
+              px: { xs: 2, sm: 4 },
               py: 1.2,
               fontWeight: 700,
+              flex: fullScreen ? 2 : "initial",
               "&:hover": { bgcolor: "#2563eb" },
             }}
           >

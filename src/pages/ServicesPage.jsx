@@ -52,9 +52,7 @@ const ServicesPage = () => {
     const fetchServices = async () => {
       try {
         const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-        const response = await axios.get(
-          `${api}/public/services`,
-        );
+        const response = await axios.get(`${api}/public/services`);
         setDepartments(response.data);
       } catch (error) {
         console.error("Error fetching services:", error);
@@ -140,12 +138,12 @@ const ServicesPage = () => {
         </div> */}
 
         {/* Departments Grid */}
-        <Grid container spacing={7}>
+        <Grid container spacing={{ xs: 3, sm: 4, md: 5, lg: 6 }} justifyContent="center">
           {departments.map((dept, index) => (
-            <Grid item xs={12} sm={6} md={6} lg={3} key={index}>
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
               <Card
                 elevation={0}
-                className="group h-full max-w-[250px] flex flex-col rounded-2xl overflow-hidden transition-all duration-300 bg-white"
+                className="group h-full w-full flex flex-col rounded-2xl overflow-hidden transition-all duration-300 bg-white"
                 sx={{
                   border: "1px solid #e2e8f0",
                   "&:hover": {
@@ -157,7 +155,7 @@ const ServicesPage = () => {
                 {/* Image */}
                 <div
                   className="relative overflow-hidden"
-                  style={{ height: 160 }}
+                  style={{ height: 200 }}
                 >
                   <div
                     className="absolute inset-0 bg-center bg-no-repeat bg-cover transition-transform duration-500 group-hover:scale-105"
@@ -249,9 +247,9 @@ const ServicesPage = () => {
                 icon: <AccessTimeFilledIcon sx={{ fontSize: 36 }} />,
               },
             ].map((feature, i) => (
-              <Grid item xs={12} md={4} key={i}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
                 <div
-                  className="flex flex-col items-center text-center bg-white h-full max-w-[370px]"
+                  className="flex flex-col items-center text-center bg-white h-full w-full"
                   style={{
                     borderRadius: 16,
                     border: "1px solid #e8edf3",

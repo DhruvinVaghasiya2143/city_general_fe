@@ -76,19 +76,37 @@ const ContactUs = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: "#f6f7f8", minHeight: "100vh" }}>
-      <Container maxWidth="lg" sx={{ py: 10 }}>
+    <Box
+      sx={{
+        
+        background: "linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)",
+        minHeight: "100vh",
+      }}
+    >
+      <Container maxWidth="lg" sx={{ py: { xs: 6, md: 12 } }}>
         {/* Header Section */}
-        <Box sx={{ mb: 8 }}>
+        <Box sx={{ mb: { xs: 6, md: 10 }, textAlign: { xs: "center", md: "left" } }}>
           <Typography
             variant="h2"
-            sx={{ fontWeight: 900, mb: 2, color: "#0f172a" }}
+            sx={{
+              fontWeight: 900,
+              mb: 2,
+              color: "#0f172a",
+              fontSize: { xs: "2.5rem", sm: "3.5rem", md: "4.5rem" },
+              letterSpacing: "-0.02em",
+            }}
           >
             Contact Our Team
           </Typography>
           <Typography
             variant="h6"
-            sx={{ color: "#64748b", maxWidth: "700px", lineHeight: 1.6 }}
+            sx={{
+              color: "#64748b",
+              maxWidth: "700px",
+              lineHeight: 1.6,
+              mx: { xs: "auto", md: 0 },
+              fontSize: { xs: "1rem", md: "1.25rem" },
+            }}
           >
             Have questions about our services or need to schedule an
             appointment? Reach out through the form or visit our facility using
@@ -109,18 +127,20 @@ const ContactUs = () => {
             <Card
               elevation={0}
               sx={{
-                borderRadius: "20px",
+                borderRadius: "24px",
                 border: "1px solid #e2e8f0",
-                p: { xs: 2, md: 4 },
-                boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+                p: { xs: 3, md: 5 },
+                boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
+                background: "rgba(255, 255, 255, 0.9)",
+                backdropFilter: "blur(10px)",
               }}
             >
               <CardContent>
                 <Box
                   sx={{ display: "flex", alignItems: "center", mb: 4, gap: 1 }}
                 >
-                  <EmailIcon color="primary" />
-                  <Typography variant="h5" sx={{ fontWeight: 800 }}>
+                  <EmailIcon color="primary" sx={{ fontSize: "2rem" }} />
+                  <Typography variant="h5" sx={{ fontWeight: 800, fontSize: { xs: "1.2rem", md: "1.75rem" } }}>
                     Send us a Message
                   </Typography>
                 </Box>
@@ -258,12 +278,16 @@ const ContactUs = () => {
                   overflow: "hidden",
                   border: "1px solid #e2e8f0",
                   position: "relative",
-                  minHeight: "350px",
+                  minHeight: { xs: "300px", md: "400px" },
                   bgcolor: "#e2e8f0",
                   backgroundImage: 'url("/assets/map.jpg")',
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   filter: "grayscale(20%) brightness(95%)",
+                  transition: "transform 0.3s ease",
+                  "&:hover": {
+                    transform: "scale(1.02)",
+                  },
                 }}
               >
                 {/* Map Marker Placeholder */}
@@ -316,11 +340,16 @@ const ContactUs = () => {
                 <Box sx={{ width: { xs: "100%", sm: "50%" } }}>
                   <Box
                     sx={{
-                      bgcolor: "#dbeafe",
+                      bgcolor: "#eff6ff",
                       p: 3,
-                      borderRadius: "16px",
+                      borderRadius: "20px",
                       height: "100%",
-                      border: "1px solid #bfdbfe",
+                      border: "1px solid #dbeafe",
+                      transition: "all 0.3s ease",
+                      "&:hover": {
+                        transform: "translateY(-5px)",
+                        boxShadow: "0 10px 15px -3px rgba(59, 130, 246, 0.1)",
+                      },
                     }}
                   >
                     <PhoneIcon color="primary" sx={{ mb: 1.5 }} />
@@ -329,11 +358,11 @@ const ContactUs = () => {
                     </Typography>
                     <Typography
                       variant="body2"
-                      sx={{ color: "#1e40af", mb: 0.5 }}
+                      sx={{ color: "#1e40af", mb: 0.5, fontWeight: 600 }}
                     >
                       +1 (555) 000-1234
                     </Typography>
-                    <Typography variant="caption" sx={{ color: "#60a5fa" }}>
+                    <Typography variant="caption" sx={{ color: "#64748b" }}>
                       Available 24/7 for Emergencies
                     </Typography>
                   </Box>
@@ -341,21 +370,26 @@ const ContactUs = () => {
                 <Box sx={{ width: { xs: "100%", sm: "50%" } }}>
                   <Box
                     sx={{
-                      bgcolor: "#dbeafe",
+                      bgcolor: "#eff6ff",
                       p: 3,
-                      borderRadius: "16px",
+                      borderRadius: "20px",
                       height: "100%",
-                      border: "1px solid #bfdbfe",
+                      border: "1px solid #dbeafe",
+                      transition: "all 0.3s ease",
+                      "&:hover": {
+                        transform: "translateY(-5px)",
+                        boxShadow: "0 10px 15px -3px rgba(59, 130, 246, 0.1)",
+                      },
                     }}
                   >
                     <LocationOnIcon color="primary" sx={{ mb: 1.5 }} />
                     <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
                       Physical Address
                     </Typography>
-                    <Typography variant="body2" sx={{ color: "#1e40af" }}>
+                    <Typography variant="body2" sx={{ color: "#1e40af", fontWeight: 600 }}>
                       123 Healthcare Plaza
                     </Typography>
-                    <Typography variant="body2" sx={{ color: "#1e40af" }}>
+                    <Typography variant="body2" sx={{ color: "#1e40af", fontWeight: 600 }}>
                       Medical District, NY 10001
                     </Typography>
                   </Box>
@@ -366,12 +400,19 @@ const ContactUs = () => {
         </Box>
 
         {/* FAQ Section */}
-        <Box sx={{ mt: 15, pt: 10, borderTop: "1px solid #e2e8f0" }}>
+        <Box sx={{ mt: { xs: 12, md: 20 }, pt: { xs: 8, md: 12 }, borderTop: "1px solid #e2e8f0" }}>
           <Box sx={{ textAlign: "center", mb: 8 }}>
-            <Typography variant="h3" sx={{ fontWeight: 900, mb: 2 }}>
+            <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 900,
+                mb: 2,
+                fontSize: { xs: "2rem", md: "3rem" },
+              }}
+            >
               Frequently Asked Questions
             </Typography>
-            <Typography variant="h6" sx={{ color: "#64748b" }}>
+            <Typography variant="h6" sx={{ color: "#64748b", fontSize: { xs: "1rem", md: "1.25rem" } }}>
               Can't find what you're looking for? Here are some quick answers.
             </Typography>
           </Box>
@@ -402,6 +443,7 @@ const ContactUs = () => {
                 sx={{
                   width: {
                     xs: "100%",
+                    sm: "calc(50% - 16px)",
                     md: "calc(33.333% - 27px)",
                   },
                 }}
@@ -410,9 +452,14 @@ const ContactUs = () => {
                   sx={{
                     p: 4,
                     bgcolor: "white",
-                    borderRadius: "16px",
+                    borderRadius: "24px",
                     border: "1px solid #e2e8f0",
                     height: "100%",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      borderColor: "primary.main",
+                      boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.1)",
+                    },
                   }}
                 >
                   <Typography

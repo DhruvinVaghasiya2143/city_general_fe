@@ -29,6 +29,7 @@ import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 
 import ScheduleAppointment from "../pages/ScheduleAppointment";
@@ -59,6 +60,12 @@ const ROLE_PAGES = {
     { label: "Patients", path: "#" },
     { label: "Appointments", path: "#" },
     { label: "Billing", path: "#" },
+  ],
+  Admin: [
+    { label: "Dashboard", path: "/admin-dashboard" },
+    { label: "Staff", path: "#" },
+    { label: "Services", path: "#" },
+    { label: "Reports", path: "#" },
   ],
 };
 
@@ -142,6 +149,7 @@ function ResponsiveAppBar() {
       Doctor: "/doctor-dashboard",
       Pharmacist: "/pharmacists-dashboard",
       Receptionist: "/receptionist-dashboard",
+      Admin: "/admin-dashboard",
     };
     navigate(routes[authUser.role] || "/");
   };
@@ -564,6 +572,260 @@ function ResponsiveAppBar() {
           </Box>
         </Box>
       );
+    } else if (authUser?.role === "Admin") {
+      return (
+        <Box
+          component="header"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderBottom: "1px solid #e2e8f0",
+            bgcolor: "white",
+            px: { xs: 2, md: 5 },
+            py: 1.5,
+            position: "sticky",
+            top: 0,
+            zIndex: 50,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                color: "#137fec",
+              }}
+            >
+              <AdminPanelSettingsIcon sx={{ fontSize: 24, color: "#137fec" }} />
+              <Typography
+                sx={{
+                  fontSize: "1.25rem",
+                  fontWeight: 900,
+                  textTransform: "uppercase",
+                  letterSpacing: "-0.025em",
+                  color: "#0f172a",
+                }}
+              >
+                MedCore
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: { xs: "none", md: "flex" },
+                flexDirection: "column",
+                width: 256,
+                height: 40,
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  flex: 1,
+                  alignItems: "center",
+                  borderRadius: "8px",
+                  bgcolor: "#f1f5f9",
+                  px: 2,
+                }}
+              >
+                <SearchIcon sx={{ color: "#64748b", fontSize: 20 }} />
+                <TextField
+                  variant="standard"
+                  placeholder="Global search..."
+                  InputProps={{
+                    disableUnderline: true,
+                    sx: {
+                      fontSize: "1rem",
+                      pl: 1,
+                      "& input::placeholder": { color: "#64748b" },
+                    },
+                  }}
+                  sx={{ flex: 1 }}
+                />
+              </Box>
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: { xs: 2, lg: 3 },
+            }}
+          >
+            <Box
+              sx={{
+                display: { xs: "none", lg: "flex" },
+                alignItems: "center",
+                gap: 3,
+              }}
+            >
+              <Typography
+                component="a"
+                href="/admin-dashboard"
+                sx={{
+                  color: "#137fec",
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
+                  borderBottom: "2px solid #137fec",
+                  pb: 0.5,
+                  textDecoration: "none",
+                }}
+              >
+                Dashboard
+              </Typography>
+              <Typography
+                component="a"
+                href="#"
+                sx={{
+                  color: "#475569",
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  "&:hover": { color: "#137fec" },
+                  transition: "color 0.2s",
+                  textDecoration: "none",
+                }}
+              >
+                Staff
+              </Typography>
+              <Typography
+                component="a"
+                href="#"
+                sx={{
+                  color: "#475569",
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  "&:hover": { color: "#137fec" },
+                  transition: "color 0.2s",
+                  textDecoration: "none",
+                }}
+              >
+                Services
+              </Typography>
+              <Typography
+                component="a"
+                href="#"
+                sx={{
+                  color: "#475569",
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  "&:hover": { color: "#137fec" },
+                  transition: "color 0.2s",
+                  textDecoration: "none",
+                }}
+              >
+                Reports
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: "flex", gap: 1.5 }}>
+              <IconButton
+                sx={{
+                  width: 40,
+                  height: 40,
+                  bgcolor: "#f1f5f9",
+                  color: "#334155",
+                  borderRadius: "8px",
+                  "&:hover": { bgcolor: "#e2e8f0" },
+                }}
+              >
+                <NotificationsIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+              <IconButton
+                sx={{
+                  width: 40,
+                  height: 40,
+                  bgcolor: "#f1f5f9",
+                  color: "#334155",
+                  borderRadius: "8px",
+                  "&:hover": { bgcolor: "#e2e8f0" },
+                }}
+              >
+                <SettingsIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+                pl: 2,
+                borderLeft: "1px solid #e2e8f0",
+              }}
+            >
+              <Box
+                sx={{
+                  textAlign: "right",
+                  display: { xs: "none", sm: "block" },
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontSize: "0.875rem",
+                    fontWeight: 700,
+                    color: "#0f172a",
+                  }}
+                >
+                  {authUser?.name}
+                </Typography>
+                <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>
+                  System Administrator
+                </Typography>
+              </Box>
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar
+                  src={authUser?.avatar}
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    border: "2px solid rgba(19, 127, 236, 0.2)",
+                    bgcolor: "#137fec",
+                    fontSize: "0.9rem",
+                    fontWeight: 700,
+                  }}
+                >
+                  {!authUser?.avatar && getInitials(authUser?.name)}
+                </Avatar>
+              </IconButton>
+              <Menu
+                anchorEl={anchorElUser}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+                sx={{ mt: 1 }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+              >
+                <MenuItem
+                  onClick={() => {
+                    handleCloseUserMenu();
+                    setProfileOpen(true);
+                  }}
+                  sx={{ gap: 1.5, fontSize: "0.875rem", py: 1.2 }}
+                >
+                  <BadgeIcon fontSize="small" sx={{ color: "#64748b" }} />
+                  Manage Profile
+                </MenuItem>
+                <Divider />
+                <MenuItem
+                  onClick={handleLogout}
+                  sx={{
+                    gap: 1.5,
+                    color: "#dc2626",
+                    fontWeight: 600,
+                    fontSize: "0.875rem",
+                    py: 1.2,
+                  }}
+                >
+                  <LogoutIcon fontSize="small" />
+                  Sign Out
+                </MenuItem>
+              </Menu>
+            </Box>
+          </Box>
+        </Box>
+      );
     } else if (authUser?.role === "Receptionist") {
       return (
         <Box
@@ -722,6 +984,7 @@ function ResponsiveAppBar() {
                   textTransform: "none",
                   boxShadow: "0 4px 6px -1px rgba(59, 130, 246, 0.2)",
                   "&:hover": { bgcolor: "#2563eb" },
+                  whiteSpace: "nowrap",
                 }}
               >
                 Book Appointment
@@ -887,7 +1150,7 @@ function ResponsiveAppBar() {
                   <Button
                     variant="contained"
                     onClick={handleOpenBooking}
-                    className="bg-blue-600 hover:bg-blue-700 normal-case hidden sm:flex"
+                    className="bg-blue-600 hover:bg-blue-700 normal-case hidden md:flex whitespace-nowrap"
                   >
                     Book Appointment
                   </Button>

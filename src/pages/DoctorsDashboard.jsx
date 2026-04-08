@@ -26,6 +26,8 @@ import {
   DialogContent,
   DialogActions,
   Popover,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -84,6 +86,10 @@ const formatLoginTime = (iso) => {
 };
 
 const DoctorsDashboard = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+
   const [authUser, setAuthUser] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [profileOpen, setProfileOpen] = React.useState(false);
@@ -550,7 +556,7 @@ const DoctorsDashboard = () => {
       <Box
         component="main"
         sx={{
-          p: { xs: 2, md: 3 },
+          p: { xs: 1.5, sm: 2, md: 3 },
           maxWidth: 1600,
           mx: "auto",
           width: "100%",
@@ -570,15 +576,17 @@ const DoctorsDashboard = () => {
           <Box
             sx={{
               display: "flex",
-              alignItems: "center",
+              flexDirection: { xs: "column", sm: "row" },
+              alignItems: { xs: "flex-start", sm: "center" },
               justifyContent: "space-between",
               width: "100%",
+              gap: 2,
             }}
           >
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
               <Typography
                 sx={{
-                  fontSize: "1.875rem",
+                  fontSize: { xs: "1.5rem", sm: "1.875rem" },
                   fontWeight: 900,
                   color: "#0f172a",
                   lineHeight: 1.25,
@@ -587,7 +595,12 @@ const DoctorsDashboard = () => {
               >
                 Doctor Dashboard
               </Typography>
-              <Typography sx={{ fontSize: "1.125rem", color: "#64748b" }}>
+              <Typography
+                sx={{
+                  fontSize: { xs: "0.875rem", sm: "1.125rem" },
+                  color: "#64748b",
+                }}
+              >
                 Welcome back,{" "}
                 {doctorName.startsWith("Dr.")
                   ? doctorName.split(" ").slice(1).join(" ")
@@ -606,7 +619,9 @@ const DoctorsDashboard = () => {
                 textTransform: "none",
                 borderRadius: "10px",
                 px: 3,
-                py: 1.5,
+                py: { xs: 1, sm: 1.5 },
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+                width: { xs: "100%", sm: "auto" },
                 boxShadow: "0 4px 6px -1px rgba(19, 127, 236, 0.2)",
                 "&:hover": {
                   bgcolor: "#0f6bd1",
@@ -623,8 +638,8 @@ const DoctorsDashboard = () => {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-            gap: 3,
+            gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" },
+            gap: { xs: 2, sm: 3 },
             mb: 4,
           }}
         >
@@ -635,7 +650,7 @@ const DoctorsDashboard = () => {
               flexDirection: "column",
               gap: 1,
               borderRadius: "12px",
-              p: 3,
+              p: { xs: 2.5, sm: 3 },
               bgcolor: "white",
               border: "1px solid #e2e8f0",
               boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
@@ -755,8 +770,8 @@ const DoctorsDashboard = () => {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: { xs: "1fr", lg: "1fr 260px" },
-            gap: 2.5,
+            gridTemplateColumns: { xs: "minmax(0, 1fr)", lg: "minmax(0, 1fr) 300px" },
+            gap: { xs: 3, lg: 4 },
           }}
         >
           {/* Schedule Timeline */}
@@ -765,6 +780,7 @@ const DoctorsDashboard = () => {
               display: "flex",
               flexDirection: "column",
               gap: 2,
+              minWidth: 0,
             }}
           >
             <Box
@@ -843,11 +859,13 @@ const DoctorsDashboard = () => {
                 bgcolor: "white",
                 borderRadius: "12px",
                 border: "1px solid #e2e8f0",
-                p: 3,
+                p: { xs: 1.5, sm: 2, md: 3 },
                 boxShadow: "0 1px 2px 0 rgba(0,0,0,0.05)",
+                width: "100%",
+                maxWidth: "100%",
               }}
             >
-              <TableContainer sx={{ maxHeight: 600 }}>
+              <TableContainer sx={{ maxHeight: 600, overflowX: "auto" }}>
                 <Table stickyHeader sx={{ minWidth: 650 }}>
                   <TableHead>
                     <TableRow>
@@ -859,6 +877,7 @@ const DoctorsDashboard = () => {
                           fontWeight: 700,
                           textTransform: "uppercase",
                           borderColor: "#e2e8f0",
+                          width: 50,
                         }}
                       >
                         #
@@ -873,19 +892,7 @@ const DoctorsDashboard = () => {
                           borderColor: "#e2e8f0",
                         }}
                       >
-                        First Name
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          bgcolor: "#f8fafc",
-                          color: "#64748b",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          textTransform: "uppercase",
-                          borderColor: "#e2e8f0",
-                        }}
-                      >
-                        Last Name
+                        Patient
                       </TableCell>
                       <TableCell
                         sx={{
@@ -909,7 +916,7 @@ const DoctorsDashboard = () => {
                           borderColor: "#e2e8f0",
                         }}
                       >
-                        Appointment Date
+                        Appointment
                       </TableCell>
                       <TableCell
                         sx={{
@@ -933,18 +940,6 @@ const DoctorsDashboard = () => {
                           borderColor: "#e2e8f0",
                         }}
                       >
-                        Registered At
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          bgcolor: "#f8fafc",
-                          color: "#64748b",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                          textTransform: "uppercase",
-                          borderColor: "#e2e8f0",
-                        }}
-                      >
                         Status
                       </TableCell>
                       <TableCell
@@ -955,6 +950,7 @@ const DoctorsDashboard = () => {
                           fontWeight: 700,
                           textTransform: "uppercase",
                           borderColor: "#e2e8f0",
+                          textAlign: "right",
                         }}
                       >
                         Actions
@@ -999,18 +995,7 @@ const DoctorsDashboard = () => {
                                   fontSize: "0.875rem",
                                 }}
                               >
-                                {apt.patientId?.firstName}
-                              </Typography>
-                            </TableCell>
-                            <TableCell sx={{ py: 2 }}>
-                              <Typography
-                                sx={{
-                                  fontWeight: 700,
-                                  color: "#0f172a",
-                                  textTransform: "capitalize",
-                                  fontSize: "0.875rem",
-                                }}
-                              >
+                                {apt.patientId?.firstName}{" "}
                                 {apt.patientId?.lastName}
                               </Typography>
                             </TableCell>
@@ -1033,10 +1018,29 @@ const DoctorsDashboard = () => {
                                 fontSize: "0.875rem",
                               }}
                             >
-                              {new Date(apt.date).toLocaleString([], {
-                                dateStyle: "medium",
-                                timeStyle: "short",
-                              })}
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                }}
+                              >
+                                <Typography
+                                  sx={{ fontSize: "0.875rem", fontWeight: 600 }}
+                                >
+                                  {new Date(apt.date).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </Typography>
+                                <Typography
+                                  sx={{ fontSize: "0.75rem", color: "#64748b" }}
+                                >
+                                  {new Date(apt.date).toLocaleDateString([], {
+                                    month: "short",
+                                    day: "numeric",
+                                  })}
+                                </Typography>
+                              </Box>
                             </TableCell>
                             <TableCell sx={{ py: 2, maxWidth: 200 }}>
                               <Typography
@@ -1049,13 +1053,6 @@ const DoctorsDashboard = () => {
                                 }}
                               >
                                 {apt.concern || "—"}
-                              </Typography>
-                            </TableCell>
-                            <TableCell sx={{ py: 2 }}>
-                              <Typography
-                                sx={{ fontSize: "0.875rem", color: "#64748b" }}
-                              >
-                                {new Date(apt.createdAt).toLocaleDateString()}
                               </Typography>
                             </TableCell>
                             <TableCell sx={{ py: 2 }}>
@@ -1087,7 +1084,7 @@ const DoctorsDashboard = () => {
                                 }}
                               />
                             </TableCell>
-                            <TableCell sx={{ py: 2 }}>
+                            <TableCell sx={{ py: 2, textAlign: "right" }}>
                               <Button
                                 size="small"
                                 onClick={() => handleViewAppointment(apt)}
@@ -1095,6 +1092,7 @@ const DoctorsDashboard = () => {
                                   fontWeight: 700,
                                   textTransform: "none",
                                   color: "#137fec",
+                                  minWidth: "auto",
                                   "&:hover": { bgcolor: "transparent" },
                                 }}
                               >
@@ -1326,8 +1324,8 @@ const DoctorsDashboard = () => {
         onClose={() => setProfileOpen(false)}
         PaperProps={{
           sx: {
-            width: { xs: "100vw", sm: 380 },
-            borderRadius: "16px 0 0 16px",
+            width: { xs: "100%", sm: 380 },
+            borderRadius: { xs: 0, sm: "16px 0 0 16px" },
           },
         }}
       >
@@ -1496,8 +1494,9 @@ const DoctorsDashboard = () => {
         onClose={handleCloseDialog}
         maxWidth="sm"
         fullWidth
+        fullScreen={isMobile}
         PaperProps={{
-          sx: { borderRadius: "12px", p: 1 },
+          sx: { borderRadius: isMobile ? 0 : "12px", p: isMobile ? 0 : 1 },
         }}
       >
         <DialogTitle sx={{ fontWeight: 800, color: "#0f172a", pb: 1 }}>

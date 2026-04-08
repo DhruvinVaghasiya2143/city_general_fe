@@ -127,16 +127,35 @@ const DoctorsPage = () => {
   }, [location.state]);
 
   return (
-    <Box sx={{ bgcolor: "#f6f7f8", minHeight: "100vh", py: 8 }}>
+    <Box
+      sx={{
+        background: "linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)",
+        minHeight: "100vh",
+        py: { xs: 4, md: 8 },
+      }}
+    >
       <Container maxWidth="xl">
-        <Box sx={{ mb: 6 }}>
+        <Box sx={{ mb: { xs: 4, md: 6 }, textAlign: { xs: "center", md: "left" } }}>
           <Typography
             variant="h3"
-            sx={{ fontWeight: 900, mb: 2, tracking: "-0.033em" }}
+            sx={{
+              fontWeight: 900,
+              mb: 2,
+              letterSpacing: "-0.02em",
+              fontSize: { xs: "2rem", sm: "2.75rem", md: "3.5rem" },
+            }}
           >
             Find a Specialist
           </Typography>
-          <Typography variant="h6" sx={{ color: "#64748b", maxW: "700px" }}>
+          <Typography
+            variant="h6"
+            sx={{
+              color: "#64748b",
+              maxWidth: "700px",
+              mx: { xs: "auto", md: 0 },
+              fontSize: { xs: "0.95rem", md: "1.25rem" },
+            }}
+          >
             Connect with our network of world-class medical professionals.
           </Typography>
         </Box>
@@ -145,10 +164,13 @@ const DoctorsPage = () => {
         <Card
           elevation={0}
           sx={{
-            p: 3,
-            borderRadius: "16px",
+            p: { xs: 2.5, md: 4 },
+            borderRadius: "24px",
             border: "1px solid #e2e8f0",
             mb: 6,
+            background: "rgba(255, 255, 255, 0.7)",
+            backdropFilter: "blur(10px)",
+            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)",
           }}
         >
           <Box
@@ -266,9 +288,15 @@ const DoctorsPage = () => {
                     md: "calc(33.333% - 16px)",
                     lg: "calc(25% - 18px)",
                   },
-                  borderRadius: "16px",
+                  borderRadius: "24px",
                   border: "1px solid #e2e8f0",
                   overflow: "hidden",
+                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  "&:hover": {
+                    transform: "translateY(-8px)",
+                    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                    borderColor: "primary.light",
+                  },
                 }}
               >
                 <Box
@@ -355,7 +383,12 @@ const DoctorsPage = () => {
         fullWidth
         maxWidth="sm"
         PaperProps={{
-          sx: { borderRadius: "16px", p: 1 },
+          sx: {
+            borderRadius: "28px",
+            p: { xs: 1, md: 2 },
+            margin: { xs: 2, sm: 3 },
+            maxHeight: "calc(100% - 32px)",
+          },
         }}
       >
         <DialogTitle sx={{ fontWeight: 900, fontSize: "1.5rem" }}>
@@ -372,20 +405,35 @@ const DoctorsPage = () => {
         <DialogContent>
           {selectedDoctor && (
             <Box sx={{ mt: 2 }}>
-              <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  gap: { xs: 3, sm: 4 },
+                  mb: 3,
+                  alignItems: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Box
                   component="img"
                   src={doctorImage}
                   alt="doctor"
                   sx={{
-                    width: 200,
-                    height: 200,
-                    borderRadius: "12px",
+                    width: { xs: "100%", sm: 200 },
+                    height: { xs: "auto", sm: 200 },
+                    aspectRatio: { xs: "1/1", sm: "auto" },
+                    borderRadius: "20px",
                     objectFit: "cover",
+                    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
                   }}
                 />
                 <Box
-                  sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1.5,
+                    width: "100%",
+                  }}
                 >
                   <Box sx={{ display: "flex", gap: 1 }}>
                     <Typography sx={{ color: "black", fontWeight: 700 }}>

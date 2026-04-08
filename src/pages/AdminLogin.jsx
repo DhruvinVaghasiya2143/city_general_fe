@@ -48,14 +48,11 @@ const AdminLogin = () => {
     try {
       setIsLoading(true);
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      const response = await axios.post(
-        `${api}/auth/login`,
-        {
-          email: email,
-          password: password,
-          role: "admin",
-        },
-      );
+      const response = await axios.post(`${api}/auth/login`, {
+        email: email,
+        password: password,
+        role: "admin",
+      });
 
       if (response) {
         console.log("loginResponse", response);
@@ -84,6 +81,8 @@ const AdminLogin = () => {
   return (
     <Box
       sx={{
+        marginBlockStart: { xs: "5%", sm: "10%", md: "0%" },
+        marginInline: "auto",
         bgcolor: "#f8fafc",
         minHeight: "100vh",
         display: "flex",
@@ -312,9 +311,10 @@ const AdminLogin = () => {
                       px: 2,
                       zIndex: 1,
                       color: "#94a3b8",
-                      fontWeight: 700,
+                      fontWeight: 800,
                       textTransform: "uppercase",
-                      letterSpacing: "1px",
+                      letterSpacing: "1.5px",
+                      fontSize: "0.7rem",
                     }}
                   >
                     Administration

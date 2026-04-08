@@ -11,12 +11,22 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
+  IconButton,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import SaveIcon from "@mui/icons-material/Save";
 import axios from "axios";
 
-const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = false }) => {
+const AddService = ({
+  open,
+  onClose,
+  onSuccess,
+  initialData = null,
+  isEdit = false,
+}) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -24,6 +34,8 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
   });
   const [error, setError] = useState({});
   const [loading, setLoading] = useState(false);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const fileInputRef = React.useRef(null);
@@ -88,22 +100,22 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (!file) return;
- 
+
     // Validate file type
     if (!file.type.startsWith("image/")) {
       setError({ ...error, imageUrl: "Please select an image file" });
       return;
     }
- 
+
     setSelectedFile(file);
     setError({ ...error, imageUrl: "" });
-    
+
     // Create local preview URL
     const localUrl = URL.createObjectURL(file);
     setPreviewUrl(localUrl);
-    
+
     // Also update formData.imageUrl to pass validation if we are using it
-    setFormData(prev => ({ ...prev, imageUrl: file.name }));
+    setFormData((prev) => ({ ...prev, imageUrl: file.name }));
   };
 
   console.log("formData", formData);
@@ -119,12 +131,12 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
     setLoading(true);
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      
+
       // Use FormData for multipart/form-data request
       const payload = new FormData();
       payload.append("name", formData.name);
       payload.append("description", formData.description);
-      
+
       if (selectedFile) {
         payload.append("serviceImage", selectedFile);
       } else {
@@ -146,7 +158,8 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
     } catch (err) {
       console.error("Add Service Error:", err);
       const serverError =
-        err.response?.data?.message || `Server error during service ${isEdit ? "update" : "creation"}`;
+        err.response?.data?.message ||
+        `Server error during service ${isEdit ? "update" : "creation"}`;
       setError({ submit: serverError });
     } finally {
       setLoading(false);
@@ -175,29 +188,57 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
       onClose={onClose}
       maxWidth="sm"
       fullWidth
+      fullScreen={fullScreen}
       PaperProps={{
         component: "form",
         onSubmit: handleSubmit,
+        sx: {
+          borderRadius: fullScreen ? 0 : "16px",
+        },
       }}
     >
-      <DialogTitle sx={{ pb: 1 }}>
-        <Typography
-          variant="h5"
-          component="span"
-          sx={{ fontWeight: 800, color: "#1e293b", mb: 0.5, display: "block" }}
+      <DialogTitle sx={{ pb: 1, px: { xs: 2, sm: 3 }, pt: { xs: 2, sm: 3 } }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+          }}
         >
-          {isEdit ? "Edit Medical Service" : "Add New Medical Service"}
-        </Typography>
-        <Typography
-          variant="body2"
-          component="span"
-          sx={{ color: "#64748b", fontWeight: 500, display: "block" }}
-        >
-          {isEdit ? "Update the details for this medical service." : "Enter the details for the new hospital department or service."}
-        </Typography>
+          <Box>
+            <Typography
+              variant="h5"
+              component="span"
+              sx={{
+                fontWeight: 800,
+                color: "#1e293b",
+                mb: 0.5,
+                display: "block",
+              }}
+            >
+              {isEdit ? "Edit Medical Service" : "Add New Medical Service"}
+            </Typography>
+            <Typography
+              variant="body2"
+              component="span"
+              sx={{ color: "#64748b", fontWeight: 500, display: "block" }}
+            >
+              {isEdit
+                ? "Update the details for this medical service."
+                : "Enter the details for the new hospital department or service."}
+            </Typography>
+          </Box>
+          {fullScreen && (
+            <IconButton onClick={onClose} sx={{ color: "#64748b" }}>
+              <CloseIcon />
+            </IconButton>
+          )}
+        </Box>
       </DialogTitle>
 
-      <DialogContent sx={{ bgcolor: "#f1f5f9", pt: 3 }}>
+      <DialogContent
+        sx={{ bgcolor: "#f1f5f9", pt: { xs: 2, sm: 3 }, px: { xs: 2, sm: 3 } }}
+      >
         {error.submit && (
           <Paper
             sx={{
@@ -287,7 +328,15 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
               >
                 Service Image
               </Typography>
-              <Box sx={{ mb: 2, display: "flex", flexWrap: "wrap", gap: 2, alignItems: "flex-start" }}>
+              <Box
+                sx={{
+                  mb: 2,
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 2,
+                  alignItems: "flex-start",
+                }}
+              >
                 <input
                   type="file"
                   accept="image/*"
@@ -310,7 +359,7 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
                 >
                   {previewUrl ? "Change Image" : "Upload Image"}
                 </Button>
-                
+
                 {previewUrl && (
                   <Box
                     component="img"
@@ -326,7 +375,7 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
                   />
                 )}
               </Box>
-{/*               
+              {/*               
               <Typography
                 variant="caption"
                 sx={{ display: "block", mb: 1, color: "#64748b", fontWeight: 500 }}
@@ -347,25 +396,53 @@ const AddService = ({ open, onClose, onSuccess, initialData = null, isEdit = fal
           </Grid>
         </Paper>
 
-        <DialogActions sx={{ pb: 3, pt: 1 }}>
-          <Button onClick={onClose} sx={{ fontWeight: 700, color: "#64748b" }}>
+        <DialogActions
+          sx={{
+            pb: 3,
+            pt: 1,
+            px: 3,
+            gap: 1,
+            justifyContent: fullScreen ? "stretch" : "flex-end",
+          }}
+        >
+          <Button
+            onClick={onClose}
+            sx={{
+              fontWeight: 700,
+              color: "#64748b",
+              flex: fullScreen ? 1 : "initial",
+            }}
+          >
             Cancel
           </Button>
           <Button
             type="submit"
             variant="contained"
             disabled={loading}
-            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+            startIcon={
+              loading ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                <SaveIcon />
+              )
+            }
             sx={{
               bgcolor: "#3b82f6",
               borderRadius: "8px",
-              px: 3,
+              px: { xs: 2, sm: 4 },
               py: 1.2,
               fontWeight: 700,
+              flex: fullScreen ? 2 : "initial",
               "&:hover": { bgcolor: "#2563eb" },
             }}
           >
-            {loading ? (isEdit ? "Updating..." : "Saving...") : (isEdit ? "Update Service" : "Save Service")}
+            {loading
+              ? isEdit
+                ? "Updating..."
+                : "Saving..."
+              : isEdit
+                ? "Update Service"
+                : "Save Service"}
           </Button>
         </DialogActions>
       </DialogContent>

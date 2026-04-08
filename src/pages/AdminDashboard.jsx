@@ -14,9 +14,19 @@ import AddIcon from "@mui/icons-material/Add";
 import PeopleIcon from "@mui/icons-material/People";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
-import { Tabs, Tab, Divider } from "@mui/material";
+import {
+  Tabs,
+  Tab,
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from "@mui/material";
 import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import AddDoctor from "./AddDoctor";
 import AddService from "./AddService";
 import axios from "axios";
@@ -48,6 +58,8 @@ const AdminDashboard = () => {
 
   const [isEditService, setIsEditService] = useState(false);
   const [currentService, setCurrentService] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [serviceToDelete, setServiceToDelete] = useState(null);
 
   const fetchUsers = async () => {
     try {
@@ -107,16 +119,26 @@ const AdminDashboard = () => {
     setOpenAddService(true);
   };
 
-  const handleDeleteService = async (id) => {
-    if (window.confirm("Are you sure you want to delete this service?")) {
-      try {
-        const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-        await axios.delete(`${api}/admin/services/${id}`);
-        fetchUsers();
-      } catch (err) {
-        console.error("Error deleting service:", err);
-      }
+  const handleDeleteService = (service) => {
+    setServiceToDelete(service);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
+      await axios.delete(`${api}/admin/services/${serviceToDelete._id}`);
+      setDeleteDialogOpen(false);
+      setServiceToDelete(null);
+      fetchUsers();
+    } catch (err) {
+      console.error("Error deleting service:", err);
     }
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setServiceToDelete(null);
   };
   const handleSuccess = () => {
     // Refresh stats and users after adding a doctor
@@ -163,11 +185,25 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <Box sx={{ bgcolor: "#f8fafc", minHeight: "100vh", pt: 2, pb: 12 }}>
+    <Box
+      sx={{
+        bgcolor: "#f8fafc",
+        minHeight: "100vh",
+        pt: { xs: 4, md: 6 },
+        pb: { xs: 8, md: 12 },
+      }}
+    >
       <Container maxWidth="lg">
         {/* Header */}
         <Box
-          sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mb: 1 }}
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            justifyContent: "flex-end",
+            gap: 2,
+            mb: { xs: 4, md: 6 },
+            mt: { xs: 1, md: 0 },
+          }}
         >
           <Button
             variant="contained"
@@ -182,6 +218,7 @@ const AdminDashboard = () => {
               py: 1.2,
               boxShadow: "0 4px 6px -1px rgb(16 185 129 / 0.1)",
               "&:hover": { bgcolor: "#059669" },
+              width: { xs: "100%", sm: "auto" },
             }}
           >
             Add New Service
@@ -199,6 +236,7 @@ const AdminDashboard = () => {
               py: 1.2,
               boxShadow: "0 4px 6px -1px rgb(59 130 246 / 0.1)",
               "&:hover": { bgcolor: "#2563eb" },
+              width: { xs: "100%", sm: "auto" },
             }}
           >
             Add New Staff
@@ -238,9 +276,13 @@ const AdminDashboard = () => {
         </Box>
 
         {/* Stats Grid */}
-        <Grid container spacing={3}>
+        <Grid
+          container
+          spacing={{ xs: 2, md: 3 }}
+          sx={{ mb: { xs: 6, md: 8 } }}
+        >
           {statCards.map((stat, index) => (
-            <Grid item xs={12} sm={4} key={index}>
+            <Grid item xs={12} sm={6} md={4} key={index}>
               <Paper
                 elevation={0}
                 sx={{
@@ -285,8 +327,11 @@ const AdminDashboard = () => {
             mt: 6,
             mb: 3,
             display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
             justifyContent: "space-between",
-            alignItems: "flex-end",
+            alignItems: { xs: "flex-start", sm: "flex-end" },
+            gap: { xs: 1, sm: 2 },
+            mb: { xs: 3, md: 4 },
           }}
         >
           <Box>
@@ -312,12 +357,14 @@ const AdminDashboard = () => {
             <Tabs
               value={activeRole}
               onChange={handleTabChange}
+              variant="scrollable"
+              scrollButtons="auto"
               sx={{
                 "& .MuiTab-root": {
                   textTransform: "none",
                   fontWeight: 700,
                   fontSize: "0.95rem",
-                  minWidth: 100,
+                  minWidth: { xs: 100, sm: 120 },
                   py: 1.5,
                 },
                 "& .Mui-selected": { color: "#3b82f6" },
@@ -332,11 +379,13 @@ const AdminDashboard = () => {
           </Box>
           <Divider />
 
-          <Box sx={{ overflowX: "auto" }}>
+          {/* Responsive Table View */}
+          <Box sx={{ overflowX: "auto", width: "100%" }}>
             <Box
               component="table"
               sx={{
                 width: "100%",
+                minWidth: { xs: "800px", md: "100%" },
                 borderCollapse: "collapse",
                 "& th, & td": {
                   p: 2,
@@ -423,7 +472,7 @@ const AdminDashboard = () => {
                                 size="small"
                                 variant="outlined"
                                 color="error"
-                                onClick={() => handleDeleteService(user._id)}
+                                onClick={() => handleDeleteService(user)}
                                 sx={{
                                   textTransform: "none",
                                   fontWeight: 700,
@@ -564,6 +613,71 @@ const AdminDashboard = () => {
             fetchUsers();
           }}
         />
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog
+          open={deleteDialogOpen}
+          onClose={handleCloseDeleteDialog}
+          PaperProps={{
+            sx: {
+              borderRadius: "16px",
+              padding: 1,
+              maxWidth: "400px",
+            },
+          }}
+        >
+          <DialogTitle
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              fontWeight: 800,
+              color: "#1e293b",
+            }}
+          >
+            <WarningRoundedIcon sx={{ color: "#ef4444", fontSize: "2rem" }} />
+            Confirm Deletion
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              sx={{ color: "#64748b", fontWeight: 500, lineHeight: 1.6 }}
+            >
+              Are you sure you want to delete{" "}
+              <Box component="span" sx={{ fontWeight: 800, color: "#1e293b" }}>
+                {serviceToDelete?.name}
+              </Box>
+              ?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+            <Button
+              onClick={handleCloseDeleteDialog}
+              sx={{
+                color: "#64748b",
+                textTransform: "none",
+                fontWeight: 700,
+                "&:hover": { bgcolor: "#f1f5f9" },
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmDelete}
+              variant="contained"
+              sx={{
+                bgcolor: "#ef4444",
+                textTransform: "none",
+                fontWeight: 700,
+                borderRadius: "8px",
+                px: 3,
+                boxShadow: "0 4px 6px -1px rgb(239 68 68 / 0.2)",
+                "&:hover": { bgcolor: "#dc2626" },
+              }}
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Container>
     </Box>
   );

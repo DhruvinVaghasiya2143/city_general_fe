@@ -18,26 +18,73 @@ export default function CTASection() {
         marginBlockEnd: "64px",
       }}
     >
-      <Typography variant="h4" fontWeight="bold" mb={3}>
-        Ready to take control of <br /> your health?
+      <Typography 
+        variant="h4" 
+        sx={{ 
+          fontWeight: 800, 
+          mb: 2,
+          fontSize: { xs: "1.75rem", md: "2.5rem" },
+          px: 2
+        }}
+      >
+        Ready to take control of your health?
       </Typography>
 
-      <Typography variant="p" fontWeight="normal">
-        Book your first consultation today and experience <br /> healthcare
-        reimaged.
+      <Typography 
+        variant="body1" 
+        sx={{ 
+          fontWeight: 500, 
+          opacity: 0.9,
+          maxWidth: "600px",
+          mx: "auto",
+          mb: 4,
+          px: 4,
+          fontSize: { xs: "0.9rem", md: "1.1rem" }
+        }}
+      >
+        Book your first consultation today and experience healthcare reimagined.
       </Typography>
 
-      <Box sx={{ mt: 3 }}>
+      <Box sx={{ 
+        display: "flex", 
+        flexDirection: "row", 
+        justifyContent: "center", 
+        gap: { xs: 1, sm: 2 },
+        px: { xs: 2, sm: 4 }
+      }}>
         <Button
           variant="contained"
-          sx={{ bgcolor: "white", color: "#1976d2", mr: 2 }}
+          size="large"
+          sx={{ 
+            flex: { xs: 1, sm: "none" },
+            bgcolor: "white", 
+            color: "#1976d2", 
+            fontWeight: 700,
+            textTransform: "none",
+            borderRadius: "10px",
+            px: { xs: 1, sm: 4 },
+            fontSize: { xs: "0.85rem", sm: "0.9375rem" },
+            "&:hover": { bgcolor: "#f8fafc" }
+          }}
           onClick={() => navigate("/doctors")}
         >
           Schedule Now
         </Button>
         <Button
           variant="outlined"
-          sx={{ color: "white", borderColor: "white" }}
+          size="large"
+          sx={{ 
+            flex: { xs: 1, sm: "none" },
+            color: "white", 
+            borderColor: "white", 
+            fontWeight: 700,
+            textTransform: "none",
+            borderRadius: "10px",
+            px: { xs: 1, sm: 4 },
+            fontSize: { xs: "0.85rem", sm: "0.9375rem" },
+            borderWidth: "2px",
+            "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)", borderWidth: "2px" }
+          }}
           onClick={() => navigate("/contact")}
         >
           Contact Our Team

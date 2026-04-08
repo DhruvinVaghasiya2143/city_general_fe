@@ -50,27 +50,48 @@ const AboutUs = () => {
   ];
 
   return (
-    <Box>
+    <Box
+      sx={{
+        marginBlockStart: { xs: "5%", sm: "10%", md: "0%" },
+      }}
+    >
       {/* Hero Section */}
       <Box
         sx={{
-          height: "60vh",
+          minHeight: { xs: "400px", md: "60vh" },
           width: "100%",
           backgroundImage:
-            'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("/assets/about_hero.png")',
+            'linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url("/assets/about_hero.png")',
           backgroundSize: "cover",
           backgroundPosition: "center",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           color: "white",
-          px: { xs: 4, md: 10 },
+          px: { xs: 3, sm: 6, md: 10 },
+          py: { xs: 8, md: 0 },
         }}
       >
-        <Typography variant="h2" sx={{ fontWeight: 800, mb: 2 }}>
+        <Typography
+          variant="h2"
+          sx={{
+            fontWeight: 800,
+            mb: 2,
+            fontSize: { xs: "2.25rem", sm: "3rem", md: "4rem" },
+            lineHeight: 1.1,
+          }}
+        >
           About Our Hospital
         </Typography>
-        <Typography variant="h5" sx={{ maxWidth: "600px", opacity: 0.9 }}>
+        <Typography
+          variant="h5"
+          sx={{
+            maxWidth: "600px",
+            opacity: 0.9,
+            fontSize: { xs: "1.1rem", md: "1.5rem" },
+            lineHeight: 1.6,
+          }}
+        >
           Serving our community with world-class healthcare for over 50 years.
           We are committed to excellence in every patient interaction.
         </Typography>
@@ -107,7 +128,11 @@ const AboutUs = () => {
               sx={{
                 display: "flex",
                 justifyContent: "center",
-                width: { xs: "100%", md: "calc(33.333% - 21.333px)" },
+                width: {
+                  xs: "100%",
+                  sm: "calc(50% - 16px)",
+                  md: "calc(33.333% - 21.333px)",
+                },
               }}
             >
               <Card
@@ -193,14 +218,23 @@ const AboutUs = () => {
             <Box sx={{ width: { xs: "100%", md: "66.666%" } }}>
               <Typography
                 variant="h3"
-                sx={{ fontWeight: 800, mb: 3, letterSpacing: "-0.02em" }}
+                sx={{
+                  fontWeight: 800,
+                  mb: 3,
+                  letterSpacing: "-0.02em",
+                  fontSize: { xs: "1.75rem", sm: "2.25rem", md: "3rem" },
+                }}
               >
                 A Legacy of Compassionate Care
               </Typography>
               <Typography
                 variant="h6"
                 color="text.secondary"
-                sx={{ mb: 4, lineHeight: 1.6 }}
+                sx={{
+                  mb: 4,
+                  lineHeight: 1.6,
+                  fontSize: { xs: "1rem", md: "1.25rem" },
+                }}
               >
                 Since our founding, City General has been at the forefront of
                 medical innovation, combining state-of-the-art technology with a
@@ -269,7 +303,13 @@ const AboutUs = () => {
               </Box>
             </Box>
             <Box sx={{ width: { xs: "100%", md: "33.333%" } }}>
-              <Box sx={{ display: "flex", gap: 2 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "row", lg: "row" },
+                  gap: 2,
+                }}
+              >
                 <Box sx={{ width: "50%" }}>
                   <Box
                     component="img"
@@ -289,7 +329,7 @@ const AboutUs = () => {
                       width: "100%",
                       borderRadius: 4,
                       boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
-                      mt: 6,
+                      mt: { xs: 3, md: 6 },
                     }}
                   />
                 </Box>
@@ -299,14 +339,26 @@ const AboutUs = () => {
         </div>
 
         {/* Team Section */}
-        <Box sx={{ textAlign: "center", mb: 8 }}>
-          <Typography variant="h3" sx={{ fontWeight: 800, mb: 2 }}>
+        <Box sx={{ textAlign: "center", mb: { xs: 6, md: 8 } }}>
+          <Typography
+            variant="h3"
+            sx={{
+              fontWeight: 800,
+              mb: 2,
+              fontSize: { xs: "1.75rem", sm: "2.25rem", md: "3rem" },
+            }}
+          >
             Dedicated to Your Health
           </Typography>
           <Typography
             variant="h6"
             color="text.secondary"
-            sx={{ maxWidth: "700px", mx: "auto" }}
+            sx={{
+              maxWidth: "700px",
+              mx: "auto",
+              fontSize: { xs: "1rem", md: "1.25rem" },
+              px: { xs: 2, md: 0 },
+            }}
           >
             Our team of world-class medical professionals brings expertise from
             leading institutions to your neighborhood.
@@ -404,13 +456,24 @@ const AboutUs = () => {
           }}
         >
           <Box sx={{ width: { xs: "100%", md: "41.666%" } }}>
-            <Typography variant="h3" sx={{ fontWeight: 800, mb: 3 }}>
+            <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 800,
+                mb: 3,
+                fontSize: { xs: "1.75rem", sm: "2.25rem", md: "3rem" },
+              }}
+            >
               Our Facilities
             </Typography>
             <Typography
               variant="body1"
               color="text.secondary"
-              sx={{ mb: 4, lineHeight: 1.8 }}
+              sx={{
+                mb: 4,
+                lineHeight: 1.8,
+                fontSize: { xs: "0.95rem", md: "1rem" },
+              }}
             >
               We invest in the latest medical infrastructure to ensure our
               patients receive the most effective care in a comfortable
@@ -437,26 +500,48 @@ const AboutUs = () => {
           </Box>
           <Box sx={{ width: { xs: "100%", md: "58.333%" } }}>
             {/* Using placeholders for missing facility images since quota was hit */}
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 2,
+                justifyContent: "center",
+              }}
+            >
               <Box sx={{ width: "100%" }}>
                 <Box
                   component="img"
                   src="assets/emergency-room.jpg"
-                  sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  sx={{
+                    width: "100%",
+                    height: { xs: "200px", md: "100%" },
+                    objectFit: "cover",
+                    borderRadius: 2,
+                  }}
                 />
               </Box>
-              <Box sx={{ width: "calc(50% - 8px)" }}>
+              <Box sx={{ width: { xs: "100%", sm: "calc(50% - 8px)" } }}>
                 <Box
                   component="img"
                   src="assets/mri.jpg"
-                  sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  sx={{
+                    width: "100%",
+                    height: { xs: "150px", md: "100%" },
+                    objectFit: "cover",
+                    borderRadius: 2,
+                  }}
                 />
               </Box>
-              <Box sx={{ width: "calc(50% - 8px)" }}>
+              <Box sx={{ width: { xs: "100%", sm: "calc(50% - 8px)" } }}>
                 <Box
                   component="img"
                   src="assets/waiting.jpg"
-                  sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  sx={{
+                    width: "100%",
+                    height: { xs: "150px", md: "100%" },
+                    objectFit: "cover",
+                    borderRadius: 2,
+                  }}
                 />
               </Box>
             </Box>

@@ -30,6 +30,8 @@ import {
   Autocomplete,
   Grid,
   CircularProgress,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -46,6 +48,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import PhoneIcon from "@mui/icons-material/Phone";
 import DesktopWindowsIcon from "@mui/icons-material/DesktopWindows";
 import CodeIcon from "@mui/icons-material/Code";
+import MenuIcon from "@mui/icons-material/Menu";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
@@ -153,6 +156,11 @@ const formatLoginTime = (iso) => {
 };
 
 const PharmacistsPage = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+  const [mobileDrawerOpen, setMobileDrawerOpen] = React.useState(false);
+
   const [authUser, setAuthUser] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [profileOpen, setProfileOpen] = React.useState(false);
@@ -896,7 +904,7 @@ const PharmacistsPage = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            px: 4,
+            px: { xs: 2.5, sm: 4 },
             py: 2,
             bgcolor: "white",
             borderBottom: "1px solid #e2e8f0",
@@ -906,27 +914,39 @@ const PharmacistsPage = () => {
             zIndex: 1100,
           }}
         >
-          <Box>
-            <Typography
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <IconButton
               sx={{
-                fontSize: { xs: "1.25rem", md: "1.5rem" },
-                fontWeight: 900,
+                display: { xs: "flex", lg: "none" },
+                mr: 0.5,
                 color: "#0f172a",
-                letterSpacing: "-0.025em",
               }}
+              onClick={() => setMobileDrawerOpen(true)}
             >
-              Pharmacist {activeTab}
-            </Typography>
-            <Typography
-              sx={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}
-            >
-              Daily operational summary for{" "}
-              {new Date().toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </Typography>
+              <MenuIcon />
+            </IconButton>
+            <Box>
+              <Typography
+                sx={{
+                  fontSize: { xs: "1.25rem", md: "1.5rem" },
+                  fontWeight: 900,
+                  color: "#0f172a",
+                  letterSpacing: "-0.025em",
+                }}
+              >
+                Pharmacist {activeTab}
+              </Typography>
+              <Typography
+                sx={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}
+              >
+                Daily operational summary for{" "}
+                {new Date().toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </Typography>
+            </Box>
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -1023,6 +1043,83 @@ const PharmacistsPage = () => {
           </Box>
         </Box>
 
+        {/* Mobile Navigation Drawer */}
+        <Drawer
+          anchor="left"
+          open={mobileDrawerOpen}
+          onClose={() => setMobileDrawerOpen(false)}
+          PaperProps={{
+            sx: {
+              width: 280,
+              p: 2,
+              display: "flex",
+              flexDirection: "column",
+              gap: 0.5,
+            },
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 2,
+              px: 2,
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+                color: "#137fec",
+              }}
+            >
+              <HealthAndSafetyIcon sx={{ fontSize: 28 }} />
+              <Typography
+                sx={{
+                  fontSize: "1.125rem",
+                  fontWeight: 900,
+                  textTransform: "uppercase",
+                  color: "#0f172a",
+                }}
+              >
+                City General
+              </Typography>
+            </Box>
+            <IconButton onClick={() => setMobileDrawerOpen(false)} size="small">
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <NavItem
+            icon={DashboardIcon}
+            label="Overview"
+            active={activeTab === "Overview"}
+            onClick={() => {
+              setActiveTab("Overview");
+              setMobileDrawerOpen(false);
+            }}
+          />
+          <NavItem
+            icon={Inventory2Icon}
+            label="Drugs Inventory"
+            active={activeTab === "Drugs Inventory"}
+            onClick={() => {
+              setActiveTab("Drugs Inventory");
+              setMobileDrawerOpen(false);
+            }}
+          />
+          <NavItem
+            icon={AccountBalanceWalletIcon}
+            label="Billing"
+            active={activeTab === "Billing"}
+            onClick={() => {
+              setActiveTab("Billing");
+              setMobileDrawerOpen(false);
+            }}
+          />
+        </Drawer>
+
         {/* Content */}
         <Box
           sx={{
@@ -1087,10 +1184,13 @@ const PharmacistsPage = () => {
                         }}
                         title={`₹${stats.totalMonthlyRevenue?.toLocaleString()}`}
                       >
-                        ₹{(() => {
+                        ₹
+                        {(() => {
                           const val = stats.totalMonthlyRevenue || 0;
-                          if (val >= 10000000) return (val / 10000000).toFixed(1) + "Cr";
-                          if (val >= 100000) return (val / 100000).toFixed(1) + "L";
+                          if (val >= 10000000)
+                            return (val / 10000000).toFixed(1) + "Cr";
+                          if (val >= 100000)
+                            return (val / 100000).toFixed(1) + "L";
                           if (val >= 1000) return (val / 1000).toFixed(1) + "k";
                           return val.toLocaleString();
                         })()}
@@ -1107,7 +1207,9 @@ const PharmacistsPage = () => {
                         flexShrink: 0,
                       }}
                     >
-                      <AccountBalanceWalletIcon sx={{ fontSize: 24, color: "#2563eb" }} />
+                      <AccountBalanceWalletIcon
+                        sx={{ fontSize: 24, color: "#2563eb" }}
+                      />
                     </Box>
                   </Box>
                 </Grid>
@@ -1241,7 +1343,9 @@ const PharmacistsPage = () => {
                         flexShrink: 0,
                       }}
                     >
-                      <ErrorOutlineIcon sx={{ fontSize: 24, color: "#dc2626" }} />
+                      <ErrorOutlineIcon
+                        sx={{ fontSize: 24, color: "#dc2626" }}
+                      />
                     </Box>
                   </Box>
                 </Grid>
@@ -1319,6 +1423,7 @@ const PharmacistsPage = () => {
                   display: "flex",
                   flexDirection: "column",
                   gap: 4,
+                  minWidth: 0,
                 }}
               >
                 <Box>
@@ -1330,6 +1435,8 @@ const PharmacistsPage = () => {
                       border: "1px solid #e2e8f0",
                       overflow: "hidden",
                       boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                      width: "100%",
+                      maxWidth: "100%",
                     }}
                   >
                     <Box
@@ -1356,7 +1463,7 @@ const PharmacistsPage = () => {
                         <FilterListIcon fontSize="small" />
                       </IconButton>
                     </Box>
-                    <TableContainer>
+                    <TableContainer sx={{ overflowX: "auto" }}>
                       <Table sx={{ minWidth: 600 }}>
                         <TableHead sx={{ bgcolor: "rgba(248, 250, 252, 0.5)" }}>
                           <TableRow>
@@ -1477,7 +1584,7 @@ const PharmacistsPage = () => {
           )}
 
           {activeTab === "Drugs Inventory" && (
-            <Box>
+            <Box sx={{ minWidth: 0 }}>
               {/* Drug Inventory Table */}
               <Box
                 sx={{
@@ -1486,6 +1593,8 @@ const PharmacistsPage = () => {
                   border: "1px solid #e2e8f0",
                   overflow: "hidden",
                   boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                  width: "100%",
+                  maxWidth: "100%",
                 }}
               >
                 <Box
@@ -1680,7 +1789,7 @@ const PharmacistsPage = () => {
           )}
 
           {activeTab === "Billing" && (
-            <Box>
+            <Box sx={{ minWidth: 0 }}>
               {/* Billing History Table */}
               <Box
                 sx={{
@@ -1689,6 +1798,8 @@ const PharmacistsPage = () => {
                   border: "1px solid #e2e8f0",
                   overflow: "hidden",
                   boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                  width: "100%",
+                  maxWidth: "100%",
                 }}
               >
                 <Box
@@ -1705,7 +1816,7 @@ const PharmacistsPage = () => {
                     Invoice History
                   </Typography>
                 </Box>
-                <TableContainer>
+                <TableContainer sx={{ overflowX: "auto" }}>
                   <Table sx={{ minWidth: 800 }}>
                     <TableHead sx={{ bgcolor: "rgba(248, 250, 252, 0.5)" }}>
                       <TableRow>
@@ -1864,8 +1975,8 @@ const PharmacistsPage = () => {
         onClose={() => setProfileOpen(false)}
         PaperProps={{
           sx: {
-            width: { xs: "100vw", sm: 380 },
-            borderRadius: "16px 0 0 16px",
+            width: { xs: "100%", sm: 380 },
+            borderRadius: { xs: 0, sm: "16px 0 0 16px" },
           },
         }}
       >
@@ -2023,10 +2134,11 @@ const PharmacistsPage = () => {
         }}
         fullWidth
         maxWidth="sm"
+        fullScreen={isMobile}
         PaperProps={{
           component: "form",
           onSubmit: handleAddDrugSubmit,
-          sx: { borderRadius: "20px", p: 1 },
+          sx: { borderRadius: isMobile ? 0 : "20px", p: isMobile ? 0 : 1 },
         }}
       >
         <DialogTitle sx={{ fontWeight: 900, fontSize: "1.5rem" }}>
@@ -2141,7 +2253,7 @@ const PharmacistsPage = () => {
                 type="date"
                 InputLabelProps={{ shrink: true }}
                 value={drugData.expiryDate}
-                onChange={(e)=>handleAddDrugChange(e)}
+                onChange={(e) => handleAddDrugChange(e)}
               />
             </Box>
           </Box>
@@ -2152,7 +2264,6 @@ const PharmacistsPage = () => {
               setAddDrugModalOpen(false);
               resetDrugForm();
             }}
-            
             sx={{
               color: "#64748b",
               fontWeight: 700,
@@ -2183,8 +2294,9 @@ const PharmacistsPage = () => {
         onClose={handleClosePrescription}
         fullWidth
         maxWidth="sm"
+        fullScreen={isMobile}
         PaperProps={{
-          sx: { borderRadius: "24px", p: 1 },
+          sx: { borderRadius: isMobile ? 0 : "24px", p: isMobile ? 0 : 1 },
         }}
       >
         <DialogTitle
@@ -2353,10 +2465,11 @@ const PharmacistsPage = () => {
         onClose={() => setAddInvoiceModalOpen(false)}
         fullWidth
         maxWidth="md"
+        fullScreen={isTablet}
         PaperProps={{
           component: "form",
           onSubmit: handleGenerateInvoice,
-          sx: { borderRadius: "24px", p: 1 },
+          sx: { borderRadius: isTablet ? 0 : "24px", p: isTablet ? 0 : 1 },
         }}
       >
         <DialogTitle sx={{ fontWeight: 900, fontSize: "1.5rem" }}>
@@ -2613,9 +2726,10 @@ const PharmacistsPage = () => {
         onClose={() => setSummaryModalOpen(false)}
         fullWidth
         maxWidth="sm"
+        fullScreen={isMobile}
         PaperProps={{
           sx: {
-            borderRadius: "16px",
+            borderRadius: isMobile ? 0 : "16px",
             p: 0,
             overflow: "hidden",
             boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.2)",
@@ -3046,7 +3160,7 @@ const PharmacistsPage = () => {
             e.preventDefault();
             confirmDeleteDrug();
           },
-          sx: { borderRadius: "24px", p: 1, maxWidth: "400px" },
+          sx: { borderRadius: "24px", p: 1, maxWidth: "400px", width: "90%" },
         }}
       >
         <DialogTitle sx={{ textAlign: "center", pt: 3 }}>
@@ -3082,14 +3196,23 @@ const PharmacistsPage = () => {
             </Box>
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ p: 3, gap: 1, justifyContent: "center" }}>
+        <DialogActions
+          sx={{
+            p: 3,
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: { xs: 2, sm: 1 },
+            justifyContent: "center",
+          }}
+        >
           <Button
             onClick={() => setDeleteConfirmDialogOpen(false)}
+            fullWidth={isMobile}
             sx={{
               color: "#64748b",
               fontWeight: 700,
               textTransform: "none",
-              px: 3,
+              px: { xs: 0, sm: 3 },
             }}
           >
             Cancel
@@ -3097,12 +3220,14 @@ const PharmacistsPage = () => {
           <Button
             variant="contained"
             type="submit"
+            fullWidth={isMobile}
             sx={{
               bgcolor: "#dc2626",
               fontWeight: 700,
               textTransform: "none",
               borderRadius: "12px",
-              px: 4,
+              px: { xs: 0, sm: 4 },
+              py: { xs: 1.5, sm: "auto" },
               "&:hover": { bgcolor: "#b91c1c" },
             }}
           >
@@ -3117,8 +3242,9 @@ const PharmacistsPage = () => {
         onClose={() => setViewInvoiceModalOpen(false)}
         fullWidth
         maxWidth="md"
+        fullScreen={isMobile}
         PaperProps={{
-          sx: { borderRadius: "24px", p: 1 },
+          sx: { borderRadius: isMobile ? 0 : "24px", p: isMobile ? 0 : 1 },
         }}
       >
         <DialogTitle sx={{ fontWeight: 900, fontSize: "1.5rem" }}>

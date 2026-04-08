@@ -27,6 +27,8 @@ import {
   TablePagination,
   Pagination,
   CircularProgress,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -138,6 +140,8 @@ const ReceptionistDashboard = () => {
   const [profileOpen, setProfileOpen] = React.useState(false);
   const [openBookNow, setOpenBookNow] = React.useState(false);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [appointments, setAppointments] = React.useState([]);
   const [todayAppointmentsCount, setTodayAppointmentsCount] = React.useState(0);
   const [completedAppointmentsCount, setCompletedAppointmentsCount] =
@@ -880,8 +884,10 @@ const ReceptionistDashboard = () => {
               p: 3,
               borderBottom: "1px solid #e2e8f0",
               display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
               justifyContent: "space-between",
-              alignItems: "center",
+              alignItems: { xs: "flex-start", sm: "center" },
+              gap: { xs: 2, sm: 0 }
             }}
           >
             <Typography
@@ -1212,11 +1218,13 @@ const ReceptionistDashboard = () => {
           <Box
             sx={{
               display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
               alignItems: "center",
               justifyContent: "space-between",
               px: 2,
               py: 1.5,
               borderTop: "1px solid #e2e8f0",
+              gap: { xs: 2, sm: 0 },
             }}
           >
             <TablePagination
@@ -1425,8 +1433,9 @@ const ReceptionistDashboard = () => {
         onClose={handleCloseDialog}
         maxWidth="sm"
         fullWidth
+        fullScreen={isMobile}
         PaperProps={{
-          sx: { borderRadius: "12px", p: 1 },
+          sx: { borderRadius: isMobile ? 0 : "12px", p: 1 },
         }}
       >
         <DialogTitle sx={{ fontWeight: 800, color: "#0f172a", pb: 1 }}>
@@ -1445,7 +1454,7 @@ const ReceptionistDashboard = () => {
           {selectedAppointment && (
             <>
               <Box
-                sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}
+                sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}
               >
                 <Box>
                   <Typography
@@ -1498,7 +1507,7 @@ const ReceptionistDashboard = () => {
               </Box>
 
               <Box
-                sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}
+                sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}
               >
                 <Box>
                   <Typography
@@ -1547,7 +1556,7 @@ const ReceptionistDashboard = () => {
               </Box>
 
               <Box
-                sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}
+                sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}
               >
                 <Box>
                   <Typography
@@ -1631,7 +1640,13 @@ const ReceptionistDashboard = () => {
             </>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 2, pt: 0, gap: 1 }}>
+        <DialogActions sx={{ 
+          p: 2, 
+          pt: 0, 
+          display: "flex", 
+          flexDirection: { xs: "column", sm: "row" }, 
+          gap: 1.5 
+        }}>
           <Button
             onClick={() => handleCancelAppointment(selectedAppointment._id)}
             variant="outlined"
@@ -1642,7 +1657,8 @@ const ReceptionistDashboard = () => {
               fontWeight: 600,
               borderRadius: "8px",
               px: 3,
-              minWidth: "160px", // Fixed width to prevent jumping when loading
+              width: { xs: "100%", sm: "auto" },
+              minWidth: { sm: "160px" },
             }}
           >
             {cancelling ? (
@@ -1651,7 +1667,7 @@ const ReceptionistDashboard = () => {
               "Cancel Appointment"
             )}
           </Button>
-          <Box sx={{ flexGrow: 1 }} />
+          <Box sx={{ flexGrow: { sm: 1 }, display: { xs: "none", sm: "block" } }} />
           <Button
             onClick={handleCloseDialog}
             variant="contained"
@@ -1661,6 +1677,7 @@ const ReceptionistDashboard = () => {
               textTransform: "none",
               fontWeight: 600,
               borderRadius: "8px",
+              width: { xs: "100%", sm: "auto" },
               "&:hover": { bgcolor: "#0f6bd1", boxShadow: "none" },
             }}
           >
@@ -1682,6 +1699,7 @@ const ReceptionistDashboard = () => {
               textTransform: "none",
               fontWeight: 600,
               borderRadius: "8px",
+              width: { xs: "100%", sm: "auto" },
               "&:hover": { bgcolor: "#0f6bd1", boxShadow: "none" },
             }}
           >
