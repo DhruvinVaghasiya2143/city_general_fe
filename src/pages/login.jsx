@@ -328,7 +328,7 @@ const Login = () => {
               color: "#94a3b8",
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {/* <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <VerifiedUserIcon sx={{ fontSize: "16px" }} />
               <Typography variant="caption" sx={{ fontWeight: 600 }}>
                 HIPAA Compliant
@@ -339,12 +339,12 @@ const Login = () => {
               <Typography variant="caption" sx={{ fontWeight: 600 }}>
                 256-bit Encryption
               </Typography>
-            </Box>
+            </Box> */}
           </Box>
         </Box>
       </main>
 
-      <footer
+      {/* <footer
         style={{
           padding: "32px 24px",
           borderTop: "1px solid #e2e8f0",
@@ -402,7 +402,7 @@ const Login = () => {
             Help Center
           </Typography>
         </Box>
-      </footer>
+      </footer> */}
 
       <ForgotPasswordModal
         open={forgotPasswordOpen}

@@ -6,8 +6,9 @@ import {
   IconButton,
   TextField,
   Button,
-  Link,
+  Link as MuiLink,
 } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
@@ -20,13 +21,13 @@ import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 function Footer() {
   return (
     <footer>
-    <Box
+      <Box
         component="footer"
         className="w-full bg-[#0b1120] text-slate-400 pt-16 pb-8 border-t border-slate-800"
       >
         {/* Tailwind Width Control */}
         <div className="max-w-7xl mx-auto px-6 ">
-          <Grid container spacing={6}>
+          <Grid container spacing={6} justifyContent="space-around">
             {/* Column 1 */}
             <Grid item xs={12} md={6} lg={3}>
               <div className="flex items-center mb-4">
@@ -49,7 +50,7 @@ function Footer() {
                       key={index}
                       className="bg-slate-800 text-white hover:bg-blue-600"
                     >
-                      <Icon fontSize="small" />
+                      <Icon fontSize="small" className="text-white" />
                     </IconButton>
                   ),
                 )}
@@ -64,21 +65,23 @@ function Footer() {
 
               <div className="space-y-3">
                 {[
-                  "Our Doctors",
-                  "Specialties",
-                  "Patient Stories",
-                  "Careers",
-                  "Privacy Policy",
+                  { label: "Our Doctors", path: "/doctors" },
+                  { label: "Specialties", path: "/services" },
+                  // { label: "Patient Stories", path: "#" },
+                  // { label: "Careers", path: "#" },
+                  // { label: "Privacy Policy", path: "#" },
                 ].map((item) => (
-                  <Link
-                    key={item}
-                    href="#"
+                  <MuiLink
+                    key={item.label}
+                    component={RouterLink}
+                    to={item.path}
+                    onClick={() => window.scrollTo(0, 0)}
                     underline="none"
                     className="block hover:text-white py-1"
                     color="inherit"
                   >
-                    {item}
-                  </Link>
+                    {item.label}
+                  </MuiLink>
                 ))}
               </div>
             </Grid>
@@ -114,7 +117,7 @@ function Footer() {
             </Grid>
 
             {/* Column 4 */}
-            <Grid item xs={12} md={6} lg={3}>
+            {/* <Grid item xs={12} md={6} lg={3}>
               <Typography className="text-white font-semibold mb-6 ">
                 Newsletter
               </Typography>
@@ -146,7 +149,7 @@ function Footer() {
               >
                 Subscribe
               </Button>
-            </Grid>
+            </Grid> */}
           </Grid>
 
           {/* Bottom Bar */}
@@ -158,7 +161,7 @@ function Footer() {
             <div className="flex gap-6">
               {["Terms of Service", "HIPAA Compliance", "Sitemap"].map(
                 (item) => (
-                  <Link
+                  <MuiLink
                     key={item}
                     href="#"
                     underline="none"
@@ -166,7 +169,7 @@ function Footer() {
                     className="hover:text-white"
                   >
                     {item}
-                  </Link>
+                  </MuiLink>
                 ),
               )}
             </div>
