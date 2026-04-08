@@ -27,7 +27,12 @@ function Footer() {
       >
         {/* Tailwind Width Control */}
         <div className="max-w-7xl mx-auto px-6 ">
-          <Grid container spacing={6} justifyContent="space-around">
+          <Grid
+            container
+            spacing={{ xs: 4, md: 6 }}
+            direction={{ xs: "column", md: "row" }}
+            justifyContent="space-around"
+          >
             {/* Column 1 */}
             <Grid item xs={12} md={6} lg={3}>
               <div className="flex items-center mb-4">
@@ -153,12 +158,12 @@ function Footer() {
           </Grid>
 
           {/* Bottom Bar */}
-          <div className="border-t border-slate-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+          <div className="border-t border-slate-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-center md:text-left">
             <Typography variant="caption">
               © 2024 CityGeneral Hospital. All rights reserved.
             </Typography>
 
-            <div className="flex gap-6">
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
               {["Terms of Service", "HIPAA Compliance", "Sitemap"].map(
                 (item) => (
                   <MuiLink
