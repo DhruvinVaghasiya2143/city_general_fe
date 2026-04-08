@@ -259,7 +259,7 @@ const AboutUs = () => {
                 ].map((step, i) => (
                   <Box
                     key={i}
-                    sx={{ display: "flex", mb: 4, position: "relative" }}
+                    sx={{ display: "flex", mb: 0, position: "relative" }}
                   >
                     <Box sx={{ mr: 3, mt: 1 }}>
                       <Box
@@ -292,7 +292,7 @@ const AboutUs = () => {
                       <Typography variant="h6" sx={{ fontWeight: 700 }}>
                         {step.year} - {step.title}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
                         {step.desc}
                       </Typography>
                     </Box>
