@@ -9,6 +9,8 @@ import {
   Avatar,
   Menu,
   MenuItem,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import PeopleIcon from "@mui/icons-material/People";
@@ -24,11 +26,13 @@ import {
   DialogContentText,
   DialogActions,
 } from "@mui/material";
-import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import AddDoctor from "./AddDoctor";
 import AddService from "./AddService";
+import EditUserDialog from "./EditUserDialog";
+import LocalPharmacyIcon from "@mui/icons-material/LocalPharmacy";
+import DeskIcon from "@mui/icons-material/Desk";
 import axios from "axios";
 import { TablePagination } from "@mui/material";
 
@@ -40,6 +44,8 @@ const fetchDashboardStats = async () => {
 };
 
 const AdminDashboard = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [openAddDoctor, setOpenAddDoctor] = useState(false);
   const [openAddService, setOpenAddService] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -51,6 +57,8 @@ const AdminDashboard = () => {
     doctorCount: 0,
     patientCount: 0,
     adminCount: 0,
+    pharmacistCount: 0,
+    receptionistCount: 0,
   });
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -58,8 +66,13 @@ const AdminDashboard = () => {
 
   const [isEditService, setIsEditService] = useState(false);
   const [currentService, setCurrentService] = useState(null);
+
+  const [isEditUser, setIsEditUser] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [serviceToDelete, setServiceToDelete] = useState(null);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [deleteType, setDeleteType] = useState("service");
 
   const fetchUsers = async () => {
     try {
@@ -70,7 +83,11 @@ const AdminDashboard = () => {
             ? "doctors"
             : activeRole === "patient"
               ? "patients"
-              : "admins";
+              : activeRole === "pharmacist"
+                ? "pharmacists"
+                : activeRole === "receptionist"
+                  ? "receptionists"
+                  : "admins";
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.get(
         `${api}/admin/${endpoint}?page=${page}&limit=${rowsPerPage}`,
@@ -119,26 +136,36 @@ const AdminDashboard = () => {
     setOpenAddService(true);
   };
 
-  const handleDeleteService = (service) => {
-    setServiceToDelete(service);
+  const handleEditUserClick = (user) => {
+    setCurrentUser(user);
+    setIsEditUser(true);
+  };
+
+  const handleDeleteClick = (item, type) => {
+    setItemToDelete(item);
+    setDeleteType(type);
     setDeleteDialogOpen(true);
   };
 
   const handleConfirmDelete = async () => {
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      await axios.delete(`${api}/admin/services/${serviceToDelete._id}`);
+      if (deleteType === "service") {
+        await axios.delete(`${api}/admin/services/${itemToDelete._id}`);
+      } else {
+        await axios.delete(`${api}/admin/users/${itemToDelete._id}`);
+      }
       setDeleteDialogOpen(false);
-      setServiceToDelete(null);
+      setItemToDelete(null);
       fetchUsers();
     } catch (err) {
-      console.error("Error deleting service:", err);
+      console.error(`Error deleting ${deleteType}:`, err);
     }
   };
 
   const handleCloseDeleteDialog = () => {
     setDeleteDialogOpen(false);
-    setServiceToDelete(null);
+    setItemToDelete(null);
   };
   const handleSuccess = () => {
     // Refresh stats and users after adding a doctor
@@ -182,18 +209,36 @@ const AdminDashboard = () => {
       ),
       bgcolor: "#f5f3ff",
     },
+    {
+      title: "Pharmacists",
+      value: stats.pharmacistCount,
+      icon: <LocalPharmacyIcon fontSize="large" sx={{ color: "#0ea5e9" }} />,
+      bgcolor: "#e0f2fe",
+    },
+    {
+      title: "Receptionists",
+      value: stats.receptionistCount,
+      icon: <DeskIcon fontSize="large" sx={{ color: "#f97316" }} />,
+      bgcolor: "#ffedd5",
+    },
   ];
+
+  const showActions =
+    activeRole === "service" ||
+    activeRole === "doctor" ||
+    activeRole === "pharmacist" ||
+    activeRole === "receptionist";
 
   return (
     <Box
       sx={{
         bgcolor: "#f8fafc",
         minHeight: "100vh",
-        pt: { xs: 4, md: 6 },
+        pt: { xs: 3, sm: 4, md: 6 },
         pb: { xs: 8, md: 12 },
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
         {/* Header */}
         <Box
           sx={{
@@ -278,20 +323,26 @@ const AdminDashboard = () => {
         {/* Stats Grid */}
         <Grid
           container
-          spacing={{ xs: 2, md: 3 }}
-          sx={{ mb: { xs: 6, md: 8 } }}
+          spacing={{ xs: 1.5, sm: 2, md: 3 }}
+          sx={{ mb: { xs: 4, md: 6 } }}
         >
           {statCards.map((stat, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
+            <Grid item xs={6} sm={4} md={4} key={index}
+              sx={{
+                // On md screens with 5 cards: 3 in first row, 2 centered in second row
+                ...(index >= 3 && { display: { xs: "block", md: "block" } }),
+              }}
+            >
               <Paper
                 elevation={0}
                 sx={{
-                  p: 3,
+                  p: { xs: 2, sm: 2.5, md: 3 },
                   borderRadius: "16px",
                   display: "flex",
                   alignItems: "center",
-                  gap: 3,
+                  gap: { xs: 1.5, sm: 2, md: 3 },
                   border: "1px solid #e2e8f0",
+                  height: "100%",
                   transition: "transform 0.2s, box-shadow 0.2s",
                   "&:hover": {
                     transform: "translateY(-4px)",
@@ -299,19 +350,17 @@ const AdminDashboard = () => {
                   },
                 }}
               >
-                <Avatar sx={{ bgcolor: stat.bgcolor, width: 64, height: 64 }}>
+                <Avatar sx={{ bgcolor: stat.bgcolor, width: { xs: 48, sm: 56, md: 64 }, height: { xs: 48, sm: 56, md: 64 }, flexShrink: 0 }}>
                   {stat.icon}
                 </Avatar>
                 <Box>
                   <Typography
-                    variant="h4"
-                    sx={{ fontWeight: 800, color: "#1e293b" }}
+                    sx={{ fontWeight: 800, color: "#1e293b", fontSize: { xs: "1.4rem", sm: "1.8rem", md: "2rem" }, lineHeight: 1.1 }}
                   >
                     {stat.value}
                   </Typography>
                   <Typography
-                    variant="body2"
-                    sx={{ color: "#64748b", fontWeight: 600 }}
+                    sx={{ color: "#64748b", fontWeight: 600, fontSize: { xs: "0.68rem", sm: "0.78rem", md: "0.875rem" }, lineHeight: 1.3, mt: 0.3 }}
                   >
                     {stat.title}
                   </Typography>
@@ -321,27 +370,17 @@ const AdminDashboard = () => {
           ))}
         </Grid>
 
-        {/* User Directory Table */}
-        <Box
-          sx={{
-            mt: 6,
-            mb: 3,
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            justifyContent: "space-between",
-            alignItems: { xs: "flex-start", sm: "flex-end" },
-            gap: { xs: 1, sm: 2 },
-            mb: { xs: 3, md: 4 },
-          }}
-        >
-          <Box>
-            <Typography variant="h5" sx={{ fontWeight: 800, color: "#1e293b" }}>
-              User Directory
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#64748b", mt: 0.5 }}>
-              Manage all registered platform users.
-            </Typography>
-          </Box>
+        {/* User Directory Header */}
+        <Box sx={{ mb: { xs: 2, md: 3 } }}>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 800, color: "#1e293b", fontSize: { xs: "1.1rem", md: "1.5rem" } }}
+          >
+            User Directory
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#64748b", mt: 0.5 }}>
+            Manage all registered platform users.
+          </Typography>
         </Box>
 
         <Paper
@@ -353,19 +392,21 @@ const AdminDashboard = () => {
             mb: 6,
           }}
         >
-          <Box sx={{ px: 2, pt: 1 }}>
+          <Box sx={{ px: { xs: 1, sm: 2 }, pt: 1 }}>
             <Tabs
               value={activeRole}
               onChange={handleTabChange}
               variant="scrollable"
               scrollButtons="auto"
+              allowScrollButtonsMobile
               sx={{
                 "& .MuiTab-root": {
                   textTransform: "none",
                   fontWeight: 700,
-                  fontSize: "0.95rem",
-                  minWidth: { xs: 100, sm: 120 },
-                  py: 1.5,
+                  fontSize: { xs: "0.8rem", sm: "0.95rem" },
+                  minWidth: { xs: 80, sm: 100, md: 120 },
+                  py: { xs: 1, sm: 1.5 },
+                  px: { xs: 1, sm: 2 },
                 },
                 "& .Mui-selected": { color: "#3b82f6" },
                 "& .MuiTabs-indicator": { bgcolor: "#3b82f6", height: 3 },
@@ -373,6 +414,8 @@ const AdminDashboard = () => {
             >
               <Tab label="Doctors" value="doctor" />
               <Tab label="Patients" value="patient" />
+              <Tab label="Pharmacists" value="pharmacist" />
+              <Tab label="Receptionists" value="receptionist" />
               <Tab label="Admins" value="admin" />
               <Tab label="Services" value="service" />
             </Tabs>
@@ -421,6 +464,9 @@ const AdminDashboard = () => {
                         </>
                       )}
                       {activeRole !== "doctor" && <th>Role</th>}
+                      {showActions && activeRole !== "service" && (
+                        <th>Actions</th>
+                      )}
                     </>
                   )}
                 </tr>
@@ -428,7 +474,7 @@ const AdminDashboard = () => {
               <tbody>
                 {users.length > 0 ? (
                   users.map((user) => (
-                    <tr key={user._id}>
+                    <tr key={user._id || (user.userId && user.userId._id)}>
                       {activeRole === "service" ? (
                         <>
                           <td style={{ fontWeight: 600, color: "#1e293b" }}>
@@ -472,7 +518,9 @@ const AdminDashboard = () => {
                                 size="small"
                                 variant="outlined"
                                 color="error"
-                                onClick={() => handleDeleteService(user)}
+                                onClick={() =>
+                                  handleDeleteClick(user, "service")
+                                }
                                 sx={{
                                   textTransform: "none",
                                   fontWeight: 700,
@@ -520,7 +568,9 @@ const AdminDashboard = () => {
                                 </Box>
                               </td>
                               <td style={{ color: "#64748b" }}>
-                                {user.hospitalName}
+                                {activeRole === "doctor"
+                                  ? user.hospitalName
+                                  : ""}
                               </td>
                             </>
                           )}
@@ -549,6 +599,44 @@ const AdminDashboard = () => {
                               </Box>
                             </td>
                           )}
+                          {showActions && activeRole !== "service" && (
+                            <td>
+                              <Box sx={{ display: "flex", gap: 1 }}>
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  onClick={() => handleEditUserClick(user)}
+                                  sx={{
+                                    textTransform: "none",
+                                    fontWeight: 700,
+                                    borderRadius: "6px",
+                                  }}
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  color="error"
+                                  onClick={() => {
+                                    // Doctors store user info under userId reference
+                                    const deleteTarget =
+                                      activeRole === "doctor"
+                                        ? { ...user, _id: user.userId?._id }
+                                        : user;
+                                    handleDeleteClick(deleteTarget, "user");
+                                  }}
+                                  sx={{
+                                    textTransform: "none",
+                                    fontWeight: 700,
+                                    borderRadius: "6px",
+                                  }}
+                                >
+                                  Delete
+                                </Button>
+                              </Box>
+                            </td>
+                          )}
                         </>
                       )}
                     </tr>
@@ -556,7 +644,14 @@ const AdminDashboard = () => {
                 ) : (
                   <tr>
                     <td
-                      colSpan={activeRole === "doctor" ? 5 : 4}
+                      colSpan={
+                        activeRole === "doctor"
+                          ? 6
+                          : activeRole === "pharmacist" ||
+                              activeRole === "receptionist"
+                            ? 5
+                            : 4
+                      }
                       style={{ textAlign: "center", py: 4 }}
                     >
                       No {activeRole}s found in the directory.
@@ -574,14 +669,23 @@ const AdminDashboard = () => {
             rowsPerPage={rowsPerPage}
             onRowsPerPageChange={handleChangeRowsPerPage}
             rowsPerPageOptions={[5, 10, 25]}
+            labelRowsPerPage={isMobile ? "Rows:" : "Rows per page:"}
             labelDisplayedRows={({ from, to, count }) =>
-              `Page ${page + 1} of ${Math.ceil(count / rowsPerPage)} (${from}-${to} of ${count})`
+              isMobile
+                ? `${from}-${to} / ${count}`
+                : `Page ${page + 1} of ${Math.ceil(count / rowsPerPage)} (${from}-${to} of ${count})`
             }
             sx={{
               borderTop: "1px solid #e2e8f0",
               ".MuiTablePagination-toolbar": {
                 color: "#64748b",
                 fontWeight: 600,
+                flexWrap: "wrap",
+                minHeight: { xs: "48px", sm: "52px" },
+                px: { xs: 1, sm: 2 },
+              },
+              ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
+                fontSize: { xs: "0.75rem", sm: "0.875rem" },
               },
             }}
           />
@@ -610,6 +714,21 @@ const AdminDashboard = () => {
             setOpenAddService(false);
             setIsEditService(false);
             setCurrentService(null);
+            fetchUsers();
+          }}
+        />
+
+        {/* Edit User Dialog */}
+        <EditUserDialog
+          open={isEditUser}
+          onClose={() => {
+            setIsEditUser(false);
+            setCurrentUser(null);
+          }}
+          initialData={currentUser}
+          onSuccess={() => {
+            setIsEditUser(false);
+            setCurrentUser(null);
             fetchUsers();
           }}
         />
@@ -644,7 +763,13 @@ const AdminDashboard = () => {
             >
               Are you sure you want to delete{" "}
               <Box component="span" sx={{ fontWeight: 800, color: "#1e293b" }}>
-                {serviceToDelete?.name}
+                {deleteType === "service"
+                  ? itemToDelete?.name
+                  : itemToDelete?.firstName
+                    ? `${itemToDelete.firstName} ${itemToDelete.lastName}`
+                    : itemToDelete?.userId?.firstName
+                      ? `${itemToDelete.userId.firstName} ${itemToDelete.userId.lastName}`
+                      : "this user"}
               </Box>
               ?
             </DialogContentText>
