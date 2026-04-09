@@ -223,58 +223,51 @@ const EditUserDialog = ({ open, onClose, onSuccess, initialData }) => {
             </Grid>
           </Grid>
         </Paper>
-      </DialogContent>
 
-      <DialogActions
-        sx={{
-          px: { xs: 2, sm: 3 },
-          pb: { xs: 2, sm: 3 },
-          pt: 1,
-          gap: 1,
-          bgcolor: "#f1f5f9",
-          justifyContent: fullScreen ? "stretch" : "flex-end",
-        }}
-      >
-        <Button
-          onClick={onClose}
-          disabled={loading}
+        <DialogActions
           sx={{
-            fontWeight: 700,
-            color: "#64748b",
-            flex: fullScreen ? 1 : "initial",
-            "&:hover": { bgcolor: "#e2e8f0" },
+            pb: 3,
+            pt: 1,
+            px: 3,
+            gap: 1,
+            justifyContent: fullScreen ? "stretch" : "flex-end",
           }}
         >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          variant="contained"
-          disabled={loading}
-          startIcon={
-            loading ? (
-              <CircularProgress size={20} color="inherit" />
-            ) : (
-              <SaveIcon />
-            )
-          }
-          sx={{
-            bgcolor: "#3b82f6",
-            borderRadius: "8px",
-            px: { xs: 2, sm: 4 },
-            py: 1.2,
-            fontWeight: 700,
-            flex: fullScreen ? 2 : "initial",
-            "&:hover": { bgcolor: "#2563eb" },
-            "&.Mui-disabled": {
-              bgcolor: "#93c5fd",
-              color: "#fff",
-            },
-          }}
-        >
-          {loading ? "Updating..." : "Update User"}
-        </Button>
-      </DialogActions>
+          <Button
+            onClick={onClose}
+            sx={{
+              fontWeight: 700,
+              color: "#64748b",
+              flex: fullScreen ? 1 : "initial",
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={loading}
+            startIcon={
+              loading ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                <SaveIcon />
+              )
+            }
+            sx={{
+              bgcolor: "#3b82f6",
+              borderRadius: "8px",
+              px: { xs: 2, sm: 4 },
+              py: 1.2,
+              fontWeight: 700,
+              flex: fullScreen ? 2 : "initial",
+              "&:hover": { bgcolor: "#2563eb" },
+            }}
+          >
+            {loading ? "Updating..." : "Update User"}
+          </Button>
+        </DialogActions>
+      </DialogContent>
     </Dialog>
   );
 };
