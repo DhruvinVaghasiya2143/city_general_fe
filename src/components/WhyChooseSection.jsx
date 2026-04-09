@@ -8,7 +8,7 @@ export default function WhyChooseSection() {
     <Box sx={{ bgcolor: "#f9fafb", py: 8 }}>
       <Container>
         <Typography variant="h4" fontWeight="bold" textAlign="center">
-          Why Choose CityGeneral?
+          Why  CityGeneral?
         </Typography>
 
         <Grid container spacing={{ xs: 6, md: 10 }} alignItems="center" sx={{ mt: 4 }}>

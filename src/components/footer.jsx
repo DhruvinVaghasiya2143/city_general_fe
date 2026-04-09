@@ -166,7 +166,7 @@ function Footer() {
               © 2024 CityGeneral Hospital. All rights reserved.
             </Typography>
 
-            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+            <div className="flex flex md:flex-row items-center gap-4 md:gap-6">
               {["Terms of Service", "HIPAA Compliance", "Sitemap"].map(
                 (item) => (
                   <MuiLink

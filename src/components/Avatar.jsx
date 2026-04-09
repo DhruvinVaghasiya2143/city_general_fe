@@ -14,7 +14,6 @@ export default function ImageAvatars() {
           key={index}
           src={img}
           sx={{
-            border: "2px solid white",
             boxShadow: 1,
           }}
         />
@@ -29,7 +28,6 @@ export default function ImageAvatars() {
       >
         +500
       </Avatar>
-      
     </Stack>
   );
 }
