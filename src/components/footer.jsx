@@ -93,7 +93,10 @@ function Footer() {
 
             {/* Column 3 */}
             <Grid item xs={12} md={6} lg={3}>
-              <Typography className="text-white font-semibold mb-6">
+              <Typography
+                className="text-white font-semibold mb-6"
+                style={{ marginBottom: "10px" }}
+              >
                 Contact Info
               </Typography>
 
