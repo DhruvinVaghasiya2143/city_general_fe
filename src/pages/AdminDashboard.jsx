@@ -210,13 +210,13 @@ const AdminDashboard = () => {
       bgcolor: "#f5f3ff",
     },
     {
-      title: "Pharmacists",
+      title: "Total Pharmacists",
       value: stats.pharmacistCount,
       icon: <LocalPharmacyIcon fontSize="large" sx={{ color: "#0ea5e9" }} />,
       bgcolor: "#e0f2fe",
     },
     {
-      title: "Receptionists",
+      title: "Total Receptionists",
       value: stats.receptionistCount,
       icon: <DeskIcon fontSize="large" sx={{ color: "#f97316" }} />,
       bgcolor: "#ffedd5",
