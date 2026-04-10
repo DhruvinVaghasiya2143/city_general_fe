@@ -3193,25 +3193,14 @@ const PharmacistsPage = () => {
         <DialogActions
           sx={{
             p: 3,
+            pt: 1,
             display: "flex",
             flexDirection: { xs: "column", sm: "row" },
-            gap: { xs: 2, sm: 1 },
+            gap: 1.5,
             justifyContent: "center",
+            alignItems: "stretch",
           }}
         >
-          <Button
-            variant="outlined"
-            onClick={() => setDeleteConfirmDialogOpen(false)}
-            fullWidth={isMobile}
-            sx={{
-              color: "#64748b",
-              fontWeight: 700,
-              textTransform: "none",
-              px: { xs: 0, sm: 3 },
-            }}
-          >
-            Cancel
-          </Button>
           <Button
             variant="contained"
             type="submit"
@@ -3222,11 +3211,28 @@ const PharmacistsPage = () => {
               textTransform: "none",
               borderRadius: "12px",
               px: { xs: 0, sm: 4 },
-              py: { xs: 1.5, sm: "auto" },
+              py: 1.2,
+              width: { xs: "100%", sm: "auto" },
               "&:hover": { bgcolor: "#b91c1c" },
             }}
           >
             Delete
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => setDeleteConfirmDialogOpen(false)}
+            fullWidth={isMobile}
+            sx={{
+              color: "#64748b",
+              fontWeight: 700,
+              textTransform: "none",
+              px: { xs: 0, sm: 3 },
+              py: 1.2,
+              width: { xs: "100%", sm: "auto" },
+              ml: { xs: "0 !important", sm: "inherit" },
+            }}
+          >
+            Cancel
           </Button>
         </DialogActions>
       </Dialog>

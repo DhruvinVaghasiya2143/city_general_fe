@@ -226,7 +226,7 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
         onSubmit: handleSubmit,
       }}
     >
-      <DialogTitle sx={{ pb: 1, px: { xs: 2, sm: 3 }, pt: { xs: 2, sm: 3 } }}>
+      <DialogTitle sx={{ pb: 3, px: { xs: 2, sm: 3 }, pt: { xs: 2, sm: 3 } }}>
         <Box
           sx={{
             display: "flex",
@@ -291,6 +291,7 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
             borderRadius: "12px",
             border: "1px solid #e2e8f0",
             mb: 3,
+            mt: 2,
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
@@ -700,8 +701,9 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
             pb: 3,
             pt: 1,
             px: 3,
-            gap: 1,
-            justifyContent: fullScreen ? "stretch" : "flex-end",
+            gap: 1.5,
+            flexDirection: { xs: "column-reverse", sm: "row" },
+            alignItems: "stretch",
           }}
         >
           <Button
@@ -710,7 +712,8 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
             sx={{
               fontWeight: 700,
               color: "#64748b",
-              flex: fullScreen ? 1 : "initial",
+              width: { xs: "100%", sm: "auto" },
+              py: 1.2,
             }}
           >
             Cancel
@@ -732,7 +735,8 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
               px: { xs: 2, sm: 4 },
               py: 1.2,
               fontWeight: 700,
-              flex: fullScreen ? 2 : "initial",
+              width: { xs: "100%", sm: "auto" },
+              ml: { xs: "0 !important", sm: "inherit" },
               "&:hover": { bgcolor: "#2563eb" },
             }}
           >

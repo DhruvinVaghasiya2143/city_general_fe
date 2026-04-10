@@ -128,7 +128,7 @@ const EditUserDialog = ({ open, onClose, onSuccess, initialData }) => {
         },
       }}
     >
-      <DialogTitle sx={{ pb: 1, px: { xs: 2, sm: 3 }, pt: { xs: 2, sm: 3 } }}>
+      <DialogTitle sx={{ pb: 3, px: { xs: 2, sm: 3 }, pt: { xs: 2, sm: 3 } }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 800, color: "#1e293b", mb: 0.5 }}>
@@ -155,7 +155,7 @@ const EditUserDialog = ({ open, onClose, onSuccess, initialData }) => {
           </Paper>
         )}
 
-        <Paper elevation={0} sx={{ p: 3, borderRadius: "12px", border: "1px solid #e2e8f0", mb: 1 }}>
+        <Paper elevation={0} sx={{ p: 3, borderRadius: "12px", border: "1px solid #e2e8f0", mb: 1, mt: 2 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
             <PersonIcon sx={{ color: "#3b82f6" }} />
             <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#1e293b" }}>
@@ -229,8 +229,9 @@ const EditUserDialog = ({ open, onClose, onSuccess, initialData }) => {
             pb: 3,
             pt: 1,
             px: 3,
-            gap: 1,
-            justifyContent: fullScreen ? "stretch" : "flex-end",
+            gap: 1.5,
+            flexDirection: { xs: "column-reverse", sm: "row" },
+            alignItems: "stretch",
           }}
         >
           <Button
@@ -239,7 +240,8 @@ const EditUserDialog = ({ open, onClose, onSuccess, initialData }) => {
             sx={{
               fontWeight: 700,
               color: "#64748b",
-              flex: fullScreen ? 1 : "initial",
+              width: { xs: "100%", sm: "auto" },
+              py: 1.2,
             }}
           >
             Cancel
@@ -261,7 +263,8 @@ const EditUserDialog = ({ open, onClose, onSuccess, initialData }) => {
               px: { xs: 2, sm: 4 },
               py: 1.2,
               fontWeight: 700,
-              flex: fullScreen ? 2 : "initial",
+              width: { xs: "100%", sm: "auto" },
+              ml: { xs: "0 !important", sm: "inherit" },
               "&:hover": { bgcolor: "#2563eb" },
             }}
           >

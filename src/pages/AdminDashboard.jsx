@@ -4,7 +4,6 @@ import {
   Typography,
   Button,
   Container,
-  Grid,
   Paper,
   Avatar,
   Menu,
@@ -321,21 +320,26 @@ const AdminDashboard = () => {
         </Box>
 
         {/* Stats Grid */}
-        <Grid
-          container
-          spacing={{ xs: 1.5, sm: 2, md: 3 }}
-          sx={{ mb: { xs: 4, md: 6 } }}
+        {/* Stats Hybrid Layout (Flex for Mobile, Grid for Desktop) */}
+        <Box
+          sx={{
+            display: { xs: "flex", md: "grid" },
+            flexWrap: { xs: "wrap", md: "nowrap" },
+            gridTemplateColumns: { md: "repeat(3, 1fr)" },
+            gap: { xs: 1.5, sm: 2, md: 3 },
+            justifyContent: "center",
+            mb: { xs: 4, md: 6 },
+          }}
         >
           {statCards.map((stat, index) => (
-            <Grid
-              item
-              xs={6}
-              sm={4}
-              md={4}
+            <Box
               key={index}
               sx={{
-                // On md screens with 5 cards: 3 in first row, 2 centered in second row
-                ...(index >= 3 && { display: { xs: "block", md: "block" } }),
+                flex: {
+                  xs: "1 1 calc(50% - 12px)",
+                  sm: "1 1 calc(33.33% - 16px)",
+                },
+                minWidth: { xs: "140px", sm: "200px" },
               }}
             >
               <Paper
@@ -393,9 +397,9 @@ const AdminDashboard = () => {
                   </Typography>
                 </Box>
               </Paper>
-            </Grid>
+            </Box>
           ))}
-        </Grid>
+        </Box>
 
         {/* User Directory Header */}
         <Box sx={{ mb: { xs: 2, md: 3 } }}>
@@ -806,19 +810,16 @@ const AdminDashboard = () => {
               ?
             </DialogContentText>
           </DialogContent>
-          <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
-            <Button
-              variant="outlined"
-              onClick={handleCloseDeleteDialog}
-              sx={{
-                color: "#64748b",
-                textTransform: "none",
-                fontWeight: 700,
-                "&:hover": { bgcolor: "#f1f5f9" },
-              }}
-            >
-              Cancel
-            </Button>
+          <DialogActions
+            sx={{
+              px: 3,
+              pb: 3,
+              pt: 1,
+              gap: 1.5,
+              flexDirection: { xs: "column", sm: "row" },
+              alignItems: "stretch",
+            }}
+          >
             <Button
               onClick={handleConfirmDelete}
               variant="contained"
@@ -828,11 +829,28 @@ const AdminDashboard = () => {
                 fontWeight: 700,
                 borderRadius: "8px",
                 px: 3,
+                py: 1.2,
                 boxShadow: "0 4px 6px -1px rgb(239 68 68 / 0.2)",
+                width: { xs: "100%", sm: "auto" },
                 "&:hover": { bgcolor: "#dc2626" },
               }}
             >
               Delete
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={handleCloseDeleteDialog}
+              sx={{
+                color: "#64748b",
+                textTransform: "none",
+                fontWeight: 700,
+                width: { xs: "100%", sm: "auto" },
+                ml: { xs: "0 !important", sm: "inherit" },
+                py: 1.2,
+                "&:hover": { bgcolor: "#f1f5f9" },
+              }}
+            >
+              Cancel
             </Button>
           </DialogActions>
         </Dialog>
