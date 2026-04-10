@@ -83,7 +83,6 @@ const AddService = ({
       newError.description = "Description is required";
     }
 
-    // Pass validation if either a file is selected or a valid URL is provided
     if (!selectedFile && !formData.imageUrl) {
       newError.imageUrl = "Image is required";
     } else if (!selectedFile && formData.imageUrl) {
@@ -101,7 +100,6 @@ const AddService = ({
     const file = event.target.files[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       setError({ ...error, imageUrl: "Please select an image file" });
       return;
@@ -110,15 +108,12 @@ const AddService = ({
     setSelectedFile(file);
     setError({ ...error, imageUrl: "" });
 
-    // Create local preview URL
     const localUrl = URL.createObjectURL(file);
     setPreviewUrl(localUrl);
 
-    // Also update formData.imageUrl to pass validation if we are using it
     setFormData((prev) => ({ ...prev, imageUrl: file.name }));
   };
 
-  console.log("formData", formData);
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = validateForm();
@@ -132,7 +127,6 @@ const AddService = ({
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
 
-      // Use FormData for multipart/form-data request
       const payload = new FormData();
       payload.append("name", formData.name);
       payload.append("description", formData.description);
@@ -156,7 +150,6 @@ const AddService = ({
         if (onClose) onClose();
       }
     } catch (err) {
-      console.error("Add Service Error:", err);
       const serverError =
         err.response?.data?.message ||
         `Server error during service ${isEdit ? "update" : "creation"}`;
@@ -376,81 +369,64 @@ const AddService = ({
                   />
                 )}
               </Box>
-              {/*               
-              <Typography
-                variant="caption"
-                sx={{ display: "block", mb: 1, color: "#64748b", fontWeight: 500 }}
-              >
-                Or paste an image URL directly:
-              </Typography>
-              <TextField
-                fullWidth
-                name="imageUrl"
-                placeholder="https://example.com/image.png"
-                value={formData.imageUrl}
-                onChange={handleChange}
-                error={!!error.imageUrl}
-                helperText={error.imageUrl}
-                sx={textFieldStyles}
-              /> */}
             </Grid>
           </Grid>
         </Paper>
+      </DialogContent>
 
-        <DialogActions
+      <DialogActions
+        sx={{
+          pb: 3,
+          pt: 1,
+          px: 3,
+          gap: 1.5,
+          flexDirection: { xs: "column-reverse", sm: "row" },
+          alignItems: "stretch",
+        }}
+      >
+        <Button
+          variant="outlined"
+          onClick={onClose}
           sx={{
-            pb: 3,
-            pt: 1,
-            px: 3,
-            gap: 1.5,
-            flexDirection: { xs: "column-reverse", sm: "row" },
-            alignItems: "stretch",
+            fontWeight: 700,
+            color: "#64748b",
+            width: { xs: "100%", sm: "auto" },
+            py: 1.2,
           }}
         >
-          <Button
-            variant="outlined"
-            onClick={onClose}
-            sx={{
-              fontWeight: 700,
-              color: "#64748b",
-              width: { xs: "100%", sm: "auto" },
-              py: 1.2,
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={loading}
-            startIcon={
-              loading ? (
-                <CircularProgress size={20} color="inherit" />
-              ) : (
-                <SaveIcon />
-              )
-            }
-            sx={{
-              bgcolor: "#3b82f6",
-              borderRadius: "8px",
-              px: { xs: 2, sm: 4 },
-              py: 1.2,
-              fontWeight: 700,
-              width: { xs: "100%", sm: "auto" },
-              ml: { xs: "0 !important", sm: "inherit" },
-              "&:hover": { bgcolor: "#2563eb" },
-            }}
-          >
-            {loading
-              ? isEdit
-                ? "Updating..."
-                : "Saving..."
-              : isEdit
-                ? "Update Service"
-                : "Save Service"}
-          </Button>
-        </DialogActions>
-      </DialogContent>
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={loading}
+          startIcon={
+            loading ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              <SaveIcon />
+            )
+          }
+          sx={{
+            bgcolor: "#3b82f6",
+            borderRadius: "8px",
+            px: { xs: 2, sm: 4 },
+            py: 1.2,
+            fontWeight: 700,
+            width: { xs: "100%", sm: "auto" },
+            ml: { xs: "0 !important", sm: "inherit" },
+            "&:hover": { bgcolor: "#2563eb" },
+          }}
+        >
+          {loading
+            ? isEdit
+              ? "Updating..."
+              : "Saving..."
+            : isEdit
+              ? "Update Service"
+              : "Save Service"}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };

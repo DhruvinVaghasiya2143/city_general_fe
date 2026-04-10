@@ -167,11 +167,10 @@ const AdminDashboard = () => {
     setItemToDelete(null);
   };
   const handleSuccess = () => {
-    // Refresh stats and users after adding a doctor
     loadStats();
     setPage(0);
     fetchUsers();
-    console.log("Doctor added successfully");
+
   };
 
   const handleChangePage = (event, newPage) => {
@@ -319,8 +318,7 @@ const AdminDashboard = () => {
           </Menu>
         </Box>
 
-        {/* Stats Grid */}
-        {/* Stats Hybrid Layout (Flex for Mobile, Grid for Desktop) */}
+
         <Box
           sx={{
             display: { xs: "flex", md: "grid" },
@@ -401,7 +399,7 @@ const AdminDashboard = () => {
           ))}
         </Box>
 
-        {/* User Directory Header */}
+
         <Box sx={{ mb: { xs: 2, md: 3 } }}>
           <Typography
             variant="h5"
@@ -457,7 +455,7 @@ const AdminDashboard = () => {
           </Box>
           <Divider />
 
-          {/* Responsive Table View */}
+
           <Box sx={{ overflowX: "auto", width: "100%" }}>
             <Box
               component="table"
@@ -654,7 +652,6 @@ const AdminDashboard = () => {
                                   variant="outlined"
                                   color="error"
                                   onClick={() => {
-                                    // Doctors store user info under userId reference
                                     const deleteTarget =
                                       activeRole === "doctor"
                                         ? { ...user, _id: user.userId?._id }
@@ -727,7 +724,7 @@ const AdminDashboard = () => {
           />
         </Paper>
 
-        {/* Add Doctor Dialog */}
+
         <AddDoctor
           open={openAddDoctor}
           onClose={handleClose}
@@ -735,7 +732,7 @@ const AdminDashboard = () => {
           initialRole={selectedRole}
         />
 
-        {/* Add Service Dialog */}
+
         <AddService
           open={openAddService}
           onClose={() => {
@@ -746,7 +743,7 @@ const AdminDashboard = () => {
           isEdit={isEditService}
           initialData={currentService}
           onSuccess={() => {
-            console.log("Service saved successfully");
+
             setOpenAddService(false);
             setIsEditService(false);
             setCurrentService(null);
@@ -754,7 +751,7 @@ const AdminDashboard = () => {
           }}
         />
 
-        {/* Edit User Dialog */}
+
         <EditUserDialog
           open={isEditUser}
           onClose={() => {
@@ -769,7 +766,7 @@ const AdminDashboard = () => {
           }}
         />
 
-        {/* Delete Confirmation Dialog */}
+
         <Dialog
           open={deleteDialogOpen}
           onClose={handleCloseDeleteDialog}

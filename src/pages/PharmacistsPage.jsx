@@ -132,7 +132,7 @@ const NavItem = ({ icon: Icon, label, active, badge, onClick }) => (
   </Box>
 );
 
-// Helper: format ISO date nicely
+
 const formatLoginTime = (iso) => {
   if (!iso) return "—";
   try {
@@ -173,18 +173,18 @@ const PharmacistsPage = () => {
   const [prescriptionModalOpen, setPrescriptionModalOpen] =
     React.useState(false);
 
-  // Pagination state for Prescriptions
+
   const [prescriptionPage, setPrescriptionPage] = React.useState(0);
   const [prescriptionRowsPerPage, setPrescriptionRowsPerPage] =
     React.useState(10);
   const [prescriptionTotal, setPrescriptionTotal] = React.useState(0);
 
-  // Pagination state for Drugs
+
   const [drugPage, setDrugPage] = React.useState(0);
   const [drugRowsPerPage, setDrugRowsPerPage] = React.useState(10);
   const [drugTotal, setDrugTotal] = React.useState(0);
 
-  // Billing (Invoice) state
+
   const [invoices, setInvoices] = React.useState([]);
   const [invoicePage, setInvoicePage] = React.useState(0);
   const [invoiceRowsPerPage, setInvoiceRowsPerPage] = React.useState(10);
@@ -239,8 +239,7 @@ const PharmacistsPage = () => {
       setPrescriptionTotal(response.data.total || 0);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching prescriptions:", error);
-      setLoading(false);
+
     }
   };
 
@@ -253,7 +252,7 @@ const PharmacistsPage = () => {
       setDrugs(response.data.data || []);
       setDrugTotal(response.data.total || 0);
     } catch (error) {
-      console.error("Error fetching drugs:", error);
+
     }
   };
 
@@ -266,7 +265,7 @@ const PharmacistsPage = () => {
       setInvoices(response.data.data || []);
       setInvoiceTotal(response.data.total || 0);
     } catch (error) {
-      console.error("Error fetching invoices:", error);
+
     }
   };
 
@@ -278,7 +277,7 @@ const PharmacistsPage = () => {
         setStats(response.data.stats);
       }
     } catch (error) {
-      console.error("Error fetching dashboard stats:", error);
+
     }
   };
 
@@ -359,33 +358,33 @@ const PharmacistsPage = () => {
   const generateInvoicePDF = (invoice) => {
     const doc = new jsPDF();
 
-    // Theme Colors
+
     const primaryBlue = [19, 127, 236]; // #137fec
     const lightBlue = [207, 230, 253]; // #cfe6fd (Light blue for notes)
     const grayText = [100, 116, 139]; // #64748b
     const darkSlate = [15, 23, 42]; // #0f172a
 
-    // -- HEADER SECTION (Ultra Compact Solid Blue) --
+
     doc.setFillColor(...primaryBlue);
     doc.rect(0, 0, 210, 28, "F");
 
-    // Monitor/Invoice Icon Placeholder (Scaled Down)
+
     doc.setDrawColor(255, 255, 255);
     doc.setLineWidth(0.8);
-    doc.roundedRect(15, 4, 12, 9, 2, 2, "D"); // Monitor screen
-    doc.line(18, 13, 18, 15); // Monitor neck
+    doc.roundedRect(15, 4, 12, 9, 2, 2, "D");
+    doc.line(18, 13, 18, 15);
     doc.line(24, 13, 24, 15);
-    doc.line(16, 15, 26, 15); // Monitor base
+    doc.line(16, 15, 26, 15);
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(6);
     doc.text("</>", 21, 10, { align: "center" });
 
-    // "Invoice" Text (Compact Font)
+
     doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
     doc.text("Invoice", 15, 24);
 
-    // Hospital Details (Ultra Compact & Centered in new height)
+
     doc.setFontSize(14);
     doc.text("City General Hospital", 195, 12, { align: "right" });
     doc.setFontSize(7);
@@ -393,21 +392,21 @@ const PharmacistsPage = () => {
     doc.text("Ahmedabad, Gujarat, India", 195, 19, { align: "right" });
     doc.text("Postal Code: 380001", 195, 23, { align: "right" });
 
-    // -- WATERMARK (Premium LocalHospitalIcon Vector) --
+
     doc.saveGraphicsState();
-    doc.setGState(new doc.GState({ opacity: 0.015 })); // Extreme subtlety for true watermark look
+    doc.setGState(new doc.GState({ opacity: 0.015 }));
     doc.setFillColor(180, 180, 180);
 
-    // Draw Icon Body (Filled Rounded Square)
+
     doc.roundedRect(65, 105, 80, 80, 12, 12, "F");
 
-    // Draw Centered Cross (Plus sign as a knockout/white fill)
+
     doc.setFillColor(255, 255, 255);
-    doc.rect(100, 120, 10, 50, "F"); // Vertical bar
-    doc.rect(80, 140, 50, 10, "F"); // Horizontal bar
+    doc.rect(100, 120, 10, 50, "F");
+    doc.rect(80, 140, 50, 10, "F");
     doc.restoreGraphicsState();
 
-    // -- MIDDLE SECTION (Bill To & Metadata) --
+
     const middleY = 45;
     doc.setTextColor(...darkSlate);
     doc.setFontSize(10);
@@ -423,7 +422,7 @@ const PharmacistsPage = () => {
       doc.text(`Email: ${invoice.emailId}`, 15, middleY + 20);
     }
 
-    // Invoice Metadata (Right Aligned)
+
     doc.setTextColor(...darkSlate);
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
@@ -444,7 +443,7 @@ const PharmacistsPage = () => {
       { align: "right" },
     );
 
-    // -- ITEMS TABLE --
+
     const tableData = invoice.items.map((item, index) => [
       `Item ${index + 1}`,
       item.name,
@@ -479,7 +478,7 @@ const PharmacistsPage = () => {
       margin: { left: 15, right: 15 },
     });
 
-    // -- SUMMARY SECTION (Calculations) --
+
     const subtotal = invoice.items.reduce((sum, item) => sum + item.total, 0);
     const taxAmount = subtotal * 0.05;
     const summaryY = doc.lastAutoTable.finalY + 8;
@@ -496,10 +495,10 @@ const PharmacistsPage = () => {
       align: "right",
     });
 
-    // -- FOOTER BOXES (Notes & Total Due) --
+
     const footerY = summaryY + 10;
 
-    // Notes Box (Light Blue)
+
     doc.setFillColor(...lightBlue);
     doc.rect(15, footerY, 105, 28, "F");
     doc.setTextColor(...darkSlate);
@@ -515,7 +514,7 @@ const PharmacistsPage = () => {
       { maxWidth: 95 },
     );
 
-    // Total Box (Solid Blue)
+
     doc.setFillColor(...primaryBlue);
     doc.rect(120, footerY, 75, 28, "F");
     doc.setTextColor(255, 255, 255);
@@ -541,14 +540,14 @@ const PharmacistsPage = () => {
         return;
       }
 
-      // 10-digit Mobile Number Validation
+
       const mobileRegex = /^[0-9]{10}$/;
       if (!mobileRegex.test(newInvoiceData.mobileNumber)) {
         toast.error("Please enter a valid 10-digit mobile number");
         return;
       }
 
-      // Email ID Validation (if provided)
+
       if (newInvoiceData.emailId) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(newInvoiceData.emailId)) {
@@ -584,7 +583,7 @@ const PharmacistsPage = () => {
         fetchDashboardStats();
       }
     } catch (error) {
-      console.error("Error creating invoice:", error);
+
       toast.error(error.response?.data?.message || "Failed to create invoice");
     } finally {
       setIsGeneratingInvoice(false);
@@ -658,7 +657,7 @@ const PharmacistsPage = () => {
         fetchDashboardStats();
       }
     } catch (error) {
-      console.error("Error saving drug:", error);
+
       toast.error(error.response?.data?.message || "Failed to save drug");
     }
   };
@@ -685,7 +684,7 @@ const PharmacistsPage = () => {
         fetchDashboardStats();
       }
     } catch (error) {
-      console.error("Error deleting drug:", error);
+
       toast.error(error.response?.data?.message || "Failed to delete drug");
     }
   };
@@ -707,7 +706,7 @@ const PharmacistsPage = () => {
         fontFamily: "Inter, sans-serif",
       }}
     >
-      {/* Sidebar */}
+
       <Box
         sx={{
           display: { xs: "none", lg: "flex" },
@@ -745,7 +744,7 @@ const PharmacistsPage = () => {
                   fontSize: "22px",
                   fontWeight: "900",
                   lineHeight: 1,
-                  mt: -0.2, // Minor adjustment for vertical centering of '+'
+                  mt: -0.2,
                 }}
               >
                 +
@@ -876,18 +875,18 @@ const PharmacistsPage = () => {
         </Box>
       </Box>
 
-      {/* Main Area */}
+
       <Box
         sx={{
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          overflow: "hidden", // Header stays fixed, content below scrolls
+          overflow: "hidden",
           bgcolor: "rgba(248, 250, 252, 0.5)",
           height: "100%",
         }}
       >
-        {/* Header */}
+
         <Box
           sx={{
             display: "flex",
@@ -939,7 +938,7 @@ const PharmacistsPage = () => {
           </Box>
         </Box>
 
-        {/* Mobile Navigation Drawer */}
+
         <Drawer
           anchor="left"
           open={mobileDrawerOpen}
@@ -1118,7 +1117,7 @@ const PharmacistsPage = () => {
           </Box>
         </Drawer>
 
-        {/* Content */}
+
         <Box
           sx={{
             flex: 1,
@@ -1127,7 +1126,7 @@ const PharmacistsPage = () => {
             display: "flex",
             flexDirection: "column",
             gap: 4,
-            overflowY: "auto", // This area now scrolls
+            overflowY: "auto",
           }}
         >
           {activeTab === "Overview" && (
@@ -1141,7 +1140,7 @@ const PharmacistsPage = () => {
                   width: "100%",
                 }}
               >
-                {/* Monthly Revenue Card */}
+
                 <Box
                   sx={{
                     flex: {
@@ -1219,7 +1218,7 @@ const PharmacistsPage = () => {
                   </Paper>
                 </Box>
 
-                {/* Total Medicines Card */}
+
                 <Box
                   sx={{
                     flex: {
@@ -1285,7 +1284,7 @@ const PharmacistsPage = () => {
                   </Paper>
                 </Box>
 
-                {/* Low Stock Card */}
+
                 <Box
                   sx={{
                     flex: {
@@ -1353,7 +1352,7 @@ const PharmacistsPage = () => {
                   </Paper>
                 </Box>
 
-                {/* Total Invoices Card */}
+
                 <Box
                   sx={{
                     flex: {
@@ -1429,7 +1428,7 @@ const PharmacistsPage = () => {
                 }}
               >
                 <Box>
-                  {/* Recent Transactions Table */}
+
                   <Box
                     sx={{
                       bgcolor: "white",
@@ -1587,7 +1586,7 @@ const PharmacistsPage = () => {
 
           {activeTab === "Drugs Inventory" && (
             <Box sx={{ minWidth: 0 }}>
-              {/* Drug Inventory Table */}
+
               <Box
                 sx={{
                   bgcolor: "white",
@@ -1782,7 +1781,7 @@ const PharmacistsPage = () => {
 
           {activeTab === "Billing" && (
             <Box sx={{ minWidth: 0 }}>
-              {/* Billing History Table */}
+
               <Box
                 sx={{
                   bgcolor: "white",
@@ -1960,7 +1959,7 @@ const PharmacistsPage = () => {
         </Box>
       </Box>
 
-      {/* ── Profile Drawer ── */}
+
       <Drawer
         anchor="right"
         open={profileOpen}
@@ -2117,7 +2116,7 @@ const PharmacistsPage = () => {
           </Box>
         )}
       </Drawer>
-      {/* Add Drug Modal */}
+
       <Dialog
         open={addDrugModalOpen}
         onClose={() => {
@@ -2281,7 +2280,7 @@ const PharmacistsPage = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Prescription Detail Modal */}
+
       <Dialog
         open={prescriptionModalOpen}
         onClose={handleClosePrescription}
@@ -2452,7 +2451,7 @@ const PharmacistsPage = () => {
         </DialogActions>
       </Dialog>
 
-      {/* New Invoice Modal */}
+
       <Dialog
         open={addInvoiceModalOpen}
         onClose={() => setAddInvoiceModalOpen(false)}
@@ -2714,7 +2713,7 @@ const PharmacistsPage = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Invoice Summary Modal */}
+
       <Dialog
         open={summaryModalOpen}
         onClose={() => setSummaryModalOpen(false)}
@@ -2733,7 +2732,7 @@ const PharmacistsPage = () => {
         <DialogContent sx={{ p: 0, bgcolor: "white" }}>
           {generatedInvoice && (
             <Box>
-              {/* -- HEADER SECTION (Compact Blue) -- */}
+
               <Box
                 sx={{
                   bgcolor: "#137fec",
@@ -2796,7 +2795,7 @@ const PharmacistsPage = () => {
               </Box>
 
               <Box sx={{ p: 3 }}>
-                {/* -- MIDDLE SECTION (Compact) -- */}
+
                 <Grid
                   container
                   spacing={2}
@@ -2882,7 +2881,7 @@ const PharmacistsPage = () => {
                   </Grid>
                 </Grid>
 
-                {/* -- ITEMS TABLE (Compact) -- */}
+
                 <TableContainer component={Box} sx={{ mb: 3 }}>
                   <Table size="small">
                     <TableHead>
@@ -2958,7 +2957,7 @@ const PharmacistsPage = () => {
                   </Table>
                 </TableContainer>
 
-                {/* -- SUMMARY CALCULATION (Clean Breakdown) -- */}
+
                 <Box
                   sx={{
                     display: "flex",
@@ -3033,7 +3032,7 @@ const PharmacistsPage = () => {
                   </Box>
                 </Box>
 
-                {/* -- FOOTER BOXES (Compact) -- */}
+
                 <Box
                   sx={{
                     display: "flex",
@@ -3144,7 +3143,7 @@ const PharmacistsPage = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
+
       <Dialog
         open={deleteConfirmDialogOpen}
         onClose={() => setDeleteConfirmDialogOpen(false)}
@@ -3237,7 +3236,7 @@ const PharmacistsPage = () => {
         </DialogActions>
       </Dialog>
 
-      {/* View Invoice Preview Modal */}
+
       <Dialog
         open={viewInvoiceModalOpen}
         onClose={() => setViewInvoiceModalOpen(false)}
@@ -3261,7 +3260,7 @@ const PharmacistsPage = () => {
                 border: "1px solid #e2e8f0",
               }}
             >
-              {/* -- HOSPITAL HEADER (Premium Branding) -- */}
+
               <Box
                 sx={{
                   display: "flex",
@@ -3326,7 +3325,7 @@ const PharmacistsPage = () => {
 
               <Divider sx={{ mb: 4, borderColor: "#f1f5f9" }} />
 
-              {/* -- PATIENT & INVOICE META -- */}
+
               <Grid container spacing={4} sx={{ mb: 4 }}>
                 <Grid item xs={6}>
                   <Typography
@@ -3374,7 +3373,7 @@ const PharmacistsPage = () => {
                 </Grid>
               </Grid>
 
-              {/* -- ITEMS TABLE (Compact & Clean) -- */}
+
               <TableContainer
                 sx={{
                   mb: 4,
@@ -3452,7 +3451,7 @@ const PharmacistsPage = () => {
                 </Table>
               </TableContainer>
 
-              {/* -- SUMMARY CALCULATION (Clean Breakdown) -- */}
+
               <Box
                 sx={{
                   display: "flex",
@@ -3527,7 +3526,7 @@ const PharmacistsPage = () => {
                 </Box>
               </Box>
 
-              {/* -- FOOTER BOXES (Compact) -- */}
+
               <Box
                 sx={{
                   display: "flex",

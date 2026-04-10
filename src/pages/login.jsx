@@ -72,7 +72,7 @@ const Login = () => {
       );
 
       const user = response.data.user;
-      console.log("user", user);
+
       const sessionUser = {
         loggedIn: true,
         role: user.role,
@@ -84,9 +84,9 @@ const Login = () => {
 
       sessionStorage.setItem("authUser", JSON.stringify(sessionUser));
 
-      // Redirect based on role
+
       const userRole = user.role?.toLowerCase();
-      console.log("userRole", userRole, user);
+
       if (userRole === "doctor") navigate("/doctor-dashboard");
       if (userRole === "pharmacist") navigate("/pharmacists-dashboard");
       if (userRole === "receptionist") navigate("/receptionist-dashboard");
@@ -328,81 +328,12 @@ const Login = () => {
               color: "#94a3b8",
             }}
           >
-            {/* <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <VerifiedUserIcon sx={{ fontSize: "16px" }} />
-              <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                HIPAA Compliant
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <LockResetIcon sx={{ fontSize: "16px" }} />
-              <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                256-bit Encryption
-              </Typography>
-            </Box> */}
+
           </Box>
         </Box>
       </main>
 
-      {/* <footer
-        style={{
-          padding: "32px 24px",
-          borderTop: "1px solid #e2e8f0",
-          textAlign: "center",
-          backgroundColor: "white",
-        }}
-      >
-        <Typography variant="caption" sx={{ color: "#64748b" }}>
-          © 2024 HealthCare Portal. All patient data is protected under
-          international health privacy regulations.
-        </Typography>
-        <Box
-          sx={{
-            mt: 2,
-            display: "flex",
-            justifyContent: "center",
-            gap: 2,
-            "& span": { color: "#e2e8f0" },
-          }}
-        >
-          <Typography
-            variant="caption"
-            sx={{
-              color: "#94a3b8",
-              cursor: "pointer",
-              "&:hover": { color: "primary.main" },
-            }}
-          >
-            Privacy Policy
-          </Typography>
-          <Typography component="span" variant="caption">
-            •
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              color: "#94a3b8",
-              cursor: "pointer",
-              "&:hover": { color: "primary.main" },
-            }}
-          >
-            Terms of Service
-          </Typography>
-          <Typography component="span" variant="caption">
-            •
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              color: "#94a3b8",
-              cursor: "pointer",
-              "&:hover": { color: "primary.main" },
-            }}
-          >
-            Help Center
-          </Typography>
-        </Box>
-      </footer> */}
+
 
       <ForgotPasswordModal
         open={forgotPasswordOpen}

@@ -56,13 +56,13 @@ import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import axios from "axios";
 
-// FullCalendar imports
+
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
-// Helper: get initials from a full name
+
 const getInitials = (name = "") =>
   name
     .split(" ")
@@ -72,7 +72,7 @@ const getInitials = (name = "") =>
     .join("")
     .toUpperCase();
 
-// Helper: format ISO date nicely
+
 const formatLoginTime = (iso) => {
   if (!iso) return "—";
   try {
@@ -146,13 +146,13 @@ const DoctorsDashboard = () => {
     try {
       setIsLoadingCalendar(true);
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
-      // Fetch with filter=all and a large limit to get everything for the calendar
+
       const response = await axios.get(
         `${api}/appointment/appointments/${user.id}?filter=all&limit=1000`,
       );
       setCalendarAppointments(response.data.data || []);
     } catch (error) {
-      console.error("Error fetching calendar appointments:", error);
+
     } finally {
       setIsLoadingCalendar(false);
     }
@@ -168,10 +168,7 @@ const DoctorsDashboard = () => {
     setPrescription(appointment.prescription || "");
     setPrescriptionError(false);
     setIsDialogOpen(true);
-    // Mark as read when opened
-    // if (appointment.status === "pending") {
-    //   handleMarkAsRead(appointment._id);
-    // }
+
   };
 
   const handleCloseDialog = () => {
@@ -193,7 +190,7 @@ const DoctorsDashboard = () => {
     currentFilter,
   ) => {
     try {
-      console.log("doctorId", doctorId);
+
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.get(
         `${api}/appointment/appointments/${doctorId}?page=${page}&limit=${limit}&filter=${currentFilter}`,
@@ -206,7 +203,7 @@ const DoctorsDashboard = () => {
         setCompletedTodayCount(response.data.stats.completedTodayCount);
       }
     } catch (error) {
-      console.error(error);
+
     }
   };
 
@@ -221,13 +218,13 @@ const DoctorsDashboard = () => {
         status: "completed",
         prescription: prescription,
       });
-      // Refresh the data
+
       if (user?.id) {
         getAssignedAppointments(user.id, schedulePage, rowsPerPage, filter);
       }
       handleCloseDialog();
     } catch (error) {
-      console.error("Error updating appointment status:", error);
+
     }
   };
 
@@ -237,12 +234,12 @@ const DoctorsDashboard = () => {
       await axios.patch(`${api}/appointment/status/${appointmentId}`, {
         status: "completed",
       });
-      // Refresh the data to show latest status
+
       if (user?.id) {
         getAssignedAppointments(user.id, schedulePage, rowsPerPage, filter);
       }
     } catch (error) {
-      console.error("Error updating appointment status to read:", error);
+
     }
   };
 
@@ -252,7 +249,7 @@ const DoctorsDashboard = () => {
       const response = await axios.get(`${api}/doctor/details/${userId}`);
       setDoctorDetails(response.data);
     } catch (error) {
-      console.error("Error fetching doctor details:", error);
+
     }
   };
   const handleOpenUserMenu = (event) => setAnchorEl(event.currentTarget);
@@ -272,7 +269,7 @@ const DoctorsDashboard = () => {
 
   const user = JSON.parse(sessionStorage.getItem("authUser"));
 
-  // Calculate dynamic stats
+
   const totalPatientsCount = new Set(
     assignedAppointments.map((apt) => apt.patientId?._id).filter(Boolean),
   ).size;
@@ -291,7 +288,7 @@ const DoctorsDashboard = () => {
     }
   }, [user?.id, schedulePage, rowsPerPage, filter]);
 
-  console.log("assigned_appointments =>", assignedAppointments);
+
 
   return (
     <Box
@@ -301,7 +298,7 @@ const DoctorsDashboard = () => {
         fontFamily: "Inter, sans-serif",
       }}
     >
-      {/* Main Content Areas */}
+
       <Box
         component="main"
         sx={{
@@ -311,7 +308,7 @@ const DoctorsDashboard = () => {
           width: "100%",
         }}
       >
-        {/* Welcome Section */}
+
         <Box
           sx={{
             display: "flex",
@@ -384,7 +381,7 @@ const DoctorsDashboard = () => {
           </Box>
         </Box>
 
-        {/* Stats Grid */}
+
         <Box
           sx={{
             display: "grid",
@@ -393,7 +390,7 @@ const DoctorsDashboard = () => {
             mb: 4,
           }}
         >
-          {/* Total Patients */}
+
           <Box
             sx={{
               display: "flex",
@@ -454,7 +451,7 @@ const DoctorsDashboard = () => {
             </Box>
           </Box>
 
-          {/* Completed Today */}
+
           <Box
             sx={{
               display: "flex",
@@ -527,7 +524,7 @@ const DoctorsDashboard = () => {
             gap: { xs: 3, lg: 4 },
           }}
         >
-          {/* Schedule Timeline */}
+
           <Box
             sx={{
               display: "flex",
@@ -922,7 +919,7 @@ const DoctorsDashboard = () => {
             </Box>
           </Box>
 
-          {/* Recent Patients */}
+
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
             <Box
               sx={{
@@ -1047,30 +1044,9 @@ const DoctorsDashboard = () => {
         </Box>
       </Box>
 
-      {/* Global Floating Action Component */}
-      {/* <IconButton
-        sx={{
-          position: "fixed",
-          bottom: 32,
-          right: 32,
-          width: 56,
-          height: 56,
-          bgcolor: "#137fec",
-          color: "white",
-          boxShadow:
-            "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
-          zIndex: 50,
-          "&:hover": {
-            bgcolor: "#137fec",
-            transform: "scale(1.1)",
-          },
-          transition: "transform 0.2s",
-        }}
-      >
-        <ChatBubbleIcon />
-      </IconButton> */}
 
-      {/* ── Profile Drawer ── */}
+
+
       <Drawer
         anchor="right"
         open={profileOpen}
@@ -1241,7 +1217,7 @@ const DoctorsDashboard = () => {
         )}
       </Drawer>
 
-      {/* Appointment Details Dialog */}
+
       <Dialog
         open={isDialogOpen}
         onClose={handleCloseDialog}
@@ -1539,7 +1515,7 @@ const DoctorsDashboard = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Calendar Dialog */}
+
       <Dialog
         fullWidth
         maxWidth="lg"
@@ -1703,7 +1679,7 @@ const DoctorsDashboard = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Calendar Hover Fly-over Popover */}
+
       <Popover
         sx={{
           pointerEvents: "none",

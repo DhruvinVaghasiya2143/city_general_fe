@@ -79,7 +79,7 @@ const EditUserDialog = ({ open, onClose, onSuccess, initialData }) => {
     try {
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       
-      // Determine correct ID based on if it's a doctor profile or standard user
+
       const targetId = initialData.userId?._id ? initialData.userId._id : initialData._id;
       
       const response = await axios.put(`${api}/admin/users/${targetId}`, formData);

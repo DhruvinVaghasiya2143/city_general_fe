@@ -59,12 +59,12 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
   const handleAddDoctor = async () => {
     setLoading(true);
     try {
-      console.log("Sending Data:", formData);
+
 
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.post(`${api}/admin/add-staff`, formData);
 
-      console.log("Response:", response.data);
+
       if (onSuccess) onSuccess();
       if (onClose) onClose();
       setFormData({
@@ -90,7 +90,7 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
     } catch (err) {
       console.error("Add Doctor Error:", err);
       if (err.response && err.response.data) {
-        // If server returns a specific error message
+
         const serverError = err.response.data.message || "An error occurred";
         setError({ submit: serverError });
       } else {
@@ -183,7 +183,7 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
     if (!formData.role) {
       newError.role = "Role is required";
     }
-    console.log(newError);
+
     return newError;
   };
 
@@ -283,7 +283,7 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
             </Typography>
           </Paper>
         )}
-        {/* Personal Information Section */}
+
         <Paper
           elevation={0}
           sx={{
@@ -425,7 +425,7 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
           </Grid>
         </Paper>
 
-        {/* Professional Details Section */}
+
         {formData.role === "doctor" && (
           <Paper
             elevation={0}

@@ -42,7 +42,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import PersonIcon from "@mui/icons-material/Person";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1"; // Closest to person_check
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import axios from "axios";
@@ -54,7 +54,7 @@ const waitlistData = [
     dept: "General Consultation",
     doctor: "Dr. James Wilson",
     docStatus: "Available",
-    docStatusColor: "#10b981", // green
+    docStatusColor: "#10b981",
     avatar:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuDNOmbgTtdBz4GcTZ9Uahrmmb8R595py8QwJHRzEEQAjqJJ8Asndb5rCrpS7fKI3a-2_tR4yvk4SMaP0Slvnqj_w49czLHn8lQ5C31A4wo0uc7Hz3tgKLfr6HXWpd6v68167O5BGg6z84ZF87tk151WQITsWFPWtwEWE6KTJxDuFwwHE1KOrRWKWgaoT0kcK5TdN9-ULtzhTXoDPIB50CArXe3xR8txIbFVpo4JtVO2k6PknGFq8uT0Zbxgmit8XsbZSDpVTU2-EbMY",
     patientsWaiting: 3,
@@ -68,7 +68,7 @@ const waitlistData = [
     dept: "Cardiology",
     doctor: "Dr. Sarah Chen",
     docStatus: "In Session",
-    docStatusColor: "#f97316", // orange
+    docStatusColor: "#f97316",
     avatar:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuAaD8nAT_oTf26hoSUqr7l-Sbp5cODplolqSJfSAkC6tthvaT3zQi4HnibrW5qaVR_Ova-AU9W6BFLQKLyJi0B5Z4EoM058Dp2iA8LNHbZ5fqk5Nl0mxSe-QTFzdT5BsSc0GCcBRzEQYr_ngQV-EdieDUoQ9YWC5FuyFU2i7eVh3DK_tlv9IYyrJo7mgHtv4Ow1nBnKBFez2fuNN06GmCqkT-eOzs5eFlWnT1cgRWq3vwDKegqZTjEVOUr_FL67U6rGXVHaEtPOPSpn",
     patientsWaiting: 5,
@@ -111,7 +111,7 @@ const checkinData = [
   { id: 2, name: "Alice Cooper", time: "Checked in 12m ago" },
 ];
 
-// Helper: get initials from a full name
+
 const getInitials = (name = "") =>
   name
     .split(" ")
@@ -121,7 +121,7 @@ const getInitials = (name = "") =>
     .join("")
     .toUpperCase();
 
-// Helper: format ISO date nicely
+
 const formatLoginTime = (iso) => {
   if (!iso) return "—";
   try {
@@ -173,7 +173,7 @@ const ReceptionistDashboard = () => {
 
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter);
-    setPage(0); // Reset to first page on filter change
+    setPage(0);
   };
 
   const handleViewAppointment = (appointment) => {
@@ -200,18 +200,15 @@ const ReceptionistDashboard = () => {
         ),
       );
 
-      // Update selected appointment so the button in the modal disables immediately
-      setSelectedAppointment((prev) =>
-        prev?._id === appointmentId ? { ...prev, status: "completed" } : prev,
-      );
 
-      // Refresh the appointments list totals
+
+
       fetchAppointments(page, rowsPerPage, filter);
 
-      // Auto-close dialog after completion
+
       handleCloseDialog();
     } catch (error) {
-      console.error("Error completing appointment:", error);
+
     }
   };
 
@@ -237,7 +234,7 @@ const ReceptionistDashboard = () => {
       fetchAppointments(page, rowsPerPage, filter);
       handleCloseDialog();
     } catch (error) {
-      console.error("Error cancelling appointment:", error);
+
     } finally {
       setCancelling(false);
     }
@@ -258,14 +255,10 @@ const ReceptionistDashboard = () => {
         const stats = response.data.stats;
         setTodayAppointmentsCount(stats.todayAppointmentsCount || 0);
         setCompletedAppointmentsCount(stats.completedTodayCount || 0);
-        // Calculate pending count as it's missing from backend stats
-        setPendingAppointmentsCount(
-          (stats.todayAppointmentsCount || 0) -
-            (stats.completedTodayCount || 0),
-        );
+
       }
     } catch (error) {
-      console.error("Error fetching appointments:", error);
+
     }
   };
 
@@ -273,30 +266,11 @@ const ReceptionistDashboard = () => {
     fetchAppointments(page, rowsPerPage, filter);
   }, [page, rowsPerPage, filter]);
 
-  // React.useEffect(() => {
-  //   const raw = sessionStorage.getItem("authUser");
-  //   if (raw) {
-  //     try {
-  //       setAuthUser(JSON.parse(raw));
-  //     } catch {
-  //       setAuthUser(null);
-  //     }
-  //   } else {
-  //     setAuthUser(null);
-  //   }
-  // }, [navigate]);
+
 
   const isLoggedIn = authUser?.loggedIn;
 
-  // React.useEffect(() => {
-  //   if (authUser) {
-  //     if (authUser.role !== "Receptionist") {
-  //       navigate("/");
-  //     }
-  //   } else if (sessionStorage.getItem("authUser") === null) {
-  //     navigate("/login");
-  //   }
-  // }, [authUser, navigate]);
+
 
   const handleLogout = () => {
     sessionStorage.removeItem("authUser");
@@ -320,7 +294,7 @@ const ReceptionistDashboard = () => {
         fontFamily: "Inter, sans-serif",
       }}
     >
-      {/* Main Content Area */}
+
       <Box
         component="main"
         sx={{
@@ -330,7 +304,7 @@ const ReceptionistDashboard = () => {
           width: "100%",
         }}
       >
-        {/* Page Header */}
+
         <Box
           sx={{
             display: "flex",
@@ -389,8 +363,8 @@ const ReceptionistDashboard = () => {
           </Box>
         </Box>
 
-        {/* Summary Cards */}
-        {/* Summary Row: Cards + Quick Actions */}
+
+
         <Box
           sx={{
             display: "grid",
@@ -403,7 +377,7 @@ const ReceptionistDashboard = () => {
             mb: 5,
           }}
         >
-          {/* Today's Appointments */}
+
           <Box
             sx={{
               display: "flex",
@@ -469,7 +443,7 @@ const ReceptionistDashboard = () => {
             </Box>
           </Box>
 
-          {/* Patients Checked-in */}
+
           <Box
             sx={{
               display: "flex",
@@ -535,7 +509,7 @@ const ReceptionistDashboard = () => {
             </Box>
           </Box>
 
-          {/* Patients Currently Waiting */}
+
           <Box
             sx={{
               display: "flex",
@@ -601,7 +575,7 @@ const ReceptionistDashboard = () => {
             </Box>
           </Box>
 
-          {/* Quick Actions Card */}
+
           <Box
             sx={{
               bgcolor: "white",
@@ -661,7 +635,7 @@ const ReceptionistDashboard = () => {
           </Box>
         </Box>
 
-        {/* Appointments List - Full Width */}
+
         <Box
           sx={{
             bgcolor: "white",
@@ -1042,7 +1016,7 @@ const ReceptionistDashboard = () => {
                     fontWeight: 600,
                   },
                 ".MuiTablePagination-actions": {
-                  display: "none", // Hide default arrows as we use Pagination component
+                  display: "none",
                 },
               }}
             />
@@ -1063,7 +1037,7 @@ const ReceptionistDashboard = () => {
         </Box>
       </Box>
 
-      {/* ── Profile Drawer ── */}
+
       <Drawer
         anchor="right"
         open={profileOpen}
@@ -1220,7 +1194,7 @@ const ReceptionistDashboard = () => {
         )}
       </Drawer>
 
-      {/* Appointment Details Dialog */}
+
       <Dialog
         open={isDialogOpen}
         onClose={handleCloseDialog}

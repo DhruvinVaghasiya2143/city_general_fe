@@ -87,11 +87,11 @@ const ScheduleAppointment = ({
         try {
           const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
           const response = await axios.get(`${api}/public/doctors`);
-          console.log("Fetched doctors:", response.data);
+
           const fetchedDoctors = response.data.data || response.data || [];
           setDoctors(Array.isArray(fetchedDoctors) ? fetchedDoctors : []);
         } catch (err) {
-          console.error("Error fetching doctors:", err);
+
         }
       };
       fetchDoctors();
@@ -110,7 +110,7 @@ const ScheduleAppointment = ({
       try {
         const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
 
-        // Fetch Doctor details to get schedule
+
         const doctorRes = await axios.get(
           `${api}/public/doctors/${formData.doctorId}`,
         );
@@ -118,7 +118,7 @@ const ScheduleAppointment = ({
           setDoctorSchedule(doctorRes.data.schedule || []);
         }
 
-        // Fetch booked appointments for the selected date
+
         if (formData.date) {
           const selectedDateStr = formData.date.split("T")[0];
           const bookingsRes = await axios.get(
@@ -134,7 +134,7 @@ const ScheduleAppointment = ({
         }
       } catch (err) {
         if (!ignore) {
-          console.error("Error fetching schedule/bookings:", err);
+
         }
       }
     };
@@ -157,10 +157,10 @@ const ScheduleAppointment = ({
   };
 
   const handleSlotClick = (slot, isBooked) => {
-    // Check if slot is booked (re-calculating strictly as per user request)
+
     const matchesBooked = bookedSlots.some((apt) => {
       const aptDate = new Date(apt.date);
-      // Extract local day string (YYYY-MM-DD in IST)
+
       const aptDayStr = `${aptDate.getFullYear()}-${(aptDate.getMonth() + 1).toString().padStart(2, "0")}-${aptDate.getDate().toString().padStart(2, "0")}`;
       const selectedDateStr = formData.date.split("T")[0];
 
@@ -181,7 +181,7 @@ const ScheduleAppointment = ({
         ...prev,
         timeSlot: "This slot is already booked please select another slot",
       }));
-      // We will now allow updating the state so it shows in the box
+
     }
 
     let datePart = "";
@@ -207,7 +207,7 @@ const ScheduleAppointment = ({
       timeSlot: slot.startTime,
     }));
 
-    // Clear any previous error when a valid slot (non-booked, non-past) is selected
+
     if (!matchesBooked && (error.timeSlot || error.date)) {
       setError((prev) => ({ ...prev, timeSlot: "", date: "" }));
     }
@@ -228,10 +228,10 @@ const ScheduleAppointment = ({
     if (!formData.timeSlot) {
       newErrors.timeSlot = "Please select a time slot";
     } else {
-      // Re-validate that the selected slot isn't booked
+
       const isStillBooked = bookedSlots.some((apt) => {
         const aptDate = new Date(apt.date);
-        // Extract local day string (YYYY-MM-DD in IST)
+
         const aptDayStr = `${aptDate.getFullYear()}-${(aptDate.getMonth() + 1).toString().padStart(2, "0")}-${aptDate.getDate().toString().padStart(2, "0")}`;
         const selectedDateStr = formData.date.split("T")[0];
 
@@ -274,15 +274,15 @@ const ScheduleAppointment = ({
       setIsBooking(true);
       const api = import.meta.env.VITE_API_BASE_BACKEND_URL;
       const response = await axios.post(`${api}/public/appointment`, formData);
-      console.log("Appointment booked:", response.data);
 
-      // Call success callback if provided
+
+
       if (onSuccess) {
         onSuccess();
       }
 
       onClose();
-      // Reset form
+
       setFormData({
         firstName: "",
         lastName: "",
@@ -293,7 +293,7 @@ const ScheduleAppointment = ({
         concern: "",
       });
     } catch (err) {
-      console.error("Error booking appointment:", err);
+
     } finally {
       setIsBooking(false);
     }
@@ -466,28 +466,7 @@ const ScheduleAppointment = ({
                   min: new Date().toISOString().split("T")[0],
                 }}
                 sx={{
-                  "& .MuiInputBase-input": {
-                    /* Specifically target and capitalize Chrome's native date format hints */
-                    "&::-webkit-datetime-edit": {
-                      textTransform: "uppercase",
-                    },
-                    "&::-webkit-datetime-edit-month-field": {
-                      textTransform: "uppercase",
-                    },
-                    "&::-webkit-datetime-edit-day-field": {
-                      textTransform: "uppercase",
-                    },
-                    "&::-webkit-datetime-edit-year-field": {
-                      textTransform: "uppercase",
-                    },
-                    "&::-webkit-datetime-edit-text": {
-                      textTransform: "uppercase",
-                    },
-                    /* Only show pointer cursor over the actual clickable calendar indicator */
-                    "&::-webkit-calendar-picker-indicator": {
-                      cursor: "pointer",
-                    },
-                  },
+
                 }}
               />
             </Box>
@@ -598,11 +577,7 @@ const ScheduleAppointment = ({
                       value={slot.startTime}
                       disabled={isPast}
                       onClick={(e) => {
-                        if (isBooked) {
-                          // Prevent standard Select behavior if booked
-                          // but still allow handleSlotClick to set the error
-                          handleSlotClick(slot, true);
-                        }
+
                       }}
                       sx={{
                         display: "flex",
