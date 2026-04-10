@@ -132,7 +132,6 @@ const NavItem = ({ icon: Icon, label, active, badge, onClick }) => (
   </Box>
 );
 
-
 const formatLoginTime = (iso) => {
   if (!iso) return "—";
   try {
@@ -173,17 +172,14 @@ const PharmacistsPage = () => {
   const [prescriptionModalOpen, setPrescriptionModalOpen] =
     React.useState(false);
 
-
   const [prescriptionPage, setPrescriptionPage] = React.useState(0);
   const [prescriptionRowsPerPage, setPrescriptionRowsPerPage] =
     React.useState(10);
   const [prescriptionTotal, setPrescriptionTotal] = React.useState(0);
 
-
   const [drugPage, setDrugPage] = React.useState(0);
   const [drugRowsPerPage, setDrugRowsPerPage] = React.useState(10);
   const [drugTotal, setDrugTotal] = React.useState(0);
-
 
   const [invoices, setInvoices] = React.useState([]);
   const [invoicePage, setInvoicePage] = React.useState(0);
@@ -238,9 +234,7 @@ const PharmacistsPage = () => {
       setPrescriptions(response.data.data || []);
       setPrescriptionTotal(response.data.total || 0);
       setLoading(false);
-    } catch (error) {
-
-    }
+    } catch (error) {}
   };
 
   const fetchDrugs = async (page = 0, limit = 10) => {
@@ -251,9 +245,7 @@ const PharmacistsPage = () => {
       );
       setDrugs(response.data.data || []);
       setDrugTotal(response.data.total || 0);
-    } catch (error) {
-
-    }
+    } catch (error) {}
   };
 
   const fetchInvoices = async (page = 0, limit = 10) => {
@@ -264,9 +256,7 @@ const PharmacistsPage = () => {
       );
       setInvoices(response.data.data || []);
       setInvoiceTotal(response.data.total || 0);
-    } catch (error) {
-
-    }
+    } catch (error) {}
   };
 
   const fetchDashboardStats = async () => {
@@ -276,9 +266,7 @@ const PharmacistsPage = () => {
       if (response.data.success) {
         setStats(response.data.stats);
       }
-    } catch (error) {
-
-    }
+    } catch (error) {}
   };
 
   React.useEffect(() => {
@@ -358,16 +346,13 @@ const PharmacistsPage = () => {
   const generateInvoicePDF = (invoice) => {
     const doc = new jsPDF();
 
-
     const primaryBlue = [19, 127, 236]; // #137fec
     const lightBlue = [207, 230, 253]; // #cfe6fd (Light blue for notes)
     const grayText = [100, 116, 139]; // #64748b
     const darkSlate = [15, 23, 42]; // #0f172a
 
-
     doc.setFillColor(...primaryBlue);
     doc.rect(0, 0, 210, 28, "F");
-
 
     doc.setDrawColor(255, 255, 255);
     doc.setLineWidth(0.8);
@@ -379,11 +364,9 @@ const PharmacistsPage = () => {
     doc.setFontSize(6);
     doc.text("</>", 21, 10, { align: "center" });
 
-
     doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
     doc.text("Invoice", 15, 24);
-
 
     doc.setFontSize(14);
     doc.text("City General Hospital", 195, 12, { align: "right" });
@@ -392,20 +375,16 @@ const PharmacistsPage = () => {
     doc.text("Ahmedabad, Gujarat, India", 195, 19, { align: "right" });
     doc.text("Postal Code: 380001", 195, 23, { align: "right" });
 
-
     doc.saveGraphicsState();
     doc.setGState(new doc.GState({ opacity: 0.015 }));
     doc.setFillColor(180, 180, 180);
 
-
     doc.roundedRect(65, 105, 80, 80, 12, 12, "F");
-
 
     doc.setFillColor(255, 255, 255);
     doc.rect(100, 120, 10, 50, "F");
     doc.rect(80, 140, 50, 10, "F");
     doc.restoreGraphicsState();
-
 
     const middleY = 45;
     doc.setTextColor(...darkSlate);
@@ -421,7 +400,6 @@ const PharmacistsPage = () => {
     if (invoice.emailId) {
       doc.text(`Email: ${invoice.emailId}`, 15, middleY + 20);
     }
-
 
     doc.setTextColor(...darkSlate);
     doc.setFontSize(9);
@@ -442,7 +420,6 @@ const PharmacistsPage = () => {
       middleY + 20,
       { align: "right" },
     );
-
 
     const tableData = invoice.items.map((item, index) => [
       `Item ${index + 1}`,
@@ -478,7 +455,6 @@ const PharmacistsPage = () => {
       margin: { left: 15, right: 15 },
     });
 
-
     const subtotal = invoice.items.reduce((sum, item) => sum + item.total, 0);
     const taxAmount = subtotal * 0.05;
     const summaryY = doc.lastAutoTable.finalY + 8;
@@ -495,9 +471,7 @@ const PharmacistsPage = () => {
       align: "right",
     });
 
-
     const footerY = summaryY + 10;
-
 
     doc.setFillColor(...lightBlue);
     doc.rect(15, footerY, 105, 28, "F");
@@ -513,7 +487,6 @@ const PharmacistsPage = () => {
       footerY + 15,
       { maxWidth: 95 },
     );
-
 
     doc.setFillColor(...primaryBlue);
     doc.rect(120, footerY, 75, 28, "F");
@@ -540,13 +513,11 @@ const PharmacistsPage = () => {
         return;
       }
 
-
       const mobileRegex = /^[0-9]{10}$/;
       if (!mobileRegex.test(newInvoiceData.mobileNumber)) {
         toast.error("Please enter a valid 10-digit mobile number");
         return;
       }
-
 
       if (newInvoiceData.emailId) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -583,7 +554,6 @@ const PharmacistsPage = () => {
         fetchDashboardStats();
       }
     } catch (error) {
-
       toast.error(error.response?.data?.message || "Failed to create invoice");
     } finally {
       setIsGeneratingInvoice(false);
@@ -657,7 +627,6 @@ const PharmacistsPage = () => {
         fetchDashboardStats();
       }
     } catch (error) {
-
       toast.error(error.response?.data?.message || "Failed to save drug");
     }
   };
@@ -684,7 +653,6 @@ const PharmacistsPage = () => {
         fetchDashboardStats();
       }
     } catch (error) {
-
       toast.error(error.response?.data?.message || "Failed to delete drug");
     }
   };
@@ -706,7 +674,6 @@ const PharmacistsPage = () => {
         fontFamily: "Inter, sans-serif",
       }}
     >
-
       <Box
         sx={{
           display: { xs: "none", lg: "flex" },
@@ -875,7 +842,6 @@ const PharmacistsPage = () => {
         </Box>
       </Box>
 
-
       <Box
         sx={{
           flex: 1,
@@ -886,7 +852,6 @@ const PharmacistsPage = () => {
           height: "100%",
         }}
       >
-
         <Box
           sx={{
             display: "flex",
@@ -937,7 +902,6 @@ const PharmacistsPage = () => {
             </Box>
           </Box>
         </Box>
-
 
         <Drawer
           anchor="left"
@@ -1117,7 +1081,6 @@ const PharmacistsPage = () => {
           </Box>
         </Drawer>
 
-
         <Box
           sx={{
             flex: 1,
@@ -1140,7 +1103,6 @@ const PharmacistsPage = () => {
                   width: "100%",
                 }}
               >
-
                 <Box
                   sx={{
                     flex: {
@@ -1218,7 +1180,6 @@ const PharmacistsPage = () => {
                   </Paper>
                 </Box>
 
-
                 <Box
                   sx={{
                     flex: {
@@ -1283,7 +1244,6 @@ const PharmacistsPage = () => {
                     </Avatar>
                   </Paper>
                 </Box>
-
 
                 <Box
                   sx={{
@@ -1351,7 +1311,6 @@ const PharmacistsPage = () => {
                     </Avatar>
                   </Paper>
                 </Box>
-
 
                 <Box
                   sx={{
@@ -1428,7 +1387,6 @@ const PharmacistsPage = () => {
                 }}
               >
                 <Box>
-
                   <Box
                     sx={{
                       bgcolor: "white",
@@ -1586,7 +1544,6 @@ const PharmacistsPage = () => {
 
           {activeTab === "Drugs Inventory" && (
             <Box sx={{ minWidth: 0 }}>
-
               <Box
                 sx={{
                   bgcolor: "white",
@@ -1611,6 +1568,28 @@ const PharmacistsPage = () => {
                   <Typography sx={{ fontWeight: 700, color: "#0f172a" }}>
                     Drug Inventory
                   </Typography>
+                  <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={() => {
+                      resetDrugForm();
+                      setAddDrugModalOpen(true);
+                    }}
+                    sx={{
+                      bgcolor: "#137fec",
+                      borderRadius: "12px",
+                      textTransform: "none",
+                      fontWeight: 700,
+                      px: 3,
+                      boxShadow: "0 4px 6px -1px rgba(19, 127, 236, 0.2)",
+                      "&:hover": {
+                        bgcolor: "#0f6bd1",
+                        boxShadow: "0 10px 15px -3px rgba(19, 127, 236, 0.3)",
+                      },
+                    }}
+                  >
+                    Add Medicine
+                  </Button>
                 </Box>
                 <TableContainer>
                   <Table sx={{ minWidth: 800 }}>
@@ -1781,7 +1760,6 @@ const PharmacistsPage = () => {
 
           {activeTab === "Billing" && (
             <Box sx={{ minWidth: 0 }}>
-
               <Box
                 sx={{
                   bgcolor: "white",
@@ -1806,6 +1784,25 @@ const PharmacistsPage = () => {
                   <Typography sx={{ fontWeight: 700, color: "#0f172a" }}>
                     Invoice History
                   </Typography>
+                  <Button
+                    variant="contained"
+                    startIcon={<ReceiptIcon />}
+                    onClick={() => setAddInvoiceModalOpen(true)}
+                    sx={{
+                      bgcolor: "#137fec",
+                      borderRadius: "12px",
+                      textTransform: "none",
+                      fontWeight: 700,
+                      px: 3,
+                      boxShadow: "0 4px 6px -1px rgba(19, 127, 236, 0.2)",
+                      "&:hover": {
+                        bgcolor: "#0f6bd1",
+                        boxShadow: "0 10px 15px -3px rgba(19, 127, 236, 0.3)",
+                      },
+                    }}
+                  >
+                    Create Invoice
+                  </Button>
                 </Box>
                 <TableContainer sx={{ overflowX: "auto" }}>
                   <Table sx={{ minWidth: 800 }}>
@@ -1958,7 +1955,6 @@ const PharmacistsPage = () => {
           )}
         </Box>
       </Box>
-
 
       <Drawer
         anchor="right"
@@ -2280,7 +2276,6 @@ const PharmacistsPage = () => {
         </DialogActions>
       </Dialog>
 
-
       <Dialog
         open={prescriptionModalOpen}
         onClose={handleClosePrescription}
@@ -2450,7 +2445,6 @@ const PharmacistsPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
 
       <Dialog
         open={addInvoiceModalOpen}
@@ -2713,7 +2707,6 @@ const PharmacistsPage = () => {
         </DialogActions>
       </Dialog>
 
-
       <Dialog
         open={summaryModalOpen}
         onClose={() => setSummaryModalOpen(false)}
@@ -2732,7 +2725,6 @@ const PharmacistsPage = () => {
         <DialogContent sx={{ p: 0, bgcolor: "white" }}>
           {generatedInvoice && (
             <Box>
-
               <Box
                 sx={{
                   bgcolor: "#137fec",
@@ -2795,7 +2787,6 @@ const PharmacistsPage = () => {
               </Box>
 
               <Box sx={{ p: 3 }}>
-
                 <Grid
                   container
                   spacing={2}
@@ -2881,7 +2872,6 @@ const PharmacistsPage = () => {
                   </Grid>
                 </Grid>
 
-
                 <TableContainer component={Box} sx={{ mb: 3 }}>
                   <Table size="small">
                     <TableHead>
@@ -2957,7 +2947,6 @@ const PharmacistsPage = () => {
                   </Table>
                 </TableContainer>
 
-
                 <Box
                   sx={{
                     display: "flex",
@@ -3031,7 +3020,6 @@ const PharmacistsPage = () => {
                     </Typography>
                   </Box>
                 </Box>
-
 
                 <Box
                   sx={{
@@ -3143,7 +3131,6 @@ const PharmacistsPage = () => {
         </DialogActions>
       </Dialog>
 
-
       <Dialog
         open={deleteConfirmDialogOpen}
         onClose={() => setDeleteConfirmDialogOpen(false)}
@@ -3236,7 +3223,6 @@ const PharmacistsPage = () => {
         </DialogActions>
       </Dialog>
 
-
       <Dialog
         open={viewInvoiceModalOpen}
         onClose={() => setViewInvoiceModalOpen(false)}
@@ -3260,7 +3246,6 @@ const PharmacistsPage = () => {
                 border: "1px solid #e2e8f0",
               }}
             >
-
               <Box
                 sx={{
                   display: "flex",
@@ -3325,7 +3310,6 @@ const PharmacistsPage = () => {
 
               <Divider sx={{ mb: 4, borderColor: "#f1f5f9" }} />
 
-
               <Grid container spacing={4} sx={{ mb: 4 }}>
                 <Grid item xs={6}>
                   <Typography
@@ -3372,7 +3356,6 @@ const PharmacistsPage = () => {
                   </Typography>
                 </Grid>
               </Grid>
-
 
               <TableContainer
                 sx={{
@@ -3451,7 +3434,6 @@ const PharmacistsPage = () => {
                 </Table>
               </TableContainer>
 
-
               <Box
                 sx={{
                   display: "flex",
@@ -3525,7 +3507,6 @@ const PharmacistsPage = () => {
                   </Typography>
                 </Box>
               </Box>
-
 
               <Box
                 sx={{
