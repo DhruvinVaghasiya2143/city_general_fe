@@ -301,257 +301,6 @@ const DoctorsDashboard = () => {
         fontFamily: "Inter, sans-serif",
       }}
     >
-      {/* Top Navigation Bar */}
-      {/* <Box
-        component="header"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          borderBottom: "1px solid #e2e8f0",
-          bgcolor: "white",
-          px: { xs: 2, md: 5 },
-          py: 1.5,
-          position: "sticky",
-          top: 0,
-          zIndex: 50,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              color: "#137fec",
-            }}
-          >
-            <Box
-              sx={{
-                width: 32,
-                height: 32,
-                bgcolor: "rgba(19, 127, 236, 0.1)",
-                borderRadius: "8px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <HealthAndSafetyIcon sx={{ color: "#137fec" }} />
-            </Box>
-            <Typography
-              sx={{
-                fontSize: "1.25rem",
-                fontWeight: 900,
-                textTransform: "uppercase",
-                letterSpacing: "-0.025em",
-                color: "#0f172a",
-              }}
-            >
-              MedCore
-            </Typography>
-
-
-          </Box>
-          <Box
-            sx={{
-              display: { xs: "none", md: "flex" },
-              flexDirection: "column",
-              width: 256,
-              height: 40,
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flex: 1,
-                alignItems: "center",
-                borderRadius: "8px",
-                bgcolor: "#f1f5f9",
-                px: 2,
-              }}
-            >
-              <SearchIcon sx={{ color: "#64748b", fontSize: 20 }} />
-              <TextField
-                variant="standard"
-                placeholder="Search patients, records..."
-                InputProps={{
-                  disableUnderline: true,
-                  sx: {
-                    fontSize: "1rem",
-                    pl: 1,
-                    "& input::placeholder": { color: "#64748b" },
-                  },
-                }}
-                sx={{ flex: 1 }}
-              />
-            </Box>
-          </Box>
-        </Box>
-
-        <Box
-          sx={{ display: "flex", alignItems: "center", gap: { xs: 2, lg: 3 } }}
-        >
-          <Box
-            sx={{
-              display: { xs: "none", lg: "flex" },
-              alignItems: "center",
-              gap: 3,
-            }}
-          >
-            <Typography
-              component="a"
-              href="#"
-              sx={{
-                color: "#137fec",
-                fontSize: "0.875rem",
-                fontWeight: 600,
-                borderBottom: "2px solid #137fec",
-                pb: 0.5,
-                textDecoration: "none",
-              }}
-            >
-              Dashboard
-            </Typography>
-            <Typography
-              component="a"
-              href="#"
-              sx={{
-                color: "#475569",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                "&:hover": { color: "#137fec" },
-                transition: "color 0.2s",
-                textDecoration: "none",
-              }}
-            >
-              Patients
-            </Typography>
-            <Typography
-              component="a"
-              href="#"
-              sx={{
-                color: "#475569",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                "&:hover": { color: "#137fec" },
-                transition: "color 0.2s",
-                textDecoration: "none",
-              }}
-            >
-              Schedule
-            </Typography>
-            <Typography
-              component="a"
-              href="#"
-              sx={{
-                color: "#475569",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                "&:hover": { color: "#137fec" },
-                transition: "color 0.2s",
-                textDecoration: "none",
-              }}
-            >
-              Reports
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: "flex", gap: 1.5 }}>
-            <IconButton
-              sx={{
-                width: 40,
-                height: 40,
-                bgcolor: "#f1f5f9",
-                color: "#334155",
-                borderRadius: "8px",
-                "&:hover": { bgcolor: "#e2e8f0" },
-              }}
-            >
-              <NotificationsIcon sx={{ fontSize: 20 }} />
-            </IconButton>
-            <IconButton
-              sx={{
-                width: 40,
-                height: 40,
-                bgcolor: "#f1f5f9",
-                color: "#334155",
-                borderRadius: "8px",
-                "&:hover": { bgcolor: "#e2e8f0" },
-              }}
-            >
-              <SettingsIcon sx={{ fontSize: 20 }} />
-            </IconButton>
-          </Box>
-
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1.5,
-              pl: 2,
-              borderLeft: "1px solid #e2e8f0",
-            }}
-          >
-            <Box
-              sx={{ textAlign: "right", display: { xs: "none", sm: "block" } }}
-            >
-              <Typography
-                sx={{ fontSize: "0.875rem", fontWeight: 700, color: "#0f172a" }}
-              >
-                {doctorName}
-              </Typography>
-              <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>
-                {doctorSpecialty}
-              </Typography>
-            </Box>
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Avatar
-                src={doctorAvatar}
-                sx={{
-                  width: 40,
-                  height: 40,
-                  border: "2px solid rgba(19, 127, 236, 0.2)",
-                }}
-              />
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleCloseUserMenu}
-              sx={{ mt: 1 }}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              transformOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-              <MenuItem
-                onClick={() => {
-                  handleCloseUserMenu();
-                  setProfileOpen(true);
-                }}
-                sx={{ gap: 1.5, fontSize: "0.875rem", py: 1.2 }}
-              >
-                <BadgeIcon fontSize="small" sx={{ color: "#64748b" }} />
-                Manage Profile
-              </MenuItem>
-              <Divider />
-              <MenuItem
-                onClick={handleLogout}
-                sx={{
-                  gap: 1.5,
-                  color: "#dc2626",
-                  fontWeight: 600,
-                  fontSize: "0.875rem",
-                  py: 1.2,
-                }}
-              >
-                <LogoutIcon fontSize="small" />
-                Sign Out
-              </MenuItem>
-            </Menu>
-          </Box>
-        </Box>
-      </Box> */}
-
       {/* Main Content Areas */}
       <Box
         component="main"
@@ -605,7 +354,8 @@ const DoctorsDashboard = () => {
                 {doctorName.startsWith("Dr.")
                   ? doctorName.split(" ").slice(1).join(" ")
                   : doctorName}
-                . You have {todayAppointmentsCount} appointments today.
+                .
+                <br /> You have {todayAppointmentsCount} appointments today.
               </Typography>
             </Box>
             <Button
@@ -770,7 +520,10 @@ const DoctorsDashboard = () => {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: { xs: "minmax(0, 1fr)", lg: "minmax(0, 1fr) 300px" },
+            gridTemplateColumns: {
+              xs: "minmax(0, 1fr)",
+              lg: "minmax(0, 1fr) 300px",
+            },
             gap: { xs: 3, lg: 4 },
           }}
         >
@@ -1813,7 +1566,7 @@ const DoctorsDashboard = () => {
           <Typography
             sx={{ fontSize: "1.25rem", fontWeight: 800, color: "#0f172a" }}
           >
-            My Clinical Appointments
+            My Appointments
           </Typography>
           <IconButton
             onClick={() => setIsCalendarOpen(false)}

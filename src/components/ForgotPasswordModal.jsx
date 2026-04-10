@@ -193,6 +193,7 @@ const ForgotPasswordModal = ({ open, onClose, role }) => {
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 3 }}>
         <Button
+          variant="outlined"
           onClick={onClose}
           sx={{ fontWeight: 700, textTransform: "none", color: "#64748b" }}
         >

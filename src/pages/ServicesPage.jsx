@@ -138,7 +138,11 @@ const ServicesPage = () => {
         </div> */}
 
         {/* Departments Grid */}
-        <Grid container spacing={{ xs: 3, sm: 4, md: 5, lg: 6 }} justifyContent="center">
+        <Grid
+          container
+          spacing={{ xs: 3, sm: 4, md: 5, lg: 6 }}
+          justifyContent="center"
+        >
           {departments.map((dept, index) => (
             <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
               <Card
@@ -221,13 +225,13 @@ const ServicesPage = () => {
         </Grid>
 
         {/* Why Choose Section */}
-        <div className="mt-20 pt-14 border-t border-slate-200">
+        <div className=" pt-14 border-t border-slate-200">
           <Typography
             variant="h4"
             className="text-center text-slate-900"
             sx={{ fontWeight: 800, mb: 5, letterSpacing: "-0.5px" }}
           >
-            Why Choose Our Services?
+            Why Our Services?
           </Typography>
           <Grid container spacing={4}>
             {[

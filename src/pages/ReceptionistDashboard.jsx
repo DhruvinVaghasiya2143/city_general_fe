@@ -320,213 +320,6 @@ const ReceptionistDashboard = () => {
         fontFamily: "Inter, sans-serif",
       }}
     >
-      {/* Top Navigation Bar */}
-      {/* <Box
-        component="header"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          borderBottom: "1px solid #e2e8f0",
-          bgcolor: "white",
-          px: { xs: 2, md: 5 },
-          py: 1.5,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              color: "#137fec",
-            }}
-          >
-            <MedicalServicesIcon sx={{ fontSize: 24 }} />
-            <Typography
-              sx={{
-                fontSize: "1.125rem",
-                fontWeight: 700,
-                color: "#0f172a",
-                letterSpacing: "-0.015em",
-              }}
-            >
-              MedCore
-            </Typography>
-          </Box>
-            <Box
-                sx={{
-                display: { xs: "none", md: "flex" },
-                flexDirection: "column",
-                width: 256,
-                height: 40,
-                }}
-            >
-                <Box
-                sx={{
-                    display: "flex",
-                    flex: 1,
-                    alignItems: "center",
-                    borderRadius: "8px",
-                    bgcolor: "#f1f5f9",
-                    px: 2,
-                }}
-                >
-                <SearchIcon sx={{ color: "#64748b", fontSize: 20 }} />
-                <TextField
-                    variant="standard"
-                    placeholder="Search patients..."
-                    InputProps={{
-                    disableUnderline: true,
-                    sx: {
-                        fontSize: "1rem",
-                        pl: 1,
-                        "& input::placeholder": { color: "#64748b" },
-                    },
-                    }}
-                    sx={{ flex: 1 }}
-                />
-                </Box>
-            </Box>
-        </Box>
-
-        <Box
-          sx={{ display: "flex", alignItems: "center", gap: { xs: 2, lg: 4 } }}
-        >
-          <Box
-            sx={{
-              display: { xs: "none", lg: "flex" },
-              alignItems: "center",
-              gap: 4,
-            }}
-          >
-            <Typography
-              component="a"
-              href="#"
-              sx={{
-                color: "#137fec",
-                fontSize: "0.875rem",
-                fontWeight: 600,
-                borderBottom: "2px solid #137fec",
-                pb: 0.5,
-                textDecoration: "none",
-              }}
-            >
-              Dashboard
-            </Typography>
-            <Typography
-              component="a"
-              href="#"
-              sx={{
-                color: "#475569",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                "&:hover": { color: "#137fec" },
-                transition: "color 0.2s",
-                textDecoration: "none",
-              }}
-            >
-              Patients
-            </Typography>
-            <Typography
-              component="a"
-              href="#"
-              sx={{
-                color: "#475569",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                "&:hover": { color: "#137fec" },
-                transition: "color 0.2s",
-                textDecoration: "none",
-              }}
-            >
-              Appointments
-            </Typography>
-            <Typography
-              component="a"
-              href="#"
-              sx={{
-                color: "#475569",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                "&:hover": { color: "#137fec" },
-                transition: "color 0.2s",
-                textDecoration: "none",
-              }}
-            >
-              Billing
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <IconButton
-              sx={{
-                width: 40,
-                height: 40,
-                bgcolor: "#f1f5f9",
-                color: "#334155",
-                borderRadius: "8px",
-                "&:hover": { bgcolor: "#e2e8f0" },
-              }}
-            >
-              <NotificationsIcon sx={{ fontSize: 20 }} />
-            </IconButton>
-            <IconButton
-              sx={{
-                width: 40,
-                height: 40,
-                bgcolor: "#f1f5f9",
-                color: "#334155",
-                borderRadius: "8px",
-                "&:hover": { bgcolor: "#e2e8f0" },
-              }}
-            >
-              <SettingsIcon sx={{ fontSize: 20 }} />
-            </IconButton>
-          </Box>
-
-          <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-            <Avatar
-              src={receptionistAvatar}
-              sx={{ width: 40, height: 40, border: "1px solid #e2e8f0" }}
-            />
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleCloseUserMenu}
-            sx={{ mt: 1 }}
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            transformOrigin={{ vertical: "top", horizontal: "right" }}
-          >
-            <MenuItem
-              onClick={() => {
-                handleCloseUserMenu();
-                setProfileOpen(true);
-              }}
-              sx={{ gap: 1.5, fontSize: "0.875rem", py: 1.2 }}
-            >
-              <BadgeIcon fontSize="small" sx={{ color: "#64748b" }} />
-              Manage Profile
-            </MenuItem>
-            <Divider />
-            <MenuItem
-              onClick={handleLogout}
-              sx={{
-                gap: 1.5,
-                color: "#dc2626",
-                fontWeight: 600,
-                fontSize: "0.875rem",
-                py: 1.2,
-              }}
-            >
-              <LogoutIcon fontSize="small" />
-              Sign Out
-            </MenuItem>
-          </Menu>
-        </Box>
-      </Box> */}
-
       {/* Main Content Area */}
       <Box
         component="main"
@@ -887,7 +680,7 @@ const ReceptionistDashboard = () => {
               flexDirection: { xs: "column", sm: "row" },
               justifyContent: "space-between",
               alignItems: { xs: "flex-start", sm: "center" },
-              gap: { xs: 2, sm: 0 }
+              gap: { xs: 2, sm: 0 },
             }}
           >
             <Typography
@@ -1454,7 +1247,11 @@ const ReceptionistDashboard = () => {
           {selectedAppointment && (
             <>
               <Box
-                sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                  gap: 2,
+                }}
               >
                 <Box>
                   <Typography
@@ -1507,7 +1304,11 @@ const ReceptionistDashboard = () => {
               </Box>
 
               <Box
-                sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                  gap: 2,
+                }}
               >
                 <Box>
                   <Typography
@@ -1556,7 +1357,11 @@ const ReceptionistDashboard = () => {
               </Box>
 
               <Box
-                sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                  gap: 2,
+                }}
               >
                 <Box>
                   <Typography
@@ -1640,13 +1445,15 @@ const ReceptionistDashboard = () => {
             </>
           )}
         </DialogContent>
-        <DialogActions sx={{ 
-          p: 2, 
-          pt: 0, 
-          display: "flex", 
-          flexDirection: { xs: "column", sm: "row" }, 
-          gap: 1.5 
-        }}>
+        <DialogActions
+          sx={{
+            p: 2,
+            pt: 0,
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 1.5,
+          }}
+        >
           <Button
             onClick={() => handleCancelAppointment(selectedAppointment._id)}
             variant="outlined"
@@ -1667,7 +1474,9 @@ const ReceptionistDashboard = () => {
               "Cancel Appointment"
             )}
           </Button>
-          <Box sx={{ flexGrow: { sm: 1 }, display: { xs: "none", sm: "block" } }} />
+          <Box
+            sx={{ flexGrow: { sm: 1 }, display: { xs: "none", sm: "block" } }}
+          />
           <Button
             onClick={handleCloseDialog}
             variant="contained"

@@ -132,16 +132,6 @@ const NavItem = ({ icon: Icon, label, active, badge, onClick }) => (
   </Box>
 );
 
-// Helper: get initials from a full name
-const getInitials = (name = "") =>
-  name
-    .split(" ")
-    .filter(Boolean)
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
 // Helper: format ISO date nicely
 const formatLoginTime = (iso) => {
   if (!iso) return "—";
@@ -519,7 +509,7 @@ const PharmacistsPage = () => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.text(
-      "Medicine once sold cannot be returned. Please keep this invoice for your records. This invoice was generated with MedCore.",
+      "Medicine once sold cannot be returned. Please keep this invoice for your records. This invoice was generated with CityGeneral.",
       20,
       footerY + 15,
       { maxWidth: 95 },
@@ -711,9 +701,9 @@ const PharmacistsPage = () => {
     <Box
       sx={{
         display: "flex",
-        minHeight: "100vh",
+        height: "100vh",
         bgcolor: "#f8fafc",
-        overflowY: "auto",
+        overflow: "hidden",
         fontFamily: "Inter, sans-serif",
       }}
     >
@@ -726,52 +716,53 @@ const PharmacistsPage = () => {
           bgcolor: "white",
           borderRight: "1px solid #e2e8f0",
           flexShrink: 0,
-          position: "sticky",
-          top: 0,
-          height: "100vh",
+          height: "100%",
         }}
       >
-        {/* <Box sx={{ p: 3, borderBottom: "1px solid #f8fafc" }}>
+        <Box sx={{ p: 3, borderBottom: "1px solid #f1f5f9" }}>
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
               gap: 1.5,
-              color: "#137fec",
             }}
           >
-            <HealthAndSafetyIcon sx={{ fontSize: 32 }} />
-            <Typography
+            <Box
               sx={{
-                fontSize: "1.25rem",
-                fontWeight: 900,
-                textTransform: "uppercase",
-                letterSpacing: "-0.025em",
-                color: "#0f172a",
+                width: 32,
+                height: 32,
+                bgcolor: "#000000",
+                borderRadius: "6px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
               }}
             >
-              MedCore
-            </Typography>
-          </Box>
-          <Box sx={{ mt: 2, px: 0.5 }}>
+              <Typography
+                sx={{
+                  color: "white",
+                  fontSize: "22px",
+                  fontWeight: "900",
+                  lineHeight: 1,
+                  mt: -0.2, // Minor adjustment for vertical centering of '+'
+                }}
+              >
+                +
+              </Typography>
+            </Box>
             <Typography
               sx={{
-                fontSize: "0.75rem",
-                fontWeight: 700,
-                color: "#94a3b8",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
+                fontSize: "1.5rem",
+                fontWeight: 600,
+                color: "#1e293b",
+                letterSpacing: "-0.02em",
               }}
             >
-              Main Branch
-            </Typography>
-            <Typography
-              sx={{ fontSize: "0.875rem", fontWeight: 600, color: "#334155" }}
-            >
-              Station PH-204
+              CityGeneral
             </Typography>
           </Box>
-        </Box> */}
+        </Box>
 
         <Box
           sx={{
@@ -803,28 +794,50 @@ const PharmacistsPage = () => {
           />
         </Box>
 
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 2, mt: "auto", borderTop: "1px solid #f1f5f9" }}>
           <Box
             sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              p: 1.5,
+              borderRadius: "12px",
               bgcolor: "#f8fafc",
-              borderRadius: "16px",
-              p: 2,
               border: "1px solid #f1f5f9",
             }}
           >
             <Box
-              sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}
+              onClick={() => setProfileOpen(true)}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+                flex: 1,
+                minWidth: 0,
+                cursor: "pointer",
+                borderRadius: "8px",
+                p: 0.5,
+                mx: -0.5,
+                "&:hover": {
+                  bgcolor: "rgba(19, 127, 236, 0.05)",
+                  "& .MuiAvatar-root": {
+                    transform: "scale(1.05)",
+                  },
+                },
+                transition: "all 0.2s",
+              }}
             >
-              {/* <Avatar
+              <Avatar
                 src={pharmacistAvatar}
                 sx={{
                   width: 40,
                   height: 40,
                   border: "2px solid white",
                   boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                  transition: "transform 0.2s",
                 }}
-              /> */}
-              {/* <Box sx={{ minWidth: 0 }}>
+              />
+              <Box sx={{ minWidth: 0, flex: 1 }}>
                 <Typography
                   sx={{
                     fontSize: "0.875rem",
@@ -839,7 +852,7 @@ const PharmacistsPage = () => {
                 </Typography>
                 <Typography
                   sx={{
-                    fontSize: "0.625rem",
+                    fontSize: "0.75rem",
                     fontWeight: 500,
                     color: "#64748b",
                     textTransform: "uppercase",
@@ -847,43 +860,18 @@ const PharmacistsPage = () => {
                 >
                   {pharmacistRole}
                 </Typography>
-              </Box> */}
+              </Box>
             </Box>
-            {/* <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
-              <Button
-                size="small"
-                variant="outlined"
-                onClick={() => setProfileOpen(true)}
-                sx={{
-                  flex: 1,
-                  fontSize: "0.65rem",
-                  fontWeight: 700,
-                  textTransform: "none",
-                  borderRadius: "6px",
-                  borderColor: "#e2e8f0",
-                  color: "#64748b",
-                }}
-              >
-                Profile
-              </Button>
-              <Button
-                size="small"
-                variant="outlined"
-                onClick={handleLogout}
-                sx={{
-                  flex: 1,
-                  fontSize: "0.65rem",
-                  fontWeight: 700,
-                  textTransform: "none",
-                  borderRadius: "6px",
-                  borderColor: "#fee2e2",
-                  color: "#ef4444",
-                  "&:hover": { bgcolor: "#fef2f2", borderColor: "#fca5a5" },
-                }}
-              >
-                Sign Out
-              </Button>
-            </Box> */}
+            <IconButton
+              onClick={handleLogout}
+              size="small"
+              sx={{
+                color: "#ef4444",
+                "&:hover": { bgcolor: "#fef2f2" },
+              }}
+            >
+              <LogoutIcon fontSize="small" />
+            </IconButton>
           </Box>
         </Box>
       </Box>
@@ -894,8 +882,9 @@ const PharmacistsPage = () => {
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          overflow: "hidden",
+          overflow: "hidden", // Header stays fixed, content below scrolls
           bgcolor: "rgba(248, 250, 252, 0.5)",
+          height: "100%",
         }}
       >
         {/* Header */}
@@ -948,99 +937,6 @@ const PharmacistsPage = () => {
               </Typography>
             </Box>
           </Box>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <IconButton
-              onClick={handleOpenUserMenu}
-              sx={{
-                p: 0,
-                border: "2px solid rgba(19, 127, 236, 0.2)",
-                transition: "all 0.2s",
-                "&:hover": {
-                  transform: "translateY(-1px)",
-                  boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
-                },
-              }}
-            >
-              {/* <Avatar
-                src={pharmacistAvatar}
-                sx={{
-                  width: 40,
-                  height: 40,
-                  border: "2px solid white",
-                }}
-              /> */}
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleCloseUserMenu}
-              sx={{ mt: 1 }}
-              PaperProps={{
-                sx: {
-                  minWidth: 200,
-                  borderRadius: "12px",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
-                },
-              }}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              transformOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-              <MenuItem
-                onClick={() => {
-                  handleCloseUserMenu();
-                  setProfileOpen(true);
-                }}
-                sx={{ gap: 1.5, fontSize: "0.875rem", py: 1.2 }}
-              >
-                <BadgeIcon fontSize="small" sx={{ color: "#64748b" }} />
-                Manage Profile
-              </MenuItem>
-              <Divider />
-              <MenuItem
-                onClick={handleLogout}
-                sx={{
-                  gap: 1.5,
-                  color: "#dc2626",
-                  fontWeight: 600,
-                  fontSize: "0.875rem",
-                  py: 1.2,
-                }}
-              >
-                <LogoutIcon fontSize="small" />
-                Sign Out
-              </MenuItem>
-            </Menu>
-
-            {(activeTab === "Drugs Inventory" || activeTab === "Billing") && (
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => {
-                  if (activeTab === "Drugs Inventory") {
-                    resetDrugForm();
-                    setAddDrugModalOpen(true);
-                  } else {
-                    setAddInvoiceModalOpen(true);
-                  }
-                }}
-                sx={{
-                  bgcolor: "#137fec",
-                  color: "white",
-                  fontWeight: 700,
-                  borderRadius: "12px",
-                  px: 2,
-                  py: 1,
-                  fontSize: "0.875rem",
-                  textTransform: "none",
-                  boxShadow: "0 10px 15px -3px rgba(19, 127, 236, 0.2)",
-                  "&:hover": { bgcolor: "rgba(19, 127, 236, 0.9)" },
-                }}
-              >
-                {activeTab === "Drugs Inventory" ? "Add Drugs" : "New Invoice"}
-              </Button>
-            )}
-          </Box>
         </Box>
 
         {/* Mobile Navigation Drawer */}
@@ -1072,19 +968,41 @@ const PharmacistsPage = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: 1.5,
-                color: "#137fec",
               }}
             >
-              <HealthAndSafetyIcon sx={{ fontSize: 28 }} />
-              <Typography
+              <Box
                 sx={{
-                  fontSize: "1.125rem",
-                  fontWeight: 900,
-                  textTransform: "uppercase",
-                  color: "#0f172a",
+                  width: 28,
+                  height: 28,
+                  bgcolor: "#000000",
+                  borderRadius: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
                 }}
               >
-                City General
+                <Typography
+                  sx={{
+                    color: "white",
+                    fontSize: "20px",
+                    fontWeight: "900",
+                    lineHeight: 1,
+                    mt: -0.2,
+                  }}
+                >
+                  +
+                </Typography>
+              </Box>
+              <Typography
+                sx={{
+                  fontSize: "1.25rem",
+                  fontWeight: 600,
+                  color: "#1e293b",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                CityGeneral
               </Typography>
             </Box>
             <IconButton onClick={() => setMobileDrawerOpen(false)} size="small">
@@ -1118,6 +1036,86 @@ const PharmacistsPage = () => {
               setMobileDrawerOpen(false);
             }}
           />
+
+          <Box sx={{ mt: "auto", pt: 2, borderTop: "1px solid #f1f5f9" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+                p: 1.5,
+                borderRadius: "12px",
+                bgcolor: "#f8fafc",
+                border: "1px solid #f1f5f9",
+              }}
+            >
+              <Box
+                onClick={() => {
+                  setProfileOpen(true);
+                  setMobileDrawerOpen(false);
+                }}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                  flex: 1,
+                  minWidth: 0,
+                  cursor: "pointer",
+                  borderRadius: "8px",
+                  p: 0.5,
+                  mx: -0.5,
+                  "&:hover": {
+                    bgcolor: "rgba(19, 127, 236, 0.05)",
+                  },
+                  transition: "all 0.2s",
+                }}
+              >
+                <Avatar
+                  src={pharmacistAvatar}
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    border: "2px solid white",
+                    boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                  }}
+                />
+                <Box sx={{ minWidth: 0, flex: 1 }}>
+                  <Typography
+                    sx={{
+                      fontSize: "0.875rem",
+                      fontWeight: 700,
+                      color: "#0f172a",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {pharmacistName}
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "0.75rem",
+                      fontWeight: 500,
+                      color: "#64748b",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {pharmacistRole}
+                  </Typography>
+                </Box>
+              </Box>
+              <IconButton
+                onClick={handleLogout}
+                size="small"
+                sx={{
+                  color: "#ef4444",
+                  "&:hover": { bgcolor: "#fef2f2" },
+                }}
+              >
+                <LogoutIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          </Box>
         </Drawer>
 
         {/* Content */}
@@ -1129,35 +1127,51 @@ const PharmacistsPage = () => {
             display: "flex",
             flexDirection: "column",
             gap: 4,
-            overflow: "visible",
+            overflowY: "auto", // This area now scrolls
           }}
         >
           {activeTab === "Overview" && (
             <>
-              <Grid container spacing={2}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 3,
+                  mb: 5,
+                  width: "100%",
+                }}
+              >
                 {/* Monthly Revenue Card */}
-                <Grid item xs={12} sm={6} md={3}>
-                  <Box
+                <Box
+                  sx={{
+                    flex: {
+                      xs: "1 1 100%",
+                      sm: "1 1 calc(50% - 12px)",
+                      md: "1 1 calc(25% - 22.5px)",
+                    },
+                    minWidth: 0,
+                  }}
+                >
+                  <Paper
+                    elevation={0}
                     sx={{
-                      bgcolor: "white",
-                      borderRadius: "20px",
-                      p: 2.5,
+                      p: 3,
+                      borderRadius: "24px",
                       border: "1px solid #e2e8f0",
-                      boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
                       height: "100%",
-                      transition: "transform 0.2s, box-shadow 0.2s",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                       "&:hover": {
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                        transform: "translateY(-4px)",
+                        boxShadow: "0 12px 20px -5px rgba(0, 0, 0, 0.08)",
+                        borderColor: "#137fec",
                       },
                     }}
                   >
                     <Box sx={{ minWidth: 0, flex: 1, pr: 1 }}>
                       <Typography
-                        variant="subtitle2"
                         sx={{
                           color: "#64748b",
                           fontWeight: 700,
@@ -1165,22 +1179,16 @@ const PharmacistsPage = () => {
                           textTransform: "uppercase",
                           letterSpacing: "0.05em",
                           mb: 0.5,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
                         }}
                       >
                         Monthly Revenue
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: "1.5rem",
+                          fontSize: { xs: "1.5rem", md: "1.75rem" },
                           fontWeight: 900,
                           color: "#0f172a",
                           lineHeight: 1.2,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
                         }}
                         title={`₹${stats.totalMonthlyRevenue?.toLocaleString()}`}
                       >
@@ -1196,47 +1204,52 @@ const PharmacistsPage = () => {
                         })()}
                       </Typography>
                     </Box>
-                    <Box
+                    <Avatar
                       sx={{
                         bgcolor: "#eff6ff",
-                        p: 1.25,
-                        borderRadius: "14px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
+                        width: 56,
+                        height: 56,
+                        borderRadius: "16px",
                       }}
                     >
                       <AccountBalanceWalletIcon
-                        sx={{ fontSize: 24, color: "#2563eb" }}
+                        sx={{ fontSize: 28, color: "#2563eb" }}
                       />
-                    </Box>
-                  </Box>
-                </Grid>
+                    </Avatar>
+                  </Paper>
+                </Box>
 
                 {/* Total Medicines Card */}
-                <Grid item xs={12} sm={6} md={3}>
-                  <Box
+                <Box
+                  sx={{
+                    flex: {
+                      xs: "1 1 100%",
+                      sm: "1 1 calc(50% - 12px)",
+                      md: "1 1 calc(25% - 22.5px)",
+                    },
+                    minWidth: 0,
+                  }}
+                >
+                  <Paper
+                    elevation={0}
                     sx={{
-                      bgcolor: "white",
-                      borderRadius: "20px",
-                      p: 2.5,
+                      p: 3,
+                      borderRadius: "24px",
                       border: "1px solid #e2e8f0",
-                      boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
                       height: "100%",
-                      transition: "transform 0.2s, box-shadow 0.2s",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                       "&:hover": {
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                        transform: "translateY(-4px)",
+                        boxShadow: "0 12px 20px -5px rgba(0, 0, 0, 0.08)",
+                        borderColor: "#137fec",
                       },
                     }}
                   >
                     <Box sx={{ minWidth: 0, flex: 1, pr: 1 }}>
                       <Typography
-                        variant="subtitle2"
                         sx={{
                           color: "#64748b",
                           fontWeight: 700,
@@ -1244,66 +1257,65 @@ const PharmacistsPage = () => {
                           textTransform: "uppercase",
                           letterSpacing: "0.05em",
                           mb: 0.5,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
                         }}
                       >
                         Total Medicines
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: "1.5rem",
+                          fontSize: { xs: "1.5rem", md: "1.75rem" },
                           fontWeight: 900,
                           color: "#0f172a",
                           lineHeight: 1.2,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
                         }}
                       >
                         {stats.totalMedicines}
                       </Typography>
                     </Box>
-                    <Box
+                    <Avatar
                       sx={{
                         bgcolor: "#f0fdf4",
-                        p: 1.25,
-                        borderRadius: "14px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
+                        width: 56,
+                        height: 56,
+                        borderRadius: "16px",
                       }}
                     >
-                      <MedicationIcon sx={{ fontSize: 24, color: "#16a34a" }} />
-                    </Box>
-                  </Box>
-                </Grid>
+                      <MedicationIcon sx={{ fontSize: 28, color: "#16a34a" }} />
+                    </Avatar>
+                  </Paper>
+                </Box>
 
                 {/* Low Stock Card */}
-                <Grid item xs={12} sm={6} md={3}>
-                  <Box
+                <Box
+                  sx={{
+                    flex: {
+                      xs: "1 1 100%",
+                      sm: "1 1 calc(50% - 12px)",
+                      md: "1 1 calc(25% - 22.5px)",
+                    },
+                    minWidth: 0,
+                  }}
+                >
+                  <Paper
+                    elevation={0}
                     sx={{
-                      bgcolor: "white",
-                      borderRadius: "20px",
-                      p: 2.5,
+                      p: 3,
+                      borderRadius: "24px",
                       border: "1px solid #e2e8f0",
-                      boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
                       height: "100%",
-                      transition: "transform 0.2s, box-shadow 0.2s",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                       "&:hover": {
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                        transform: "translateY(-4px)",
+                        boxShadow: "0 12px 20px -5px rgba(0, 0, 0, 0.08)",
+                        borderColor: "#dc2626",
                       },
                     }}
                   >
                     <Box sx={{ minWidth: 0, flex: 1, pr: 1 }}>
                       <Typography
-                        variant="subtitle2"
                         sx={{
                           color: "#64748b",
                           fontWeight: 700,
@@ -1311,68 +1323,67 @@ const PharmacistsPage = () => {
                           textTransform: "uppercase",
                           letterSpacing: "0.05em",
                           mb: 0.5,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
                         }}
                       >
                         Low Stock
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: "1.5rem",
+                          fontSize: { xs: "1.5rem", md: "1.75rem" },
                           fontWeight: 900,
                           color: "#dc2626",
                           lineHeight: 1.2,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
                         }}
                       >
                         {stats.outOfStock}
                       </Typography>
                     </Box>
-                    <Box
+                    <Avatar
                       sx={{
                         bgcolor: "#fef2f2",
-                        p: 1.25,
-                        borderRadius: "14px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
+                        width: 56,
+                        height: 56,
+                        borderRadius: "16px",
                       }}
                     >
                       <ErrorOutlineIcon
-                        sx={{ fontSize: 24, color: "#dc2626" }}
+                        sx={{ fontSize: 28, color: "#dc2626" }}
                       />
-                    </Box>
-                  </Box>
-                </Grid>
+                    </Avatar>
+                  </Paper>
+                </Box>
 
                 {/* Total Invoices Card */}
-                <Grid item xs={12} sm={6} md={3}>
-                  <Box
+                <Box
+                  sx={{
+                    flex: {
+                      xs: "1 1 100%",
+                      sm: "1 1 calc(50% - 12px)",
+                      md: "1 1 calc(25% - 22.5px)",
+                    },
+                    minWidth: 0,
+                  }}
+                >
+                  <Paper
+                    elevation={0}
                     sx={{
-                      bgcolor: "white",
-                      borderRadius: "20px",
-                      p: 2.5,
+                      p: 3,
+                      borderRadius: "24px",
                       border: "1px solid #e2e8f0",
-                      boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
                       height: "100%",
-                      transition: "transform 0.2s, box-shadow 0.2s",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                       "&:hover": {
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                        transform: "translateY(-4px)",
+                        boxShadow: "0 12px 20px -5px rgba(0, 0, 0, 0.08)",
+                        borderColor: "#9333ea",
                       },
                     }}
                   >
                     <Box sx={{ minWidth: 0, flex: 1, pr: 1 }}>
                       <Typography
-                        variant="subtitle2"
                         sx={{
                           color: "#64748b",
                           fontWeight: 700,
@@ -1380,43 +1391,34 @@ const PharmacistsPage = () => {
                           textTransform: "uppercase",
                           letterSpacing: "0.05em",
                           mb: 0.5,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
                         }}
                       >
                         Total Invoices
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: "1.5rem",
+                          fontSize: { xs: "1.5rem", md: "1.75rem" },
                           fontWeight: 900,
                           color: "#0f172a",
                           lineHeight: 1.2,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
                         }}
                       >
                         {stats.completedInvoices}
                       </Typography>
                     </Box>
-                    <Box
+                    <Avatar
                       sx={{
                         bgcolor: "#faf5ff",
-                        p: 1.25,
-                        borderRadius: "14px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
+                        width: 56,
+                        height: 56,
+                        borderRadius: "16px",
                       }}
                     >
-                      <AssignmentIcon sx={{ fontSize: 24, color: "#9333ea" }} />
-                    </Box>
-                  </Box>
-                </Grid>
-              </Grid>
+                      <AssignmentIcon sx={{ fontSize: 28, color: "#9333ea" }} />
+                    </Avatar>
+                  </Paper>
+                </Box>
+              </Box>
 
               <Box
                 sx={{
@@ -1610,16 +1612,6 @@ const PharmacistsPage = () => {
                   <Typography sx={{ fontWeight: 700, color: "#0f172a" }}>
                     Drug Inventory
                   </Typography>
-                  <IconButton
-                    size="small"
-                    sx={{
-                      color: "#94a3b8",
-                      "&:hover": { bgcolor: "#f8fafc" },
-                      borderRadius: "8px",
-                    }}
-                  >
-                    <FilterListIcon fontSize="small" />
-                  </IconButton>
                 </Box>
                 <TableContainer>
                   <Table sx={{ minWidth: 800 }}>
@@ -2260,6 +2252,7 @@ const PharmacistsPage = () => {
         </DialogContent>
         <DialogActions sx={{ p: 3, gap: 1 }}>
           <Button
+            variant="outlined"
             onClick={() => {
               setAddDrugModalOpen(false);
               resetDrugForm();
@@ -2689,6 +2682,7 @@ const PharmacistsPage = () => {
         </DialogContent>
         <DialogActions sx={{ p: 3, gap: 1 }}>
           <Button
+            variant="outlined"
             onClick={() => setAddInvoiceModalOpen(false)}
             sx={{ color: "#64748b", fontWeight: 700, textTransform: "none" }}
           >
@@ -3073,7 +3067,7 @@ const PharmacistsPage = () => {
                     >
                       Medicine once sold cannot be returned. Please keep this
                       invoice for your records. This invoice was generated with
-                      MedCore.
+                      CityGeneral.
                     </Typography>
                   </Box>
                   <Box
@@ -3206,6 +3200,7 @@ const PharmacistsPage = () => {
           }}
         >
           <Button
+            variant="outlined"
             onClick={() => setDeleteConfirmDialogOpen(false)}
             fullWidth={isMobile}
             sx={{
@@ -3560,7 +3555,7 @@ const PharmacistsPage = () => {
                   >
                     Medicine once sold cannot be returned. Please keep this
                     invoice for your records. This invoice was generated with
-                    MedCore.
+                    CityGeneral.
                   </Typography>
                 </Box>
                 <Box
@@ -3602,6 +3597,7 @@ const PharmacistsPage = () => {
         </DialogContent>
         <DialogActions sx={{ p: 4, pt: 0, gap: 2 }}>
           <Button
+            variant="outlined"
             onClick={() => setViewInvoiceModalOpen(false)}
             sx={{
               color: "#64748b",

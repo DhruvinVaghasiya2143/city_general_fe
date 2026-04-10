@@ -163,8 +163,9 @@ function ResponsiveAppBar() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            borderBottom: "1px solid #e2e8f0",
-            bgcolor: "white",
+            borderBottom: "1px solid rgba(226, 232, 240, 0.8)",
+            bgcolor: "rgba(255, 255, 255, 0.8)",
+            backdropFilter: "blur(8px)",
             px: { xs: 2, md: 5 },
             py: 1.5,
             position: "sticky",
@@ -185,25 +186,35 @@ function ResponsiveAppBar() {
                 sx={{
                   width: 32,
                   height: 32,
-                  bgcolor: "rgba(19, 127, 236, 0.1)",
-                  borderRadius: "8px",
+                  bgcolor: "#000000",
+                  borderRadius: "6px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  flexShrink: 0,
                 }}
               >
-                <HealthAndSafetyIcon sx={{ color: "#137fec" }} />
+                <Typography
+                  sx={{
+                    color: "white",
+                    fontSize: "22px",
+                    fontWeight: "900",
+                    lineHeight: 1,
+                    mt: -0.2,
+                  }}
+                >
+                  +
+                </Typography>
               </Box>
               <Typography
                 sx={{
                   fontSize: "1.25rem",
-                  fontWeight: 900,
-                  textTransform: "uppercase",
-                  letterSpacing: "-0.025em",
-                  color: "#0f172a",
+                  fontWeight: 600,
+                  color: "#1e293b",
+                  letterSpacing: "-0.02em",
                 }}
               >
-                MedCore
+                CityGeneral
               </Typography>
             </Box>
             <Box
@@ -395,7 +406,7 @@ function ResponsiveAppBar() {
                   sx={{ gap: 1.5, fontSize: "0.875rem", py: 1.2 }}
                 >
                   <BadgeIcon fontSize="small" sx={{ color: "#64748b" }} />
-                  Manage Profile
+                  Profile
                 </MenuItem>
                 <Divider />
                 <MenuItem
@@ -409,7 +420,7 @@ function ResponsiveAppBar() {
                   }}
                 >
                   <LogoutIcon fontSize="small" />
-                  Sign Out
+                  Logout
                 </MenuItem>
               </Menu>
             </Box>
@@ -424,10 +435,14 @@ function ResponsiveAppBar() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            borderBottom: "1px solid #e2e8f0",
-            bgcolor: "white",
+            borderBottom: "1px solid rgba(226, 232, 240, 0.8)",
+            bgcolor: "rgba(255, 255, 255, 0.8)",
+            backdropFilter: "blur(8px)",
             px: { xs: 2, md: 5 },
             py: 1.5,
+            position: "sticky",
+            top: 0,
+            zIndex: 50,
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -435,20 +450,42 @@ function ResponsiveAppBar() {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                gap: 2,
-                color: "#137fec",
+                gap: 1.5,
               }}
             >
-              <MedicalServicesIcon sx={{ fontSize: 24 }} />
-              <Typography
+              <Box
                 sx={{
-                  fontSize: "1.125rem",
-                  fontWeight: 700,
-                  color: "#0f172a",
-                  letterSpacing: "-0.015em",
+                  width: 32,
+                  height: 32,
+                  bgcolor: "#000000",
+                  borderRadius: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
                 }}
               >
-                MedCore
+                <Typography
+                  sx={{
+                    color: "white",
+                    fontSize: "22px",
+                    fontWeight: "900",
+                    lineHeight: 1,
+                    mt: -0.2,
+                  }}
+                >
+                  +
+                </Typography>
+              </Box>
+              <Typography
+                sx={{
+                  fontSize: "1.25rem",
+                  fontWeight: 600,
+                  color: "#1e293b",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                CityGeneral
               </Typography>
             </Box>
             <Box
@@ -580,8 +617,9 @@ function ResponsiveAppBar() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            borderBottom: "1px solid #e2e8f0",
-            bgcolor: "white",
+            borderBottom: "1px solid rgba(226, 232, 240, 0.8)",
+            bgcolor: "rgba(255, 255, 255, 0.8)",
+            backdropFilter: "blur(8px)",
             px: { xs: 2, md: 5 },
             py: 1.5,
             position: "sticky",
@@ -592,25 +630,38 @@ function ResponsiveAppBar() {
           <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
             <Box
               sx={{
+                width: 32,
+                height: 32,
+                bgcolor: "#000000",
+                borderRadius: "6px",
                 display: "flex",
                 alignItems: "center",
-                gap: 2,
-                color: "#137fec",
+                justifyContent: "center",
+                flexShrink: 0,
               }}
             >
-              <AdminPanelSettingsIcon sx={{ fontSize: 24, color: "#137fec" }} />
               <Typography
                 sx={{
-                  fontSize: "1.25rem",
-                  fontWeight: 900,
-                  textTransform: "uppercase",
-                  letterSpacing: "-0.025em",
-                  color: "#0f172a",
+                  color: "white",
+                  fontSize: "22px",
+                  fontWeight: "900",
+                  lineHeight: 1,
+                  mt: -0.2,
                 }}
               >
-                MedCore
+                +
               </Typography>
             </Box>
+            <Typography
+              sx={{
+                fontSize: "1.25rem",
+                fontWeight: 600,
+                color: "#1e293b",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              CityGeneral
+            </Typography>
             <Box
               sx={{
                 display: { xs: "none", md: "flex" },
@@ -805,7 +856,7 @@ function ResponsiveAppBar() {
                   sx={{ gap: 1.5, fontSize: "0.875rem", py: 1.2 }}
                 >
                   <BadgeIcon fontSize="small" sx={{ color: "#64748b" }} />
-                  Manage Profile
+                  Profile
                 </MenuItem>
                 <Divider />
                 <MenuItem
@@ -819,7 +870,7 @@ function ResponsiveAppBar() {
                   }}
                 >
                   <LogoutIcon fontSize="small" />
-                  Sign Out
+                  Logout
                 </MenuItem>
               </Menu>
             </Box>
@@ -834,10 +885,14 @@ function ResponsiveAppBar() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            borderBottom: "1px solid #e2e8f0",
-            bgcolor: "white",
+            borderBottom: "1px solid rgba(226, 232, 240, 0.8)",
+            bgcolor: "rgba(255, 255, 255, 0.8)",
+            backdropFilter: "blur(8px)",
             px: { xs: 2, md: 5 },
             py: 1.5,
+            position: "sticky",
+            top: 0,
+            zIndex: 50,
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -845,20 +900,42 @@ function ResponsiveAppBar() {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                gap: 2,
-                color: "#137fec",
+                gap: 1.5,
               }}
             >
-              <MedicalServicesIcon sx={{ fontSize: 24 }} />
-              <Typography
+              <Box
                 sx={{
-                  fontSize: "1.125rem",
-                  fontWeight: 700,
-                  color: "#0f172a",
-                  letterSpacing: "-0.015em",
+                  width: 32,
+                  height: 32,
+                  bgcolor: "#000000",
+                  borderRadius: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
                 }}
               >
-                MedCore
+                <Typography
+                  sx={{
+                    color: "white",
+                    fontSize: "22px",
+                    fontWeight: "900",
+                    lineHeight: 1,
+                    mt: -0.2,
+                  }}
+                >
+                  +
+                </Typography>
+              </Box>
+              <Typography
+                sx={{
+                  fontSize: "1.25rem",
+                  fontWeight: 600,
+                  color: "#1e293b",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                CityGeneral
               </Typography>
             </Box>
             <Box
@@ -1037,7 +1114,7 @@ function ResponsiveAppBar() {
                 sx={{ gap: 1.5, fontSize: "0.875rem", py: 1.2 }}
               >
                 <BadgeIcon fontSize="small" sx={{ color: "#64748b" }} />
-                Manage Profile
+                Profile
               </MenuItem>
               <Divider />
               <MenuItem
@@ -1051,7 +1128,7 @@ function ResponsiveAppBar() {
                 }}
               >
                 <LogoutIcon fontSize="small" />
-                Sign Out
+                Logout
               </MenuItem>
             </Menu>
           </Box>
@@ -1060,24 +1137,64 @@ function ResponsiveAppBar() {
     } else {
       return (
         <AppBar
-          position="static"
-          className="bg-transparent shadow-md"
-          color="transparent"
+          position="sticky"
+          sx={{
+            top: 0,
+            zIndex: 1100,
+            bgcolor: "rgba(255, 255, 255, 0.7)",
+            backdropFilter: "blur(12px)",
+            borderBottom: "1px solid rgba(226, 232, 240, 0.3)",
+          }}
+          className="shadow-sm"
+          color="inherit"
         >
           <div className="max-w-7xl mx-auto w-full px-4">
             <Toolbar className="flex justify-between">
               {/* Logo */}
-              <Link to="/">
-                <div className="flex items-center gap-2">
-                  <LocalHospitalIcon className="hidden md:block" />
+              <Link to="/" style={{ textDecoration: "none" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 32,
+                      height: 32,
+                      bgcolor: "#000000",
+                      borderRadius: "6px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        color: "white",
+                        fontSize: "22px",
+                        fontWeight: "900",
+                        lineHeight: 1,
+                        mt: -0.2,
+                      }}
+                    >
+                      +
+                    </Typography>
+                  </Box>
                   <Typography
-                    variant="h6"
-                    component="span"
-                    className="hidden md:block font-bold tracking-wider no-underline"
+                    sx={{
+                      fontSize: "1.25rem",
+                      fontWeight: 600,
+                      color: "#1e293b",
+                      letterSpacing: "-0.02em",
+                      display: { xs: "none", md: "block" },
+                    }}
                   >
                     CityGeneral
                   </Typography>
-                </div>
+                </Box>
               </Link>
 
               {/* Mobile Menu */}
@@ -1092,7 +1209,7 @@ function ResponsiveAppBar() {
                   onClose={handleCloseNavMenu}
                 >
                   {(authUser
-                    ? ROLE_PAGES[authUser.role] || PUBLIC_PAGES
+                    ? ROLE_PAGES[authUser.role] || []
                     : PUBLIC_PAGES
                   ).map((page) => (
                     <MenuItem
@@ -1111,7 +1228,7 @@ function ResponsiveAppBar() {
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center gap-6">
                 {(authUser
-                  ? ROLE_PAGES[authUser.role] || PUBLIC_PAGES
+                  ? ROLE_PAGES[authUser.role] || []
                   : PUBLIC_PAGES
                 ).map((page) => (
                   <Button
@@ -1244,12 +1361,6 @@ function ResponsiveAppBar() {
                         />
                       </Box>
 
-                      <MenuItem
-                        onClick={handleGoToDashboard}
-                        sx={{ fontSize: "0.875rem", py: 1.2 }}
-                      >
-                        My Dashboard
-                      </MenuItem>
                       <MenuItem
                         onClick={() => {
                           handleCloseUserMenu();
@@ -1469,7 +1580,7 @@ function ResponsiveAppBar() {
                       fontWeight: 700,
                     }}
                   >
-                    Sign Out
+                    Logout
                   </Button>
                 </Box>
               </Box>

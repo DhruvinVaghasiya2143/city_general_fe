@@ -705,6 +705,7 @@ const AddDoctor = ({ open, onClose, onSuccess, initialRole = "doctor" }) => {
           }}
         >
           <Button
+            variant="outlined"
             onClick={onClose}
             sx={{
               fontWeight: 700,

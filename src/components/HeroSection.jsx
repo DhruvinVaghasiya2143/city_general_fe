@@ -12,7 +12,9 @@ const WaitTimeDisplay = ({ waitTime, isLive }) => {
           <h2 className="text-blue-600 font-bold text-lg md:text-xl mb-0.5">
             Emergency Wait Time
           </h2>
-          <p className="text-gray-900 text-2xl md:text-3xl font-black">{waitTime} Minutes</p>
+          <p className="text-gray-900 text-2xl md:text-3xl font-black">
+            {waitTime} Minutes
+          </p>
         </div>
 
         {isLive && (
@@ -39,51 +41,56 @@ export default function HeroSection() {
             TRUSTED MEDICAL EXCELLENCE
           </Typography>
 
-          <Typography 
-            variant="h2" 
-            sx={{ 
-              fontWeight: 900, 
+          <Typography
+            variant="h2"
+            sx={{
+              fontWeight: 900,
               my: 2,
               fontSize: { xs: "2.5rem", sm: "3.5rem", md: "4rem" },
               lineHeight: 1.1,
-              letterSpacing: "-0.02em"
+              letterSpacing: "-0.02em",
             }}
           >
             Your Health is Our Global Priority
           </Typography>
 
-          <Typography color="text.secondary" sx={{ fontSize: { xs: "0.95rem", md: "1.1rem" }, lineHeight: 1.6 }}>
-            Providing world-class healthcare with a compassionate touch. Access the best specialists, cutting-edge technology, and 24/7 care for you and your family.
+          <Typography
+            color="text.secondary"
+            sx={{ fontSize: { xs: "0.95rem", md: "1.1rem" }, lineHeight: 1.6 }}
+          >
+            Providing world-class healthcare with a compassionate touch. Access
+            the best specialists, cutting-edge technology, and 24/7 care for you
+            and your family.
           </Typography>
 
           <Box sx={{ mt: 4, display: "flex", flexDirection: "row", gap: 1.5 }}>
             <Button
               variant="contained"
               size="large"
-              sx={{ 
-                flex: { xs: 1, sm: "none" }, 
-                px: { xs: 1, sm: 4 }, 
-                py: 1.5, 
-                borderRadius: "10px", 
-                fontWeight: 700, 
+              sx={{
+                flex: { xs: 1, sm: "none" },
+                px: { xs: 1, sm: 4 },
+                py: 1.5,
+                borderRadius: "10px",
+                fontWeight: 700,
                 textTransform: "none",
-                fontSize: { xs: "0.85rem", sm: "0.9375rem" } 
+                fontSize: { xs: "0.85rem", sm: "0.9375rem" },
               }}
               onClick={() => navigate("/doctors")}
             >
               Book Now
             </Button>
-            <Button 
+            <Button
               variant="outlined"
               size="large"
-              sx={{ 
-                flex: { xs: 1, sm: "none" }, 
-                px: { xs: 1, sm: 4 }, 
-                py: 1.5, 
-                borderRadius: "10px", 
-                fontWeight: 700, 
+              sx={{
+                flex: { xs: 1, sm: "none" },
+                px: { xs: 1, sm: 4 },
+                py: 1.5,
+                borderRadius: "10px",
+                fontWeight: 700,
                 textTransform: "none",
-                fontSize: { xs: "0.85rem", sm: "0.9375rem" } 
+                fontSize: { xs: "0.85rem", sm: "0.9375rem" },
               }}
               onClick={() => navigate("/services")}
             >

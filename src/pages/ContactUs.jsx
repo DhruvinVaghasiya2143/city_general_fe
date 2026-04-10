@@ -11,7 +11,11 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import EmailIcon from "@mui/icons-material/Email";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -78,14 +82,18 @@ const ContactUs = () => {
   return (
     <Box
       sx={{
-        
         background: "linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)",
         minHeight: "100vh",
       }}
     >
       <Container maxWidth="lg" sx={{ py: { xs: 6, md: 12 } }}>
         {/* Header Section */}
-        <Box sx={{ mb: { xs: 6, md: 10 }, textAlign: { xs: "center", md: "left" } }}>
+        <Box
+          sx={{
+            mb: { xs: 6, md: 10 },
+            textAlign: { xs: "center", md: "left" },
+          }}
+        >
           <Typography
             variant="h2"
             sx={{
@@ -96,7 +104,7 @@ const ContactUs = () => {
               letterSpacing: "-0.02em",
             }}
           >
-            Contact Our Team
+            Contact Us
           </Typography>
           <Typography
             variant="h6"
@@ -130,7 +138,8 @@ const ContactUs = () => {
                 borderRadius: "24px",
                 border: "1px solid #e2e8f0",
                 p: { xs: 3, md: 5 },
-                boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
+                boxShadow:
+                  "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
                 background: "rgba(255, 255, 255, 0.9)",
                 backdropFilter: "blur(10px)",
               }}
@@ -140,7 +149,13 @@ const ContactUs = () => {
                   sx={{ display: "flex", alignItems: "center", mb: 4, gap: 1 }}
                 >
                   <EmailIcon color="primary" sx={{ fontSize: "2rem" }} />
-                  <Typography variant="h5" sx={{ fontWeight: 800, fontSize: { xs: "1.2rem", md: "1.75rem" } }}>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 800,
+                      fontSize: { xs: "1.2rem", md: "1.75rem" },
+                    }}
+                  >
                     Send us a Message
                   </Typography>
                 </Box>
@@ -386,10 +401,16 @@ const ContactUs = () => {
                     <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
                       Physical Address
                     </Typography>
-                    <Typography variant="body2" sx={{ color: "#1e40af", fontWeight: 600 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "#1e40af", fontWeight: 600 }}
+                    >
                       123 Healthcare Plaza
                     </Typography>
-                    <Typography variant="body2" sx={{ color: "#1e40af", fontWeight: 600 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "#1e40af", fontWeight: 600 }}
+                    >
                       Medical District, NY 10001
                     </Typography>
                   </Box>
@@ -400,7 +421,13 @@ const ContactUs = () => {
         </Box>
 
         {/* FAQ Section */}
-        <Box sx={{ mt: { xs: 12, md: 20 }, pt: { xs: 8, md: 12 }, borderTop: "1px solid #e2e8f0" }}>
+        <Box
+          sx={{
+            mt: { xs: 12, md: 20 },
+            pt: { xs: 8, md: 12 },
+            borderTop: "1px solid #e2e8f0",
+          }}
+        >
           <Box sx={{ textAlign: "center", mb: 8 }}>
             <Typography
               variant="h3"
@@ -410,9 +437,12 @@ const ContactUs = () => {
                 fontSize: { xs: "2rem", md: "3rem" },
               }}
             >
-              Frequently Asked Questions
+              FAQs
             </Typography>
-            <Typography variant="h6" sx={{ color: "#64748b", fontSize: { xs: "1rem", md: "1.25rem" } }}>
+            <Typography
+              variant="h6"
+              sx={{ color: "#64748b", fontSize: { xs: "1rem", md: "1.25rem" } }}
+            >
               Can't find what you're looking for? Here are some quick answers.
             </Typography>
           </Box>
@@ -420,62 +450,102 @@ const ContactUs = () => {
           <Box
             sx={{
               display: "flex",
-              flexWrap: "wrap",
-              gap: 4,
+              flexDirection: "column",
+              maxWidth: "800px",
+              mx: "auto",
             }}
           >
             {[
               {
-                q: "How do I request records?",
-                a: "Patient records can be requested via the Patient Portal or by visiting our Medical Records office in the West Wing.",
+                q: "How do I request medical records?",
+                a: "Patient records can be requested via the Patient Portal or by visiting our Medical Records office in the West Wing. Processing typically takes 5–7 business days.",
               },
               {
-                q: "What are visiting hours?",
-                a: "Visiting hours are daily from 8:00 AM to 8:00 PM. Intensive Care units have specific visitation protocols.",
+                q: "What are the visiting hours?",
+                a: "Visiting hours are daily from 8:00 AM to 8:00 PM. Intensive Care units have specific visitation protocols — please check with nursing staff on arrival.",
               },
               {
-                q: "Is parking available?",
-                a: "Yes, we offer 24-hour valet parking at the main entrance and a multi-story public garage on 5th Avenue.",
+                q: "Is parking available at the hospital?",
+                a: "Yes, we offer 24-hour valet parking at the main entrance and a multi-story public garage on 5th Avenue. The first two hours are complimentary for outpatients.",
+              },
+              {
+                q: "How do I schedule an appointment?",
+                a: "You can book appointments online through our website, call our scheduling line at +1 (555) 000-1234, or visit the reception desk in person during working hours.",
+              },
+              {
+                q: "Does the hospital accept insurance?",
+                a: "We accept most major insurance plans including Medicare and Medicaid. We recommend contacting our Billing & Insurance department beforehand to confirm your coverage.",
+              },
+              {
+                q: "What should I bring to my first appointment?",
+                a: "Please bring a valid government-issued photo ID, your insurance card, a list of current medications, and any relevant prior medical records or referral letters.",
               },
             ].map((faq, i) => (
-              <Box
+              <Accordion
                 key={i}
+                elevation={0}
+                disableGutters
                 sx={{
-                  width: {
-                    xs: "100%",
-                    sm: "calc(50% - 16px)",
-                    md: "calc(33.333% - 27px)",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "16px !important",
+                  mb: 2,
+                  overflow: "hidden",
+                  "&:before": { display: "none" },
+                  transition: "box-shadow 0.2s ease",
+                  "&.Mui-expanded": {
+                    boxShadow: "0 8px 24px -4px rgba(59, 130, 246, 0.12)",
+                    borderColor: "#bfdbfe",
                   },
                 }}
               >
-                <Box
+                <AccordionSummary
+                  expandIcon={
+                    <ExpandMoreIcon
+                      sx={{ color: "primary.main", fontSize: "1.4rem" }}
+                    />
+                  }
                   sx={{
-                    p: 4,
+                    px: { xs: 2.5, sm: 4 },
+                    py: { xs: 1, sm: 1.5 },
                     bgcolor: "white",
-                    borderRadius: "24px",
-                    border: "1px solid #e2e8f0",
-                    height: "100%",
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      borderColor: "primary.main",
-                      boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.1)",
+                    "&.Mui-expanded": {
+                      bgcolor: "#eff6ff",
+                      borderBottom: "1px solid #dbeafe",
+                    },
+                    "& .MuiAccordionSummary-content": {
+                      my: { xs: 1, sm: 1.5 },
                     },
                   }}
                 >
                   <Typography
-                    variant="h6"
-                    sx={{ fontWeight: 800, color: "primary.main", mb: 2 }}
+                    sx={{
+                      fontWeight: 700,
+                      color: "#1e293b",
+                      fontSize: { xs: "0.95rem", sm: "1.05rem" },
+                    }}
                   >
                     {faq.q}
                   </Typography>
+                </AccordionSummary>
+                <AccordionDetails
+                  sx={{
+                    px: { xs: 2.5, sm: 4 },
+                    py: { xs: 2, sm: 2.5 },
+                    bgcolor: "white",
+                  }}
+                >
                   <Typography
                     variant="body2"
-                    sx={{ color: "#64748b", lineHeight: 1.7 }}
+                    sx={{
+                      color: "#64748b",
+                      lineHeight: 1.8,
+                      fontSize: { xs: "0.88rem", sm: "0.95rem" },
+                    }}
                   >
                     {faq.a}
                   </Typography>
-                </Box>
-              </Box>
+                </AccordionDetails>
+              </Accordion>
             ))}
           </Box>
         </Box>

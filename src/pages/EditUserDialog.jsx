@@ -234,6 +234,7 @@ const EditUserDialog = ({ open, onClose, onSuccess, initialData }) => {
           }}
         >
           <Button
+            variant="outlined"
             onClick={onClose}
             sx={{
               fontWeight: 700,

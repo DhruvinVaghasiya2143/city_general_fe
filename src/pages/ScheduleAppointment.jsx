@@ -688,6 +688,7 @@ const ScheduleAppointment = ({
             }}
           >
             <Button
+              variant="outlined"
               onClick={onClose}
               sx={{ color: "#64748b", fontWeight: 700, textTransform: "none" }}
             >

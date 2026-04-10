@@ -327,7 +327,12 @@ const AdminDashboard = () => {
           sx={{ mb: { xs: 4, md: 6 } }}
         >
           {statCards.map((stat, index) => (
-            <Grid item xs={6} sm={4} md={4} key={index}
+            <Grid
+              item
+              xs={6}
+              sm={4}
+              md={4}
+              key={index}
               sx={{
                 // On md screens with 5 cards: 3 in first row, 2 centered in second row
                 ...(index >= 3 && { display: { xs: "block", md: "block" } }),
@@ -350,17 +355,39 @@ const AdminDashboard = () => {
                   },
                 }}
               >
-                <Avatar sx={{ bgcolor: stat.bgcolor, width: { xs: 48, sm: 56, md: 64 }, height: { xs: 48, sm: 56, md: 64 }, flexShrink: 0 }}>
+                <Avatar
+                  sx={{
+                    bgcolor: stat.bgcolor,
+                    width: { xs: 48, sm: 56, md: 64 },
+                    height: { xs: 48, sm: 56, md: 64 },
+                    flexShrink: 0,
+                  }}
+                >
                   {stat.icon}
                 </Avatar>
                 <Box>
                   <Typography
-                    sx={{ fontWeight: 800, color: "#1e293b", fontSize: { xs: "1.4rem", sm: "1.8rem", md: "2rem" }, lineHeight: 1.1 }}
+                    sx={{
+                      fontWeight: 800,
+                      color: "#1e293b",
+                      fontSize: { xs: "1.4rem", sm: "1.8rem", md: "2rem" },
+                      lineHeight: 1.1,
+                    }}
                   >
                     {stat.value}
                   </Typography>
                   <Typography
-                    sx={{ color: "#64748b", fontWeight: 600, fontSize: { xs: "0.68rem", sm: "0.78rem", md: "0.875rem" }, lineHeight: 1.3, mt: 0.3 }}
+                    sx={{
+                      color: "#64748b",
+                      fontWeight: 600,
+                      fontSize: {
+                        xs: "0.68rem",
+                        sm: "0.78rem",
+                        md: "0.875rem",
+                      },
+                      lineHeight: 1.3,
+                      mt: 0.3,
+                    }}
                   >
                     {stat.title}
                   </Typography>
@@ -374,7 +401,11 @@ const AdminDashboard = () => {
         <Box sx={{ mb: { xs: 2, md: 3 } }}>
           <Typography
             variant="h5"
-            sx={{ fontWeight: 800, color: "#1e293b", fontSize: { xs: "1.1rem", md: "1.5rem" } }}
+            sx={{
+              fontWeight: 800,
+              color: "#1e293b",
+              fontSize: { xs: "1.1rem", md: "1.5rem" },
+            }}
           >
             User Directory
           </Typography>
@@ -684,9 +715,10 @@ const AdminDashboard = () => {
                 minHeight: { xs: "48px", sm: "52px" },
                 px: { xs: 1, sm: 2 },
               },
-              ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
-                fontSize: { xs: "0.75rem", sm: "0.875rem" },
-              },
+              ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows":
+                {
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                },
             }}
           />
         </Paper>
@@ -776,6 +808,7 @@ const AdminDashboard = () => {
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
             <Button
+              variant="outlined"
               onClick={handleCloseDeleteDialog}
               sx={{
                 color: "#64748b",

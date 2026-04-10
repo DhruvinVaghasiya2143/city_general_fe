@@ -23,7 +23,12 @@ import AdminRegistration from "./pages/AdminRegistration";
 function App() {
   const location = useLocation();
 
-  const authRoutes = ["/login", "/admin/login", "/admin/register", "/registration"];
+  const authRoutes = [
+    "/login",
+    "/admin/login",
+    "/admin/register",
+    "/registration",
+  ];
   const dashboardRoutes = [
     "/admin-dashboard",
     "/pharmacists-dashboard",
@@ -31,7 +36,9 @@ function App() {
     "/receptionist-dashboard",
   ];
 
-  const shouldShowNavbar = !authRoutes.includes(location.pathname);
+  const shouldShowNavbar =
+    !authRoutes.includes(location.pathname) &&
+    location.pathname !== "/pharmacists-dashboard";
   const shouldShowFooter =
     !authRoutes.includes(location.pathname) &&
     !dashboardRoutes.includes(location.pathname);

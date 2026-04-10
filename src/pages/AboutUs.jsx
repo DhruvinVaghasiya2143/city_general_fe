@@ -292,7 +292,11 @@ const AboutUs = () => {
                       <Typography variant="h6" sx={{ fontWeight: 700 }}>
                         {step.year} - {step.title}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 4 }}
+                      >
                         {step.desc}
                       </Typography>
                     </Box>

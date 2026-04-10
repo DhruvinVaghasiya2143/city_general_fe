@@ -135,7 +135,9 @@ const DoctorsPage = () => {
       }}
     >
       <Container maxWidth="xl">
-        <Box sx={{ mb: { xs: 4, md: 6 }, textAlign: { xs: "center", md: "left" } }}>
+        <Box
+          sx={{ mb: { xs: 4, md: 6 }, textAlign: { xs: "center", md: "left" } }}
+        >
           <Typography
             variant="h3"
             sx={{
@@ -294,7 +296,8 @@ const DoctorsPage = () => {
                   transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                   "&:hover": {
                     transform: "translateY(-8px)",
-                    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                    boxShadow:
+                      "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
                     borderColor: "primary.light",
                   },
                 }}

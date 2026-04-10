@@ -406,6 +406,7 @@ const AddService = ({
           }}
         >
           <Button
+            variant="outlined"
             onClick={onClose}
             sx={{
               fontWeight: 700,
