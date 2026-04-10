@@ -1198,32 +1198,34 @@ function ResponsiveAppBar() {
               </Link>
 
               {/* Mobile Menu */}
-              <div className="md:hidden">
-                <IconButton onClick={handleOpenNavMenu} color="inherit">
-                  <MenuIcon />
-                </IconButton>
+              {!isLoggedIn && (
+                <div className="md:hidden">
+                  <IconButton onClick={handleOpenNavMenu} color="inherit">
+                    <MenuIcon />
+                  </IconButton>
 
-                <Menu
-                  anchorEl={anchorElNav}
-                  open={Boolean(anchorElNav)}
-                  onClose={handleCloseNavMenu}
-                >
-                  {(authUser
-                    ? ROLE_PAGES[authUser.role] || []
-                    : PUBLIC_PAGES
-                  ).map((page) => (
-                    <MenuItem
-                      key={page.label}
-                      onClick={() => {
-                        handleCloseNavMenu();
-                        if (page.path !== "#") navigate(page.path);
-                      }}
-                    >
-                      {page.label}
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </div>
+                  <Menu
+                    anchorEl={anchorElNav}
+                    open={Boolean(anchorElNav)}
+                    onClose={handleCloseNavMenu}
+                  >
+                    {(authUser
+                      ? ROLE_PAGES[authUser.role] || []
+                      : PUBLIC_PAGES
+                    ).map((page) => (
+                      <MenuItem
+                        key={page.label}
+                        onClick={() => {
+                          handleCloseNavMenu();
+                          if (page.path !== "#") navigate(page.path);
+                        }}
+                      >
+                        {page.label}
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </div>
+              )}
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center gap-6">
