@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import Navbar from "./components/navbar";
 import Landing from "./pages/landing";
+import ScrollToTop from "./components/ScrollToTop";
 import Login from "./pages/login";
 
 import Footer from "./components/footer";
@@ -47,6 +48,7 @@ function App() {
     <div>
       {shouldShowNavbar && <Navbar />}
       <ToastContainer />
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/about" element={<AboutUs />} />
